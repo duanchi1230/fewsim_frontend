@@ -1,26 +1,20 @@
-import React, {Component} from 'react';
-import './styles/App.css';
-import PixelMapView from './components/PixelMapView';
+import React from 'react';
+import logo from './logo.svg';
+import './App.css';
+import PixMatrix from './component/PixelMapCanvas'
 
+function App() {
 
-export default class App extends Component {
+  console.log("123")
 
-    constructor(props) {
-        super(props);
-
-        this.state = {};
-    }
-
-    render() {
-
-        const {data} = this.props;
-
-        return (
-            <div className="App">
-                <PixelMapView
-                    data={data}
-                />
-            </div>
-        );
-    }
+  return ( 
+    <div>
+    <div className="App">
+      FEWSim
+    </div>
+    <h1><PixMatrix/></h1>
+    </div>
+  );
 }
+
+export default App;

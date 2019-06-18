@@ -1,13 +1,12 @@
 {
-  "name": "fewsim-frontend",
+  "name": "sim",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:8000",
   "dependencies": {
-    "antd": "^3.19.3",
     "d3": "^5.9.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-faux-dom": "^4.5.0",
     "react-scripts": "3.0.1"
   },
   "scripts": {
