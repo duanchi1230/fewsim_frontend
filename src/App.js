@@ -136,9 +136,7 @@ export default class App extends Component {
                             </Menu>
                         </div>
                     </Header>
-                    <Layout
-                        style={{flex: 1}}
-                    >
+
                         <Content
                             style={{
                                 padding: 16
@@ -196,7 +194,6 @@ export default class App extends Component {
                                 </Col>
                             </Row>
                         </Content>
-                    </Layout>
                 </Layout>
             </div>
         );
