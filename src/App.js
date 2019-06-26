@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Layout, Button, Row, Col, Divider, Select, Menu} from 'antd';
+import {Layout, Button, Row, Col, Divider, Select, Menu, Modal, Icon} from 'antd';
 import './styles/App.css';
 
 const {Header, Content} = Layout;
@@ -10,12 +10,49 @@ export default class App extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            createScenarioModalVisible: false
+        };
     }
+
+    handleScenarioChange = (value) => {
+        // Search for the scenario
+        // load it into the main content
+    };
+
+    handleAddScenarioButtonClicked = () => {
+        this.setState({createScenarioModalVisible: true});
+    };
+
+    handleAddScenarioModalClosed = () => {
+        this.setState({createScenarioModalVisible: false})
+    };
+
+    handleSubmitNewScenario = () => {
+
+    };
 
     render() {
         return (
             <div>
+                <Modal
+                    width={800}
+                    visible={this.state.createScenarioModalVisible}
+                    onCancel={this.handleAddScenarioModalClosed.bind(this)}
+                    footer={null}
+                >
+                    <Row
+                        gutter={16}
+                        style={{minHeight: 430}}
+                    >
+                        <Col span={12}>
+                            Existing scenarios
+                        </Col>
+                        <Col span={12}>
+                            New Parameters
+                        </Col>
+                    </Row>
+                </Modal>
                 <Layout>
                     <Header
                         style={{
@@ -44,13 +81,27 @@ export default class App extends Component {
                                     marginLeft: 48
                                 }}
                             >
+                                <Button
+                                    type="primary"
+                                    shape="circle"
+                                    icon="plus"
+                                    onClick={this.handleAddScenarioButtonClicked.bind(this)}
+                                />
+                            </div>
+                            <div
+                                style={{
+                                    marginLeft: 16
+                                }}
+                            >
                                 <Select
                                     showSearch
                                     placeholder={'Select a scenario'}
                                     style={{
                                         width: 200
                                     }}
+                                    onChange={this.handleScenarioChange.bind(this)}
                                 >
+                                    <Select.Option value="create">Create...</Select.Option>
                                     <Select.Option value="s1">Scenario 1</Select.Option>
                                     <Select.Option value="s2">Scenario 2</Select.Option>
                                     <Select.Option value="s3">Scenario 3</Select.Option>
@@ -72,6 +123,7 @@ export default class App extends Component {
                                     <Select.Option value="mabia">MABIA</Select.Option>
                                 </Select>
                             </div>
+
                         </div>
                         <div>
                             <Menu
@@ -124,19 +176,19 @@ export default class App extends Component {
                                     <div
                                         style={{
                                             backgroundColor: '#fff',
-                                            // minHeight: 500,
-                                            // minHeight: '100%',
-                                            height: '100vh'
+                                            minHeight: 500,
+                                            padding: 16
                                         }}
                                     >
-                                        Center
+
                                     </div>
                                 </Col>
                                 <Col span={10}>
                                     <div
                                         style={{
                                             backgroundColor: '#fff',
-                                            minHeight: 500
+                                            minHeight: 500,
+                                            padding: 16
                                         }}
                                     >
                                         Center
