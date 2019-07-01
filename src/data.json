@@ -1,0 +1,1014 @@
+{
+  1986: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  1987: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  1988: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  1989: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  1990: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  1991: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  1992: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  1993: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  1994: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  1995: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  1996: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  1997: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  1998: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  1999: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  2000: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  2001: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  2002: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  2003: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  2004: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  2005: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  2006: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  2007: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  },
+  2008: {
+    "Municipal": {
+      "\\from CAPWithdral": 35034304.77631995,
+      "\\from GW": 38532333.333333336,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 37894303.94875717,
+      "\\from WWTP": 5454652.924074721
+    },
+    "Agriculture": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 26078051.45840155,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 38440951.660882294,
+      "\\from WWTP": 0.0
+    },
+    "Agriculture2": {
+      "\\from CAPWithdral": 16003025.534732295,
+      "\\from GW": 58724394.289090715,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 0.0
+    },
+    "Industrial": {
+      "\\from CAPWithdral": 1079112.8447597935,
+      "\\from GW": 4979717.577295999,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0.0,
+      "\\from WWTP": 6111073.094654987
+    },
+    "PowerPlant": {
+      "\\from CAPWithdral": 0,
+      "\\from GW": 5670817.588836667,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 0,
+      "\\from WWTP": 2749033.3333333335
+    },
+    "Indian": {
+      "\\from CAPWithdral": 6804984.877277658,
+      "\\from GW": 10398116.886160085,
+      "\\from GW_SRP": 0,
+      "\\from SRPwithdral": 10406742.757210001,
+      "\\from WWTP": 0
+    }
+  }
+}

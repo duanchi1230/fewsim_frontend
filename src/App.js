@@ -179,6 +179,7 @@ export default class App extends Component {
                                             minHeight: 800,
                                             padding: 16
                                         }}
+                                        
                                     >
                                         <PixelMapView/>
 

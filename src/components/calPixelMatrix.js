@@ -1,6 +1,6 @@
 import { tsConstructorType } from "@babel/types";
 import { PassThrough } from "stream";
-import raw_flow from '../data'
+
 
 function calPixelMatrix (flow, origin, start_year=1986, end_year=2008, sort=1){
     var year1 =start_year
@@ -8,10 +8,10 @@ function calPixelMatrix (flow, origin, start_year=1986, end_year=2008, sort=1){
     var d = []
     if (sort === 1){
         d = flow_byDemand(flow,origin, year1, year2)
-        console.log("Table sorted by Demand")
     }
 
     mapColor(d)
+    console.log(d)
     return  d
 }
 
@@ -22,15 +22,14 @@ function flow_byDemand(flow, origin, start_year=1986, end_year=2008){
     var year =[] 
     var site =[] 
     var d = [] 
-    var site = ["Municipal", "Agriculture", "Agriculture2", "Industrial", "PowerPlant", "Indian"]
-    var supply = {"\\from CAPWithdral": "CAP to ", "\\from GW": "GW to ", "\\from GW_SRP": "GW_SRP to ", "\\from SRPwithdral": "SRP to ", "\\from WWTP": "WWTP to "}
+
     for (var i=0; i<flow.length;i++){
         for (var j=0; j<flow[i]["value"].length; j++){
-            flow_value.append(flow[i]["value"][j])
-            rowName.append(flow[i]["name"])
-            source.append(flow[i]["source"])
-            site.append(flow[i]["site"])
-            year.append(start_year+j)
+            flow_value.push(flow[i]["value"][j])
+            rowName.push(flow[i]["name"])
+            source.push(flow[i]["source"])
+            site.push(flow[i]["site"])
+            year.push(start_year+j)
 
         }
     }
@@ -50,7 +49,7 @@ function calCoordinate(flow, origin, start_year, end_year){
     var dy = dx
     var num_scenarios = Object.keys(flow).length
 
-    for (var i=0; i<=flow.length; i++){
+    for (var i=0; i<flow.length; i++){
         var x0 = origin["x"]
         for(var j=start_year; j<=end_year; j++){
             x.push(x0)
@@ -58,15 +57,15 @@ function calCoordinate(flow, origin, start_year, end_year){
         }
     }
     
-    for (var i=0; i<=flow.length; i++){
-        for(var j=start_year; j<end_year; j++){
+    for (var i=0; i<flow.length; i++){
+        for(var j=start_year; j<=end_year; j++){
             y.push(y0)
         }
         y0 = y0 + dy + space
     }
 
     // console.log("x=", x)
-    // console.log("y=", y)
+    console.log("y=", y)
 
     return [x, y, dx, dy]
 }
@@ -81,18 +80,19 @@ function mapColor(d){
         "PowerPlant": [102,166,30], 
         "Indian": [230,171,2]}  
     var[max_value, min_value] = findRange(d)
-    for (var i=0; i<d.length; i++){
-        Object.values(base_color[d[i]["siteName"]]).forEach(
-            v=> d[i]["color"]= d[i]["color"] +" "+ (255 - (d[i]["flow_value"]-min_value[d[i]["siteName"]])*(255-v)/(max_value[d[i]["siteName"]]-min_value[d[i]["siteName"]])).toString() 
-        )
-    }
-
+    // console.log(base_color["Municipal"][0])
+    d.forEach(pixel=> {     
+        for (var i=0; i<3; i++){
+            pixel["color"]= pixel["color"] +" "+ (255 - (pixel["flow_value"]-min_value[pixel["site"]])*(255-base_color[pixel["site"]][i])/(max_value[pixel["site"]]-min_value[pixel["site"]])).toString()
+        }
+    })
+    
     function findRange(d){
         var max_value = {"Municipal": 0, "Agriculture": 0, "Agriculture2": 0, "Industrial" :0, "PowerPlant":0 , "Indian":0}
         var min_value = {"Municipal": 0, "Agriculture": 0, "Agriculture2": 0, "Industrial" :0, "PowerPlant":0 , "Indian":0}
         var site = ["Municipal", "Agriculture", "Agriculture2", "Industrial", "PowerPlant", "Indian"]
         for (var i=0; i<site.length; i++){
-            var siteData = Object.values(d).filter(v=>v["siteName"]==site[i])
+            var siteData = Object.values(d).filter(v=>v["site"]==site[i])
             var flow_value = []
             for (var j=0; j<siteData.length; j++){
                 
