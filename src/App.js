@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {Layout, Button, Row, Col, Divider, Select, Menu, Modal, Icon} from 'antd';
 import './styles/App.css';
+import PixelMapCanvas from './components/PixelMapCanvas';
+import PixelMapView from './components/PixelMapView';
 
 const {Header, Content} = Layout;
 
@@ -170,18 +172,19 @@ export default class App extends Component {
                                         </Divider>
                                     </div>
                                 </Col>
-                                <Col span={10}>
+                                <Col span={20}>
                                     <div
                                         style={{
                                             backgroundColor: '#fff',
-                                            minHeight: 500,
+                                            minHeight: 800,
                                             padding: 16
                                         }}
                                     >
+                                        <PixelMapView/>
 
                                     </div>
                                 </Col>
-                                <Col span={10}>
+                                {/* <Col span={10}>
                                     <div
                                         style={{
                                             backgroundColor: '#fff',
@@ -191,7 +194,7 @@ export default class App extends Component {
                                     >
                                         Center
                                     </div>
-                                </Col>
+                                </Col> */}
                             </Row>
                         </Content>
                 </Layout>
