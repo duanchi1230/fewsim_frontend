@@ -25,37 +25,43 @@ export default class PixelMapView extends Component {
 
     render() {
 
-        const {data} = this.props;
+        const {activatedScenario} = this.props;
 
         return (
-            <Row>
-                <Col span={4}>
-                    <Form>
-                        <Form.Item>
-                            <InputNumber
-                                min={1986}
-                                max={2009}
-                                placeholder="Year"
-                                defaultValue={this.state.year}
-                                onChange={this.handleUpdateYear.bind(this)}
-                            />
-                        </Form.Item>
-                        <Form.Item>
-                            <Button
-                                type="primary"
-                                onClick={this.handleSubmit.bind(this)}
-                                // htmlType="submit"
-                            >
-                                Run
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </Col>
-                <Col span={20}>
+            <Row
+                style={{height: '100%'}}
+            >
+                {/*<Col span={2}>*/}
+                    {/*<Form>*/}
+                        {/*<Form.Item>*/}
+                            {/*<InputNumber*/}
+                                {/*min={1986}*/}
+                                {/*max={2009}*/}
+                                {/*placeholder="Year"*/}
+                                {/*defaultValue={this.state.year}*/}
+                                {/*onChange={this.handleUpdateYear.bind(this)}*/}
+                            {/*/>*/}
+                        {/*</Form.Item>*/}
+                        {/*<Form.Item>*/}
+                            {/*<Button*/}
+                                {/*type="primary"*/}
+                                {/*onClick={this.handleSubmit.bind(this)}*/}
+                                {/*// htmlType="submit"*/}
+                            {/*>*/}
+                                {/*Run*/}
+                            {/*</Button>*/}
+                        {/*</Form.Item>*/}
+                    {/*</Form>*/}
+                {/*</Col>*/}
+                <Col
+                    span={24}
+                    style={{height: '100%'}}
+                >
                     <PixelMapCanvas
-                        data={data}
+                        // data={data}
                         width={700}
-                        height={400}
+                        height={700}
+                        activatedScenario={activatedScenario}
                     />
                 </Col>
             </Row>

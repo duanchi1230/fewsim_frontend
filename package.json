@@ -1,9 +1,9 @@
 {
   "name": "sim",
   "version": "0.1.0",
+  "proxy": "http://10.218.106.7:5000",
   "private": true,
   "dependencies": {
-    "antd": "^3.20.0",
     "d3": "^5.9.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
@@ -19,7 +19,6 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "proxy" : "http://localhost:5000",
   "browserslist": {
     "production": [
       ">0.2%",

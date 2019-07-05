@@ -1,10 +1,15 @@
 import React, {Component} from 'react';
-import {Layout, Button, Row, Col, Divider, Select, Menu, Modal, Icon} from 'antd';
+import {Layout, Button, Row, Col, Divider, Select, Menu, Modal, Tabs, Spin} from 'antd';
+
+import MainScenarioComponent from './components/MainScenarioComponent';
 import './styles/App.css';
-import PixelMapCanvas from './components/PixelMapCanvas';
-import PixelMapView from './components/PixelMapView';
+import ReactDOM from "react-dom";
+import * as serviceWorker from "./serviceWorker";
+
 
 const {Header, Content} = Layout;
+const {TabPane} = Tabs;
+const {Option} = Select;
 
 
 export default class App extends Component {
@@ -13,13 +18,97 @@ export default class App extends Component {
         super(props);
 
         this.state = {
-            createScenarioModalVisible: false
+            createScenarioModalVisible: false,
+            activatedMethod: null,
+            activatedScenario: null,
+
+            isLoadingScenario: false
         };
+
+        // Initialize data loading
+        const DUMMY_PROJ_NAME = 'test';
+
+        fetch('/proj/' + DUMMY_PROJ_NAME, {method: 'GET'})
+            .then(r => r.json())
+            .then(proj => {
+                // const {supportedMethods} = proj;
+                const supportedMethods = ['weap'];
+
+                const methodFetches = supportedMethods.map(
+                    method => [
+                        `/proj/${DUMMY_PROJ_NAME}/${method}/scenario`,
+                        {method: 'GET'}
+                    ]
+                );
+                try {
+                    Promise.all(
+                        methodFetches.map(([url, options]) => fetch(url, options))
+                    )
+                        .then(responses => Promise.all(responses.map(res => res.json())))
+                        .then(scenariosPerMethod => {
+
+                            // fill the scenarios into the proj
+                            for (let i = 0; i < supportedMethods.length; i++) {
+                                proj[supportedMethods[i]] = {
+                                    scenario: scenariosPerMethod[i]
+                                };
+                            }
+
+                            proj.supportedMethods = supportedMethods;
+                            proj.supportedMethodsDisplayNames = {weap: 'WEAP'};
+                            this.setState({proj: proj});
+                        });
+                } catch (err) {
+                    console.log(err);
+                }
+            });
     }
 
-    handleScenarioChange = (value) => {
+    handleMethodChange = (value) => {
+        this.setState({activatedMethod: value});
+    };
+
+    handleScenarioChange = (sid) => {
         // Search for the scenario
         // load it into the main content
+
+        const {proj, activatedMethod} = this.state;
+
+        // 0. Set the spinning first
+        this.setState({isLoadingScenario: true});
+
+        // 1. Test if the scenario has been loaded
+        const candidateScenarioIdx = proj[activatedMethod].scenario.findIndex(s => s.sid === sid),
+            candidateScenario = proj[activatedMethod].scenario[candidateScenarioIdx];
+
+        if (!candidateScenario['__filled']) {
+            fetch(`/proj/${proj.pid}/${activatedMethod}/scenario/${sid}`, {
+                method: 'GET'
+            })
+                .then(r => r.json())
+                .then(newScenario => {
+                    let newState = {...this.state};
+                    proj[activatedMethod].scenario[candidateScenarioIdx] = newScenario;
+                    newState.isLoadingScenario = false;
+                    newState.activatedScenario = newScenario;
+
+                    this.setState(newState);
+
+                    // let scenarioList = newState.proj[activatedMethod];
+
+                    // for (let i = 0; i < scenarioList.length; i++) {
+                    //     if (scenarioList[i].sid === sid) {
+                    //         scenarioList[i] = newScenario
+                    //     }
+                    // }
+
+                })
+        } else {
+            this.setState({
+                activatedScenario: candidateScenario,
+                isLoadingScenario: false
+            })
+        }
     };
 
     handleAddScenarioButtonClicked = () => {
@@ -35,8 +124,36 @@ export default class App extends Component {
     };
 
     render() {
+
+        const {
+            proj,
+            activatedScenario,
+            activatedMethod
+        } = this.state;
+
+        if (proj === undefined) {
+            return <div
+                style={{height: '100%'}}
+            >
+                <Layout
+                    style={{height: '100%'}}
+                >
+                    <Spin
+                        tip="Loading..."
+                        style={{margin: 'auto'}}
+                    />
+                </Layout>
+            </div>;
+        }
+
+        const {supportedMethods, supportedMethodsDisplayNames} = proj;
+
+        // console.log(proj);
+
         return (
-            <div>
+            <div
+                style={{height: '100%'}}
+            >
                 <Modal
                     width={800}
                     visible={this.state.createScenarioModalVisible}
@@ -55,7 +172,9 @@ export default class App extends Component {
                         </Col>
                     </Row>
                 </Modal>
-                <Layout>
+                <Layout
+                    style={{height: '100%'}}
+                >
                     <Header
                         style={{
                             display: 'flex',
@@ -96,17 +215,25 @@ export default class App extends Component {
                                 }}
                             >
                                 <Select
-                                    showSearch
-                                    placeholder={'Select a scenario'}
+                                    placeholder={'Select a model'}
                                     style={{
                                         width: 200
                                     }}
-                                    onChange={this.handleScenarioChange.bind(this)}
+                                    onChange={this.handleMethodChange.bind(this)}
                                 >
-                                    <Select.Option value="create">Create...</Select.Option>
-                                    <Select.Option value="s1">Scenario 1</Select.Option>
-                                    <Select.Option value="s2">Scenario 2</Select.Option>
-                                    <Select.Option value="s3">Scenario 3</Select.Option>
+                                    {
+                                        supportedMethods.map(
+                                            method => <Option
+                                                key={method}
+                                                value={method}
+                                            >
+                                                {supportedMethodsDisplayNames[method]}
+                                            </Option>
+                                        )
+                                    }
+                                    {/*<Select.Option value="weap">WEAP</Select.Option>*/}
+                                    {/*<Select.Option value="leap">LEAP</Select.Option>*/}
+                                    {/*<Select.Option value="mabia">MABIA</Select.Option>*/}
                                 </Select>
                             </div>
                             <div
@@ -115,14 +242,30 @@ export default class App extends Component {
                                 }}
                             >
                                 <Select
-                                    placeholder={'Select a model'}
+                                    showSearch
+                                    placeholder={'Select a scenario'}
                                     style={{
                                         width: 200
                                     }}
+                                    disabled={this.state.activatedMethod === null}
+                                    onChange={this.handleScenarioChange.bind(this)}
                                 >
-                                    <Select.Option value="weap">WEAP</Select.Option>
-                                    <Select.Option value="leap">LEAP</Select.Option>
-                                    <Select.Option value="mabia">MABIA</Select.Option>
+                                    {
+                                        (this.state.activatedMethod === null)
+                                            ? null
+                                            : proj[this.state.activatedMethod].scenario.map(
+                                            scenario => <Option
+                                                key={scenario.sid}
+                                                value={scenario.sid}
+                                            >
+                                                {scenario.name}
+                                            </Option>
+                                            )
+                                    }
+                                    {/*<Select.Option value="create">Create...</Select.Option>*/}
+                                    {/*<Select.Option value="s1">Scenario 1</Select.Option>*/}
+                                    {/*<Select.Option value="s2">Scenario 2</Select.Option>*/}
+                                    {/*<Select.Option value="s3">Scenario 3</Select.Option>*/}
                                 </Select>
                             </div>
 
@@ -138,66 +281,29 @@ export default class App extends Component {
                             </Menu>
                         </div>
                     </Header>
-
-                        <Content
-                            style={{
-                                padding: 16
-                            }}
-                        >
-                            <Row
-                                gutter={16}
-                                style={{
-                                    height: 900
-                                }}
+                    <Content
+                        style={{
+                            height: '100%',
+                            padding: 16,
+                        }}
+                    >
+                        {(this.state.isLoadingScenario)
+                            ? <Row
+                                style={{height: '100%', display: 'flex'}}
                             >
-                                <Col span={4}>
-                                    <div
-                                        style={{
-                                            backgroundColor: '#fff',
-                                            minHeight: '100%',
-                                            padding: 16
-                                        }}
-                                    >
-                                        <Divider
-                                            orientation="left"
-                                            style={{fontSize: 14}}
-                                        >
-                                            Summary of Scenario
-                                        </Divider>
-                                        <Divider
-                                            orientation="left"
-                                            style={{fontSize: 14}}
-                                        >
-                                            Variables
-                                        </Divider>
-                                    </div>
-                                </Col>
-                                <Col span={20}>
-                                    <div
-                                        style={{
-                                            backgroundColor: '#fff',
-                                            minHeight: 800,
-                                            padding: 16
-                                        }}
-                                        
-                                    >
-                                        <PixelMapView/>
-
-                                    </div>
-                                </Col>
-                                {/* <Col span={10}>
-                                    <div
-                                        style={{
-                                            backgroundColor: '#fff',
-                                            minHeight: 500,
-                                            padding: 16
-                                        }}
-                                    >
-                                        Center
-                                    </div>
-                                </Col> */}
+                                <Spin
+                                    style={{margin: 'auto'}}
+                                    tip="Loading Scenario..."
+                                />
                             </Row>
-                        </Content>
+                            : <MainScenarioComponent
+                                proj={proj}
+                                activatedMethod={activatedMethod}
+                                activatedScenario={activatedScenario}
+                            />
+                        }
+
+                    </Content>
                 </Layout>
             </div>
         );
