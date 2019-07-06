@@ -22,9 +22,13 @@ export default class PixelMapCanvas extends Component {
         const {activatedScenario} = this.props;
         const {width, height} = findDOMNode(this).getBoundingClientRect();
 
-        console.log()
+        console.log("this is activescenario", activatedScenario)
 
         this.initCanvas(activatedScenario, width, height);
+    }
+
+    handleMouseOver(x,y,name){
+        console.log("mouse over", name)
     }
 
     // componentWillReceiveProps(nextProps, nextContext) {
@@ -70,17 +74,19 @@ export default class PixelMapCanvas extends Component {
             .attr("rx", 0)
             .attr("ry", 0)
             .attr("fill", d => "rgb(" + d["color"] + ")")
-            .attr("stroke", "rgb(50 50 50)");
+            .attr("stroke", "rgb(50 50 50)")
+            .on("mouseover",d=>this.handleMouseOver(d["x"],d["y"],d["rowName"]));
         
-            svg.append("g")
-            .attr("id", "text-reference")
-            .selectAll("text")
-            .data(d)
-            .join("text")
-            .attr("x", d => d["x"])
-            .attr("y", d => d["y"])
-            .text("1")
-            .attr("text-anchor", "end")
+            // svg.append("g")
+            // .attr("id", "text-reference")
+            // .selectAll("text")
+            // .data(d)
+            // .join("text")
+            // .attr("x", d => d["x"]+25)
+            // .attr("y", d => d["y"]+25)
+            // .text(v=>v["percentage_change"])
+            // .attr("text-anchor", "end")
+            // .attr("font-size", "9px")
 
         let x_text = origin["x"] - 10;
         let row = d.filter(value => value["year"] == start_year);
@@ -224,7 +230,7 @@ function flow_byDemand(flow, origin, start_year = 1986, end_year = 2008) {
             source.push(flow[i]["source"])
             site.push(flow[i]["site"])
             year.push(start_year + j)
-            
+            percentage.push(flow[i]["delta_to_reference"][j])
 
         }
     }
@@ -240,7 +246,8 @@ function flow_byDemand(flow, origin, start_year = 1986, end_year = 2008) {
             "site": site[i],
             "rowName": rowName[i],
             "color": "",
-            "year": year[i]
+            "year": year[i],
+            "percentage_change": percentage[i]
         })
     }
     return d

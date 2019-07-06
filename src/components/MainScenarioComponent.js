@@ -20,7 +20,6 @@ export default class MainScenarioComponent extends Component {
         const {proj, activatedMethod, activatedScenario} = this.props;
 
         // console.log(activatedScenario);
-
         if (activatedScenario === null) {
             return (
                 <Empty
