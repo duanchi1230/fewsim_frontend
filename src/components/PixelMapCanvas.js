@@ -27,9 +27,51 @@ export default class PixelMapCanvas extends Component {
         this.initCanvas(activatedScenario, width, height);
     }
 
-    handleMouseOver(x,y,name){
-        console.log("mouse over", name)
+    handleMouseOver(x,y,d,name){
+        let data = this.props.activatedScenario
+        let value = []
+        data['var']['output'].forEach(
+            v=> {if(v["name"]==name){
+                value = v["value"]
+            }}
+        )
+        console.log(value)
+        const svg = d3.select("#svg1")
+        
+        svg.append("rect")
+        .attr("id", "tooltip-pixelmap")
+            .attr("x", x)
+            .attr("y", y-30)
+            .attr("height", 30)
+            .attr("width", 60)
+            .attr("rx", 2)
+            .attr("ry", 2)
+            .attr("fill", "grey")
+            .attr("stroke", "rgb(50 50 50)")
+            .style("opacity", 1)
+
+        svg.append("text")
+            .attr("id", "tooltip-pixelmap")
+            .attr("x", x+5)
+            .attr("y", y-5)
+            .text(d.toExponential(2))
+            .attr("font-size", "15px")
+            .attr("fill", "black")
+            .style("opacity", 1)
+
+        // svg.append("path")
+        //     .attr("id", "tooltip-pixelmap")
+        //     .attr("d", function(){
+        //         return "M "+ x.toString() + " " + y.toString()+ " " +"L "+ (x+30).toString() 
+        //     })
+
+        
     }
+    handleMouseOut(){
+        d3.selectAll("#tooltip-pixelmap")
+            .remove()
+    }
+
 
     // componentWillReceiveProps(nextProps, nextContext) {
     //     this.updateCanvas();
@@ -52,7 +94,8 @@ export default class PixelMapCanvas extends Component {
             findDOMNode(this)
         )
             .append("svg")
-            .attr("width", width)
+            .attr("id", "svg1")
+            .attr("width", width+500)
             .attr("height", height);
 
         let origin = {"x": 150, "y": 50};
@@ -61,6 +104,9 @@ export default class PixelMapCanvas extends Component {
         let end_year = 2008;
 
         let d = calPixelMatrix(flow, origin, start_year, end_year);
+        svg.append("Tooltip")
+        .attr("title", "12301230")
+        .text("this is a tooltip")
 
         svg.append("g")
             .attr("id", "map")
@@ -75,8 +121,8 @@ export default class PixelMapCanvas extends Component {
             .attr("ry", 0)
             .attr("fill", d => "rgb(" + d["color"] + ")")
             .attr("stroke", "rgb(50 50 50)")
-            .on("mouseover",d=>this.handleMouseOver(d["x"],d["y"],d["rowName"]));
-        
+            .on("mouseover",d=>this.handleMouseOver(d["x"] ,d["y"] ,d["flow_value"] , d["rowName"]))
+            .on("mouseout", d=>this.handleMouseOut());
             // svg.append("g")
             // .attr("id", "text-reference")
             // .selectAll("text")
@@ -128,6 +174,7 @@ export default class PixelMapCanvas extends Component {
                 let yRot = d3.select(this).attr("y");
                 return `rotate(-45, ${xRot},  ${yRot} )`
             });
+
     }
 
     // updateCanvas(data) {
@@ -209,7 +256,7 @@ function calPixelMatrix(flow, origin, start_year = 1986, end_year = 2008, sort =
         d = flow_byDemand(flow, origin, year1, year2)
     }
 
-    mapColor(d)
+    // mapColor(d)
     console.log("d", d)
     return d
 }
@@ -230,7 +277,7 @@ function flow_byDemand(flow, origin, start_year = 1986, end_year = 2008) {
             source.push(flow[i]["source"])
             site.push(flow[i]["site"])
             year.push(start_year + j)
-            percentage.push(flow[i]["delta_to_reference"][j])
+            // percentage.push(flow[i]["delta_to_reference"][j])
 
         }
     }

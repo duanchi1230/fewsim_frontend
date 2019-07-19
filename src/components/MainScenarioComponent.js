@@ -74,7 +74,7 @@ export default class MainScenarioComponent extends Component {
                     }}
                 >
                     <Card
-                        title="Pixel Map"
+                        title="Pixel Map (m^3/year)"
                         // size="small"
                         style={{
                             height: '100%',
