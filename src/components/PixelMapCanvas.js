@@ -98,10 +98,10 @@ export default class PixelMapCanvas extends Component {
             .attr("width", width+500)
             .attr("height", height);
 
-        let origin = {"x": 150, "y": 50};
+        let origin = {"x": 250, "y": 50};
         let flow = data["var"]["output"];
-        let start_year = 1986;
-        let end_year = 2008;
+        let start_year = data['timeRange'][0];
+        let end_year = data['timeRange'][1];
 
         let d = calPixelMatrix(flow, origin, start_year, end_year);
         svg.append("Tooltip")
@@ -119,7 +119,8 @@ export default class PixelMapCanvas extends Component {
             .attr("width", d => d["dx"])
             .attr("rx", 0)
             .attr("ry", 0)
-            .attr("fill", d => "rgb(" + d["color"] + ")")
+            // .attr("fill", d => "rgb(" + d["color"] + ")")
+            .attr("fill", d => "grey")
             .attr("stroke", "rgb(50 50 50)")
             .on("mouseover",d=>this.handleMouseOver(d["x"] ,d["y"] ,d["flow_value"] , d["rowName"]))
             .on("mouseout", d=>this.handleMouseOut());
@@ -342,6 +343,54 @@ function mapColor(d) {
         "PowerPlant": [102, 166, 30],
         "Indian": [230, 171, 2]
     }
+    let [max_value, min_value] = findRange(d)
+    // console.log(base_color["Municipal"][0])
+    d.forEach(pixel => {
+        for (let i = 0; i < 3; i++) {
+            const baseColor = base_color[pixel["site"]][i];
+            pixel["color"] = pixel["color"] + " " + (255 - (pixel["flow_value"] - min_value[pixel["site"]]) * (255 - base_color[pixel["site"]][i]) / (max_value[pixel["site"]] - min_value[pixel["site"]])).toString()
+        }
+    })
+
+    function findRange(d) {
+        let max_value = {
+            "Municipal": 0,
+            "Agriculture": 0,
+            "Agriculture2": 0,
+            "Industrial": 0,
+            "PowerPlant": 0,
+            "Indian": 0
+        }
+        let min_value = {
+            "Municipal": 0,
+            "Agriculture": 0,
+            "Agriculture2": 0,
+            "Industrial": 0,
+            "PowerPlant": 0,
+            "Indian": 0
+        }
+        let site = ["Municipal", "Agriculture", "Agriculture2", "Industrial", "PowerPlant", "Indian"]
+        for (let i = 0; i < site.length; i++) {
+            let siteData = Object.values(d).filter(v => v["site"] == site[i])
+            let flow_value = []
+            for (let j = 0; j < siteData.length; j++) {
+
+                flow_value.push(siteData[j]["flow_value"])
+            }
+            max_value[site[i]] = Math.max(...flow_value)
+            min_value[site[i]] = Math.min(...flow_value)
+        }
+        return [max_value, min_value]
+
+    }
+
+}
+
+function mapColor(d) {
+    console.log(d);
+
+    let base_color = [[141,211,199], [255,255,179], [190,186,218], [251,128,114], [128,177,211],[253,180,98], [179,222,105], [252,205,229], [217,217,217], [188,128,189]]
+    
     let [max_value, min_value] = findRange(d)
     // console.log(base_color["Municipal"][0])
     d.forEach(pixel => {
