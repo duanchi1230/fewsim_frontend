@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Row, Col, Divider, Empty, Card} from 'antd';
+import {Row, Col, Divider, Empty, Card, Button} from 'antd';
 
 import VarTreeList from './VarTreeList';
 import PixelMapView from "./PixelMapView";
@@ -11,9 +11,36 @@ export default class MainScenarioComponent extends Component {
         super(props);
 
         this.state = {
-            selectedVariables: []
+            selectedVariables: [],
+            isButtonDisabled: false,
+            runButton: "Run Model",
+            modelStatus:"Finished",
+            checkedVariable: []
         };
     }
+
+    runModel=(v)=>{
+        this.setState({
+            isButtonDisabled: true,
+            runButton: "Running...",
+            modelStatus:"Running"
+        })
+        console.log(this.state.isButtonDisabled)
+
+        fetch('/proj/1/weap/scenario/0', {method: 'POST', body: JSON.stringify({'data':'1'})}).then(r=>r.json()).then(r=>this.setState({
+            isButtonDisabled: false,
+            runButton: "Run Model",
+            modelStatus:"Finished"
+        }))
+    }
+
+    handleNodeChecked = (checkedKeys, info) => {
+        // console.log(checkedKeys)
+        this.state.checkedVariable=checkedKeys
+        this.setState(
+
+        )
+    };
 
     render() {
 
@@ -49,8 +76,10 @@ export default class MainScenarioComponent extends Component {
                         // style={{}}
                         // size="small"
                     >
+                        <p>RUN: <Button type="primary" onClick={this.runModel} disabled={this.state.isButtonDisabled}>{this.state.runButton}</Button> 
+                        </p>
                         <p>Name: {activatedScenario.name}</p>
-                        <p>Running Status: {activatedScenario.runStatus}</p>
+                        <p>Running Status: {this.state.modelStatus}</p>
                     </Card>
 
                     <Card
@@ -63,7 +92,7 @@ export default class MainScenarioComponent extends Component {
                         }}
                     >
                         <VarTreeList
-                            vars={activatedScenario.var}
+                            vars={activatedScenario.var} handleNodeChecked={this.handleNodeChecked.bind(this)}
                         />
                     </Card>
                 </Col>
@@ -90,7 +119,7 @@ export default class MainScenarioComponent extends Component {
                         }}
                     >
                         <PixelMapView
-                            activatedScenario={activatedScenario}
+                            activatedScenario={activatedScenario} checkedVariable={this.state.checkedVariable}
                         />
                     </Card>
                 </Col>

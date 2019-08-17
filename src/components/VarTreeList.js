@@ -7,23 +7,22 @@ export default class VarTreeList extends Component {
 
     constructor(props) {
         super(props);
+
     }
 
-    handleNodeChecked = (checkedKeys, info) => {
-
-    };
+    
 
     render() {
         const {vars} = this.props;
 
-        console.log(vars);
+        // console.log(vars);
 
         return (
             <Tree
                 checkable
                 defaultCheckedKeys={['output']}
                 defaultExpandedKeys={['output']}
-                onCheck={this.handleNodeChecked.bind(this)}
+                onCheck={this.props.handleNodeChecked}
             >
                 <TreeNode title="Input" key="input">
                     {Object.keys(vars.input).map(key => {

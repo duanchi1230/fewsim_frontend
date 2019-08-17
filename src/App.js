@@ -1,15 +1,16 @@
-import React, {Component} from 'react';
-import {Layout, Button, Row, Col, Divider, Select, Menu, Modal, Tabs, Spin} from 'antd';
+import React, { Component } from 'react';
+import { Layout, Button, Row, Col, Divider, Select, Menu, Modal, Tabs, Spin, Card } from 'antd';
 
 import MainScenarioComponent from './components/MainScenarioComponent';
 import './styles/App.css';
-import ReactDOM from "react-dom";
-import * as serviceWorker from "./serviceWorker";
 
+import InputParameter_WEAP from './components/InputParameter_WEAP'
+import InputParameter_LEAP from './components/InputParameter_LEAP'
 
-const {Header, Content} = Layout;
-const {TabPane} = Tabs;
-const {Option} = Select;
+import CreatedScenarios from './components/CreatedScenarios';
+const { Header, Content } = Layout;
+const { TabPane } = Tabs;
+const { Option } = Select;
 
 
 export default class App extends Component {
@@ -21,14 +22,28 @@ export default class App extends Component {
             createScenarioModalVisible: false,
             activatedMethod: null,
             activatedScenario: null,
+            isLoadingScenario: true,
 
-            isLoadingScenario: false
+            WEAP_parameter: {
+                'population': { 'start': 1, 'end': 1, 'step': 1 },
+                'municipal': { 'start': 85, 'end': 100, 'step': 6 },
+                'agriculture': { 'start': 85, 'end': 100, 'step': 6 }
+            },
+
+            LEAP_parameter: {
+                'population': { 'start': 1, 'end': 1, 'step': 1 },
+                'industrial': { 'start': 85, 'end': 100, 'step': 6 }
+            },
+
+            scenarios: [],
+            finishedScenarios: [],
+            selectedScenarios: []
         };
 
         // Initialize data loading
         const DUMMY_PROJ_NAME = 'test';
 
-        fetch('/proj/' + DUMMY_PROJ_NAME, {method: 'GET'})
+        fetch('/proj/' + DUMMY_PROJ_NAME, { method: 'GET' })
             .then(r => r.json())
             .then(proj => {
                 // const {supportedMethods} = proj;
@@ -37,7 +52,7 @@ export default class App extends Component {
                 const methodFetches = supportedMethods.map(
                     method => [
                         `/proj/${DUMMY_PROJ_NAME}/${method}/scenario`,
-                        {method: 'GET'}
+                        { method: 'GET' }
                     ]
                 );
                 try {
@@ -55,8 +70,8 @@ export default class App extends Component {
                             }
 
                             proj.supportedMethods = supportedMethods;
-                            proj.supportedMethodsDisplayNames = {weap: 'WEAP'};
-                            this.setState({proj: proj});
+                            proj.supportedMethodsDisplayNames = { weap: 'WEAP' };
+                            this.setState({ proj: proj });
                         });
                 } catch (err) {
                     console.log(err);
@@ -65,17 +80,17 @@ export default class App extends Component {
     }
 
     handleMethodChange = (value) => {
-        this.setState({activatedMethod: value});
+        this.setState({ activatedMethod: value });
     };
 
     handleScenarioChange = (sid) => {
         // Search for the scenario
         // load it into the main content
 
-        const {proj, activatedMethod} = this.state;
+        const { proj, activatedMethod } = this.state;
 
         // 0. Set the spinning first
-        this.setState({isLoadingScenario: true});
+        this.setState({ isLoadingScenario: true });
 
         // 1. Test if the scenario has been loaded
         const candidateScenarioIdx = proj[activatedMethod].scenario.findIndex(s => s.sid === sid),
@@ -87,7 +102,7 @@ export default class App extends Component {
             })
                 .then(r => r.json())
                 .then(newScenario => {
-                    let newState = {...this.state};
+                    let newState = { ...this.state };
                     proj[activatedMethod].scenario[candidateScenarioIdx] = newScenario;
                     newState.isLoadingScenario = false;
                     newState.activatedScenario = newScenario;
@@ -112,17 +127,69 @@ export default class App extends Component {
     };
 
     handleAddScenarioButtonClicked = () => {
-        this.setState({createScenarioModalVisible: true});
+        this.setState({ createScenarioModalVisible: true });
     };
 
     handleAddScenarioModalClosed = () => {
-        this.setState({createScenarioModalVisible: false})
+        this.setState({ createScenarioModalVisible: false })
     };
 
     handleSubmitNewScenario = () => {
 
     };
 
+    createScenarios = () => {
+        let WP = []
+        let WM = []
+        let WA = []
+        let LP = []
+        let LI = []
+        let scenarios = []
+        // console.log(this.state.WEAP_parameter)
+        WP = this.decomposeInputParameter(this.state.WEAP_parameter['population']['start'], this.state.WEAP_parameter['population']['end'], this.state.WEAP_parameter['population']['step'])
+        WM = this.decomposeInputParameter(this.state.WEAP_parameter['municipal']['start'], this.state.WEAP_parameter['municipal']['end'], this.state.WEAP_parameter['municipal']['step'])
+        WA = this.decomposeInputParameter(this.state.WEAP_parameter['agriculture']['start'], this.state.WEAP_parameter['agriculture']['end'], this.state.WEAP_parameter['agriculture']['step'])
+        LP = this.decomposeInputParameter(this.state.LEAP_parameter['population']['start'], this.state.LEAP_parameter['population']['end'], this.state.LEAP_parameter['population']['step'])
+        LI = this.decomposeInputParameter(this.state.LEAP_parameter['industrial']['start'], this.state.LEAP_parameter['industrial']['end'], this.state.LEAP_parameter['industrial']['step'])
+        WP.forEach(
+            wp=>{WM.forEach(
+                wm=>{
+                    WA.forEach(wa=>{
+                        LP.forEach(
+                            lp=>{
+                                LI.forEach(li=>{
+                                    scenarios.push(
+                                        {'wp':wp, 'wm':wm, 'wa':wa, 'lp':lp, 'li':li, 'name':'WP:'+wp+' WM:'+wm+' WA:'+wa+' LP:'+lp+' LI:'+li}
+                                    )
+                                })
+                            }
+                        )
+                    })
+                }
+            )}
+        )
+        console.log(WP,WM,WA, LP,LI)
+        this.state.scenarios = scenarios
+        this.setState({
+            
+        })
+        console.log(this.state.scenarios)
+    }
+
+    componentWillUpdate(){
+        console.log('component will update', this.state.scenarios)
+    }
+    decomposeInputParameter = (start, end, step) => {
+        let input = []
+        for (let i = start; i.toFixed(1) <= end; i = i + step) {
+            input.push(i.toFixed(1))
+        }
+        return input
+    }
+
+    deleteScenarios(){
+
+    }
     render() {
 
         const {
@@ -133,47 +200,75 @@ export default class App extends Component {
 
         if (proj === undefined) {
             return <div
-                style={{height: '100%'}}
+                style={{ height: '100%' }}
             >
                 <Layout
-                    style={{height: '100%'}}
+                    style={{ height: '100%' }}
                 >
                     <Spin
                         tip="Loading..."
-                        style={{margin: 'auto'}}
+                        style={{ margin: 'auto' }}
                     />
                 </Layout>
             </div>;
         }
 
-        const {supportedMethods, supportedMethodsDisplayNames} = proj;
+        const { supportedMethods, supportedMethodsDisplayNames } = proj;
 
         // console.log(proj);
 
         return (
             <div
-                style={{height: '100%'}}
+                style={{ height: '100%' }}
             >
                 <Modal
-                    width={800}
+                    width={1250}
                     visible={this.state.createScenarioModalVisible}
                     onCancel={this.handleAddScenarioModalClosed.bind(this)}
                     footer={null}
                 >
                     <Row
                         gutter={16}
-                        style={{minHeight: 430}}
+                        style={{ minHeight: 380 }}
                     >
-                        <Col span={12}>
-                            Existing scenarios
+                        <Col span={9}>
+                            <font size="5">Scenarios List</font>
+                            <Card style={{
+                                    height:380,
+                                    flex: 2,
+                                    marginTop: 16,
+                                    overflow: 'auto',
+                            }}>
+                                <CreatedScenarios scenarios={this.state.scenarios} selectedScenarios={this.state.selectedScenarios}/>
+                            </Card>
+                                
+                            <Button type="primary" onClick={this.createScenarios}>Create Scenario</Button>
+
+                            <Button type="danger" onClick={this.deleteScenarios}>Delete</Button>
+
+                            {/* <Button type="primary" onClick={this.createScenarios} style={
+                                {marginLeft: '85px'}
+                            }>Move to Batch</Button> */}
                         </Col>
-                        <Col span={12}>
-                            New Parameters
+                        <Col span={15}>
+                            <font size="5">Input Parameter</font>
+                            <Tabs type="card">
+                                <TabPane tab="WEAP" key="1">
+                                    <InputParameter_WEAP WEAP_parameter={this.state.WEAP_parameter} />
+                                </TabPane>
+                                <TabPane tab="LEAP" key="2" >
+                                    <InputParameter_LEAP LEAP_parameter={this.state.LEAP_parameter} />
+                                </TabPane>
+                                <TabPane tab="WEAP-MABIA" key="3">
+                                    WEAP-MABIA Input will be incorporated!
+                                </TabPane>
+                            </Tabs>
+
                         </Col>
                     </Row>
                 </Modal>
                 <Layout
-                    style={{height: '100%'}}
+                    style={{ height: '100%' }}
                 >
                     <Header
                         style={{
@@ -228,6 +323,7 @@ export default class App extends Component {
                                                 value={method}
                                             >
                                                 {supportedMethodsDisplayNames[method]}
+                                                
                                             </Option>
                                         )
                                     }
@@ -248,18 +344,18 @@ export default class App extends Component {
                                         width: 200
                                     }}
                                     disabled={this.state.activatedMethod === null}
-                                    onChange={this.handleScenarioChange.bind(this)}
+                                    onChange={this.handleScenarioChange.bind(1)}
                                 >
                                     {
                                         (this.state.activatedMethod === null)
                                             ? null
                                             : proj[this.state.activatedMethod].scenario.map(
-                                            scenario => <Option
-                                                key={scenario.sid}
-                                                value={scenario.sid}
-                                            >
-                                                {scenario.name}
-                                            </Option>
+                                                scenario => <Option
+                                                    key={scenario.sid}
+                                                    value={scenario.sid}
+                                                >
+                                                    {scenario.name}
+                                                </Option>
                                             )
                                     }
                                     {/*<Select.Option value="create">Create...</Select.Option>*/}
@@ -274,7 +370,7 @@ export default class App extends Component {
                             <Menu
                                 theme="dark"
                                 mode="horizontal"
-                                style={{lineHeight: '64px'}}
+                                style={{ lineHeight: '64px' }}
                             >
                                 <Menu.Item key="helpmenu">Help</Menu.Item>
                                 <Menu.Item key="aboutmenu">About</Menu.Item>
@@ -287,16 +383,7 @@ export default class App extends Component {
                             padding: 16,
                         }}
                     >
-                        {(this.state.isLoadingScenario)
-                            ? <Row
-                                style={{height: '100%', display: 'flex'}}
-                            >
-                                <Spin
-                                    style={{margin: 'auto'}}
-                                    tip="Loading Scenario..."
-                                />
-                            </Row>
-                            : <MainScenarioComponent
+                <MainScenarioComponent
                                 proj={proj}
                                 activatedMethod={activatedMethod}
                                 activatedScenario={activatedScenario}

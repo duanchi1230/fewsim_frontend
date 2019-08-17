@@ -26,7 +26,7 @@ export default class PixelMapView extends Component {
     render() {
 
         const {activatedScenario} = this.props;
-
+        console.log(this.props)
         return (
             <Row
                 style={{height: '100%'}}
@@ -62,6 +62,7 @@ export default class PixelMapView extends Component {
                         width={700}
                         height={700}
                         activatedScenario={activatedScenario}
+                        checkedVariable = {this.props.checkedVariable}
                     />
                 </Col>
             </Row>

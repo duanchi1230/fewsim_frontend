@@ -12,3 +12,8 @@ div#root {
 ::-webkit-scrollbar-thumb {
     background: #000000;
 }
+
+.scenario-input{
+    color: blue;
+    margin-left: 2px
+}
