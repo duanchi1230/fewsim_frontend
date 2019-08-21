@@ -49,7 +49,7 @@ class InputParameter_LEAP extends React.Component {
             />
           </Col>
           <Col span={8}>
-            <div className='scenario-input'>Step(0.1-20)</div>
+            <div className='scenario-input'>Step(0.1%-20%)</div>
             <InputNumber
               defaultValue={this.state.parameter['population']['step']}
               min={0.1}
@@ -57,7 +57,7 @@ class InputParameter_LEAP extends React.Component {
               step={0.1}
               formatter={value => `${value}%`}
               parser={value => value.replace('%', '')}
-              onChange={(value, para = 'start', name = 'population') => this.onChange(value, para, name)}
+              onChange={(value, para = 'step', name = 'population') => this.onChange(value, para, name)}
             />
           </Col>
       </Row>
@@ -89,9 +89,9 @@ class InputParameter_LEAP extends React.Component {
             />
           </Col>
           <Col span={8}>
-            <div className='scenario-input'>Step(0.1-20)</div>
+            <div className='scenario-input'>Step(0.1%-20%)</div>
             <InputNumber
-              defaultValue={1}
+              defaultValue={this.state.parameter['industrial']['step']}
               min={0.1}
               max={20}
               step={0.1}

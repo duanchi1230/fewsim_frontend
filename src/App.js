@@ -168,17 +168,18 @@ export default class App extends Component {
                 }
             )}
         )
-        console.log(WP,WM,WA, LP,LI)
         this.state.scenarios = scenarios
+        let selected = []
+        scenarios.map(s=>{
+            selected.push(s['name'])
+        })
         this.setState({
-            
+            selectedScenarios: selected
         })
         console.log(this.state.scenarios)
     }
 
-    componentWillUpdate(){
-        console.log('component will update', this.state.scenarios)
-    }
+    
     decomposeInputParameter = (start, end, step) => {
         let input = []
         for (let i = start; i.toFixed(1) <= end; i = i + step) {
@@ -189,7 +190,31 @@ export default class App extends Component {
 
     deleteScenarios(){
 
+        console.log(this.state.selectedScenarios)
+        let selected = []
+        this.state.scenarios.map(
+            s=>{
+                if(this.state.selectedScenarios.includes(s['name']) != true){
+
+                    selected.push(s)
+                }
+                
+            }
+        )
+
+        this.setState({
+            scenarios: selected,
+            selectedScenarios:selected
+        })
     }
+
+    handleNodeChecked = (checkedKeys, info) => {
+        this.state.selectedScenarios = checkedKeys
+        this.setState({
+
+        })
+    };
+
     render() {
 
         const {
@@ -239,12 +264,12 @@ export default class App extends Component {
                                     marginTop: 16,
                                     overflow: 'auto',
                             }}>
-                                <CreatedScenarios scenarios={this.state.scenarios} selectedScenarios={this.state.selectedScenarios}/>
+                                <CreatedScenarios scenarios={this.state.scenarios} selectedScenarios={this.state.selectedScenarios} handleNodeChecked={this.handleNodeChecked.bind(this)}/>
                             </Card>
-                                
+                            
                             <Button type="primary" onClick={this.createScenarios}>Create Scenario</Button>
 
-                            <Button type="danger" onClick={this.deleteScenarios}>Delete</Button>
+                            <Button type="danger" onClick={this.deleteScenarios.bind(this)}>Delete</Button>
 
                             {/* <Button type="primary" onClick={this.createScenarios} style={
                                 {marginLeft: '85px'}
@@ -387,6 +412,7 @@ export default class App extends Component {
                                 proj={proj}
                                 activatedMethod={activatedMethod}
                                 activatedScenario={activatedScenario}
+                                selectedScenarios={this.state.selectedScenarios}
                             />
                         }
 

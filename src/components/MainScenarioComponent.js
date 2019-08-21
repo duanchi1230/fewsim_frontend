@@ -11,11 +11,11 @@ export default class MainScenarioComponent extends Component {
         super(props);
 
         this.state = {
-            selectedVariables: [],
+
             isButtonDisabled: false,
             runButton: "Run Model",
             modelStatus:"Finished",
-            checkedVariable: []
+            checkedOutput: []
         };
     }
 
@@ -34,11 +34,9 @@ export default class MainScenarioComponent extends Component {
         }))
     }
 
-    handleNodeChecked = (checkedKeys, info) => {
-        // console.log(checkedKeys)
-        this.state.checkedVariable=checkedKeys
+    handleNodeChecked = (checkedKeys, info) => {     
         this.setState(
-
+            {checkedOutput:checkedKeys}
         )
     };
 
@@ -119,7 +117,7 @@ export default class MainScenarioComponent extends Component {
                         }}
                     >
                         <PixelMapView
-                            activatedScenario={activatedScenario} checkedVariable={this.state.checkedVariable}
+                            activatedScenario={activatedScenario} checkedOutput={this.state.checkedOutput}
                         />
                     </Card>
                 </Col>

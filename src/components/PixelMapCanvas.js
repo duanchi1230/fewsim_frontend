@@ -12,12 +12,6 @@ export default class PixelMapCanvas extends Component {
             scenario: ''
         };
     }
-
-    shouldComponentUpdate() {
-        console.log(this.props.checkedVariables)
-        return false;
-    }
-
     
     componentDidMount() {
         // fetch('/proj/1/weap/scenario/0').then(r=>r.json()).then(data=>this.initCanvas(data))
@@ -227,6 +221,86 @@ export default class PixelMapCanvas extends Component {
         //             return `rotate(0, ${xRot},  ${yRot} )`})
     // }
 
+    componentWillReceiveProps(nextProps){
+        console.log()
+        const {activatedScenario} = this.props;
+        const {width, height} = findDOMNode(this).getBoundingClientRect();
+        this.updateCanvas(activatedScenario, nextProps.checkedOutput)
+    }
+    
+    updateCanvas(data, nextProps) {
+
+        let origin = {'x': 350, 'y': 50};
+        let flow = data['var']['output'];
+        let flow_filtered =[]
+        let start_year = data['timeRange'][0];
+        let end_year = data['timeRange'][1];
+        flow.map(v=>{
+            if(nextProps.includes(v['name'])){
+                flow_filtered.push(v)
+            }
+        })
+        console.log(flow)
+
+        console.log(flow_filtered)
+        let d = calPixelMatrix(flow_filtered, origin, start_year, end_year);
+  
+        console.log(d)
+        const rect = d3.select('#map')
+                .selectAll('rect')
+                .remove()
+                .select('#map')
+                .data(d)
+                .enter()
+                .append('rect')
+                .on('mouseover',d=>this.handleMouseOver(d['x'] ,d['y'] ,d['flow_value'] , d['rowName']))
+                .on('mouseout', d=>this.handleMouseOut())
+                .attr('x', d => d['x'])
+                .attr('y', d => d['y'])
+                .attr('width', d => d['dx'])
+                .transition()
+                .duration(300)
+                .attr('height', d => d['dy'])
+                .attr('rx', 0)
+                .attr('ry', 0)
+                .attr('fill', d => 'rgb(' + d['color'] + ')')
+                .attr('stroke', 'rgb(50 50 50)')
+
+            // svg.append('g')
+            // .attr('id', 'text-reference')
+            // .selectAll('text')
+            // .data(d)
+            // .join('text') 
+            // .attr('x', d => d['x']+25)
+            // .attr('y', d => d['y']+25)
+            // .text(v=>v['percentage_change'])
+            // .attr('text-anchor', 'end')
+            // .attr('font-size', '9px')
+
+        let x_text = origin['x'] - 10;
+        let row = d.filter(value => value['year'] == start_year);
+          d3.select('#text-row')
+            .selectAll('text')
+            .remove()
+            .select('#text-row')
+            .data(row)
+            .enter()
+            .append('text')
+            .attr('y', v => v['y'] + 15)
+            .transition()
+            .duration(300)
+            .attr('x', x_text)
+            .text(v => v['rowName'])
+            .attr('text-anchor', 'end')
+            .attr('alignment-baseline', 'central')
+            // .attr('transform', function (row) {
+            //     let xRot = d3.select(this).attr('x');
+            //     let yRot = d3.select(this).attr('y');
+            //     return `rotate(0, ${xRot},  ${yRot} )`;
+            // });
+
+    }
+
     render() {
         const {width, height} = this.props;
         return (
@@ -254,7 +328,7 @@ function calPixelMatrix(flow, origin, start_year = 1986, end_year = 2008, sort =
     }
 
     mapColor(d)
-    console.log('d', d)
+    // console.log('d', d)
     return d
 }
 
@@ -321,9 +395,6 @@ function calCoordinate(flow, origin, start_year, end_year) {
         y0 = y0 + dy + space
     }
 
-    // console.log('x=', x)
-    console.log('y=', y)
-
     return [x, y, dx, dy]
 }
 
@@ -383,19 +454,18 @@ function calCoordinate(flow, origin, start_year, end_year) {
 // }
 
 function mapColor(d) {
-    console.log(d);
 
     let base_color = [[141,211,199], [255,255,179], [190,186,218], [251,128,114], [128,177,211],[253,180,98], [179,222,105], [252,205,229], [217,217,217], [188,128,189]]
     
     let color = {}
     let [max_value, min_value] = findRange(d)
-    console.log('max', min_value, max_value)
+    // console.log('max', min_value, max_value)
     let i =0
     Object.keys(max_value).forEach(
         key=>{color[key]= base_color[i];
         i = i+1}
     )
-    console.log('color', color)
+    // console.log('color', color)
     // console.log(base_color['Municipal'][0])
     d.forEach(d => {
         for (let i = 0; i < 3; i++) {

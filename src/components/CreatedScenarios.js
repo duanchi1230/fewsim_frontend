@@ -8,17 +8,8 @@ class CreatedScenarios extends React.Component {
         super(props);
     }
 
-    handleNodeChecked = (checkedKeys, info) => {
-        console.log(checkedKeys)
-    };
-
     render() {
         let scenarios = this.props.scenarios
-        console.log(scenarios)
-        // if (scenarios==[]){
-        //     scenarios = [{'name':'none'}]
-        // }
-
         
         return (
             <Row
@@ -31,8 +22,8 @@ class CreatedScenarios extends React.Component {
                 checkable
                 defaultCheckedKeys={['Scenarios']}
                 defaultExpandedKeys={['Scenarios']}
-                onCheck={this.handleNodeChecked.bind(this)}
-                disabled={true}
+                onCheck={this.props.handleNodeChecked.bind(this)}
+                disabled={false}
             >
                 <TreeNode title="Select All" key="Scenarios">
                     {scenarios.map(v => {

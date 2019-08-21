@@ -52,7 +52,7 @@ class InputParameter_WEAP extends React.Component {
             />
           </Col>
           <Col span={8}>
-            <div className='scenario-input'>Step(0.1-20)</div>
+            <div className='scenario-input'>Step(0.1%-20%)</div>
             <InputNumber
               defaultValue={this.state.parameter['population']['step']}
               min={0.1}
@@ -93,7 +93,7 @@ class InputParameter_WEAP extends React.Component {
             />
           </Col>
           <Col span={8}>
-            <div className='scenario-input'>Step(0.1-20)</div>
+            <div className='scenario-input'>Step(0.1%-20%)</div>
             <InputNumber
               defaultValue={this.state.parameter['municipal']['step']}
               min={0.1}
@@ -133,7 +133,7 @@ class InputParameter_WEAP extends React.Component {
             />
           </Col>
           <Col span={8}>
-            <div className='scenario-input'>Step(0.1-20)</div>
+            <div className='scenario-input'>Step(0.1%-20%)</div>
             <InputNumber
               defaultValue={this.state.parameter['agriculture']['step']}
               min={0.1}
