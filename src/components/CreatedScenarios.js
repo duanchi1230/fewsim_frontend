@@ -10,6 +10,10 @@ class CreatedScenarios extends React.Component {
 
     render() {
         let scenarios = this.props.scenarios
+        let defaultChecked = []
+        scenarios.map(s=>{
+            defaultChecked.push(s.name)
+        })
         
         return (
             <Row
@@ -20,12 +24,12 @@ class CreatedScenarios extends React.Component {
                     Created scenarios
                 <Tree
                 checkable
-                defaultCheckedKeys={['Scenarios']}
                 defaultExpandedKeys={['Scenarios']}
                 onCheck={this.props.handleNodeChecked.bind(this)}
+                onLoad={this.props.handleNodeChecked.bind(this)}
                 disabled={false}
             >
-                <TreeNode title="Select All" key="Scenarios">
+                <TreeNode title="Select All" key="Scenarios" >
                     {scenarios.map(v => {
                         return (<TreeNode
                             title={v.name}

@@ -168,15 +168,15 @@ export default class App extends Component {
                 }
             )}
         )
-        this.state.scenarios = scenarios
+        
         let selected = []
         scenarios.map(s=>{
             selected.push(s['name'])
         })
         this.setState({
-            selectedScenarios: selected
+            scenarios: scenarios,
+            selectedScenarios: []
         })
-        console.log(this.state.scenarios)
     }
 
     
@@ -195,7 +195,6 @@ export default class App extends Component {
         this.state.scenarios.map(
             s=>{
                 if(this.state.selectedScenarios.includes(s['name']) != true){
-
                     selected.push(s)
                 }
                 
@@ -204,14 +203,13 @@ export default class App extends Component {
 
         this.setState({
             scenarios: selected,
-            selectedScenarios:selected
         })
     }
 
     handleNodeChecked = (checkedKeys, info) => {
-        this.state.selectedScenarios = checkedKeys
+        console.log(checkedKeys)
         this.setState({
-
+            selectedScenarios:checkedKeys
         })
     };
 
@@ -413,9 +411,7 @@ export default class App extends Component {
                                 activatedMethod={activatedMethod}
                                 activatedScenario={activatedScenario}
                                 selectedScenarios={this.state.selectedScenarios}
-                            />
-                        }
-
+                            />                        
                     </Content>
                 </Layout>
             </div>

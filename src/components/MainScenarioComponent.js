@@ -41,7 +41,7 @@ export default class MainScenarioComponent extends Component {
     };
 
     render() {
-
+        
         const {proj, activatedMethod, activatedScenario} = this.props;
 
         // console.log(activatedScenario);

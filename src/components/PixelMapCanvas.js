@@ -240,12 +240,9 @@ export default class PixelMapCanvas extends Component {
                 flow_filtered.push(v)
             }
         })
-        console.log(flow)
 
-        console.log(flow_filtered)
         let d = calPixelMatrix(flow_filtered, origin, start_year, end_year);
   
-        console.log(d)
         const rect = d3.select('#map')
                 .selectAll('rect')
                 .remove()
@@ -258,8 +255,8 @@ export default class PixelMapCanvas extends Component {
                 .attr('x', d => d['x'])
                 .attr('y', d => d['y'])
                 .attr('width', d => d['dx'])
-                .transition()
-                .duration(300)
+                // .transition()
+                // .duration(300)
                 .attr('height', d => d['dy'])
                 .attr('rx', 0)
                 .attr('ry', 0)
@@ -287,8 +284,8 @@ export default class PixelMapCanvas extends Component {
             .enter()
             .append('text')
             .attr('y', v => v['y'] + 15)
-            .transition()
-            .duration(300)
+            // .transition()
+            // .duration(300)
             .attr('x', x_text)
             .text(v => v['rowName'])
             .attr('text-anchor', 'end')

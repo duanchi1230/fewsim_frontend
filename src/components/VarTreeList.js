@@ -10,11 +10,12 @@ export default class VarTreeList extends Component {
 
     }
 
-    
+    update(){
+        this.props.handleNodeChecked()
+    }
 
     render() {
         const {vars} = this.props;
-
         // console.log(vars);
 
         return (
