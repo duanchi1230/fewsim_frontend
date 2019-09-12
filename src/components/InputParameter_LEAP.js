@@ -21,7 +21,54 @@ class InputParameter_LEAP extends React.Component {
     render() {
       return (
         <div>
-        Population Growth (LP)
+          {Object.entries(this.state.parameter).map(([k, v])=>{
+            return (
+              <div>
+                {v['name']}
+              <Row>  
+              <Col span={8}>
+                <div className='scenario-input'>Start(Min {v['min']}%)</div>
+                <InputNumber
+                  defaultValue={v['start']}
+                  min={v['min']}
+                  max={v['max']}
+                  step={0.1}
+                  formatter={value => `${value}%`}
+                  parser={value => value.replace('%', '')}
+                  onChange={(value, para = 'start', name = k) => this.onChange(value, para, name)}
+                />
+              </Col>
+              <Col span={8}>
+                <div className='scenario-input'>Max(End {v['max']}%)</div>
+                <InputNumber
+                  defaultValue={v['end']}
+                  min={v['min']}
+                  max={v['max']}
+                  step={0.1}
+                  value={v['end']}
+                  formatter={value => `${value}%`}
+                  parser={value => value.replace('%', '')}
+                  onChange={(value, para = 'end', name = k) => this.onChange(value, para, name)}
+                />
+              </Col>
+              <Col span={8}>
+                <div className='scenario-input'>Step({v['step-min']}%-{v['step-max']}%)</div>
+                <InputNumber
+                  defaultValue={v['step']}
+                  min={v['step-min']}
+                  max={20}
+                  step={0.1}
+                  formatter={value => `${value}%`}
+                  parser={value => value.replace('%', '')}
+                  onChange={(value, para = 'step', name = k) => this.onChange(value, para, name)}
+                />
+              </Col>
+            </Row>
+            </div>
+            )
+          })}
+        
+        {/* Population Growth (LP)
       <Row>
           <Col span={8}>
             <div className='scenario-input'>Start(Min 0%)</div>
@@ -100,7 +147,7 @@ class InputParameter_LEAP extends React.Component {
               onChange={(value, para = 'step', name = 'industrial') => this.onChange(value, para, name)}
             />
           </Col>
-        </Row> 
+        </Row>  */}
         
         </div>
       );

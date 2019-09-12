@@ -25,19 +25,22 @@ export default class App extends Component {
             isLoadingScenario: true,
 
             WEAP_parameter: {
-                'population': { 'start': 1, 'end': 1, 'step': 1 },
-                'municipal': { 'start': 85, 'end': 100, 'step': 6 },
-                'agriculture': { 'start': 85, 'end': 100, 'step': 6 }
+                'population': { 'start': 1, 'end': 1, 'step': 1 , 'min':0, 'max':10, 'step-min':0.1, 'step-max':10, 'name':'Population Growth'},
+                'municipal': { 'start': 85, 'end': 100, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'Municipal Efficiency'},
+                'agriculture': { 'start': 85, 'end': 100, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'Agriculture Efficiency'}
             },
 
             LEAP_parameter: {
-                'population': { 'start': 1, 'end': 1, 'step': 1 },
-                'industrial': { 'start': 85, 'end': 100, 'step': 6 }
+                'population': { 'start': 1, 'end': 1, 'step': 1, 'min':0, 'max':10, 'step-min':0.1, 'step-max':10, 'name':'Population Growth'},
+                'industrial': { 'start': 85, 'end': 100, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'Industrial Efficiency' }
             },
 
             scenarios: [],
             finishedScenarios: [],
-            selectedScenarios: []
+            selectedScenarios: [],
+            parameters:{
+
+            }
         };
 
         // Initialize data loading
