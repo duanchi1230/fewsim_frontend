@@ -91,7 +91,7 @@ export default class App extends Component {
         // load it into the main content
 
         const { proj, activatedMethod } = this.state;
-
+        console.log(proj)
         // 0. Set the spinning first
         this.setState({ isLoadingScenario: true });
 
@@ -265,7 +265,9 @@ export default class App extends Component {
                                     marginTop: 16,
                                     overflow: 'auto',
                             }}>
-                                <CreatedScenarios scenarios={this.state.scenarios} selectedScenarios={this.state.selectedScenarios} handleNodeChecked={this.handleNodeChecked.bind(this)}/>
+                                <CreatedScenarios scenarios={this.state.scenarios} selectedScenarios={this.state.selectedScenarios}
+                                parameters={this.state.parameters}
+                                handleNodeChecked={this.handleNodeChecked.bind(this)}/>
                             </Card>
                             
                             <Button type="primary" onClick={this.createScenarios}>Create Scenario</Button>
@@ -421,3 +423,4 @@ export default class App extends Component {
         );
     }
 }
+
