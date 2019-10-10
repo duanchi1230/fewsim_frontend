@@ -22,6 +22,7 @@ class InputParameter_LEAP extends React.Component {
       return (
         <div>
           {Object.entries(this.state.parameter).map(([k, v])=>{
+            if(this.props.checked_LEAP_parameter.includes(k)){
             return (
               <div>
                 {v['name']}
@@ -65,7 +66,7 @@ class InputParameter_LEAP extends React.Component {
               </Col>
             </Row>
             </div>
-            )
+            )}
           })}
         
         </div>

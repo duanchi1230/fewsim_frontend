@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import { Layout, Button, Row, Col, Divider, Select, Menu, Modal, Tabs, Spin, Card } from 'antd';
+import { Layout, Button, Row, Col, Divider, Select, Menu, Modal, Tabs, Spin, Card, Tree } from 'antd';
 
 import MainScenarioComponent from './components/MainScenarioComponent';
 import './styles/App.css';
 
 import InputParameter_WEAP from './components/InputParameter_WEAP'
 import InputParameter_LEAP from './components/InputParameter_LEAP'
-
 import CreatedScenarios from './components/CreatedScenarios';
+
+const {TreeNode} = Tree;
 const { Header, Content } = Layout;
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -26,21 +27,21 @@ export default class App extends Component {
 
             WEAP_parameter: {
                 'population': { 'start': 1, 'end': 1, 'step': 1 , 'min':0, 'max':10, 'step-min':0.1, 'step-max':10, 'name':'Population Growth'},
-                'municipal': { 'start': 85, 'end': 100, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'Municipal Efficiency'},
-                'agriculture': { 'start': 85, 'end': 100, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'Agriculture Efficiency'}
+                'municipal': { 'start': 85, 'end': 85, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'Municipal Efficiency'},
+                'agriculture': { 'start': 85, 'end': 85, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'Agriculture Efficiency'}
             },
 
             LEAP_parameter: {
                 'population': { 'start': 1, 'end': 1, 'step': 1, 'min':0, 'max':10, 'step-min':0.1, 'step-max':10, 'name':'Population Growth'},
-                'industrial': { 'start': 85, 'end': 100, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'Industrial Efficiency' }
+                'CAP pumping': { 'start': 85, 'end': 85, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'CAP pumping Efficiency' },
+                'WTP': { 'start': 85, 'end': 85, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'WTP Efficiency'}
             },
 
             scenarios: [],
             finishedScenarios: [],
             selectedScenarios: [],
-            parameters:{
-
-            }
+            checked_WEAP_parameter: [],
+            checked_LEAP_parameter: []
         };
 
         // Initialize data loading
@@ -146,24 +147,27 @@ export default class App extends Component {
         let WM = []
         let WA = []
         let LP = []
-        let LI = []
+        let LC = []
+        let L_WTP = []
         let scenarios = []
         // console.log(this.state.WEAP_parameter)
         WP = this.decomposeInputParameter(this.state.WEAP_parameter['population']['start'], this.state.WEAP_parameter['population']['end'], this.state.WEAP_parameter['population']['step'])
         WM = this.decomposeInputParameter(this.state.WEAP_parameter['municipal']['start'], this.state.WEAP_parameter['municipal']['end'], this.state.WEAP_parameter['municipal']['step'])
         WA = this.decomposeInputParameter(this.state.WEAP_parameter['agriculture']['start'], this.state.WEAP_parameter['agriculture']['end'], this.state.WEAP_parameter['agriculture']['step'])
         LP = this.decomposeInputParameter(this.state.LEAP_parameter['population']['start'], this.state.LEAP_parameter['population']['end'], this.state.LEAP_parameter['population']['step'])
-        LI = this.decomposeInputParameter(this.state.LEAP_parameter['industrial']['start'], this.state.LEAP_parameter['industrial']['end'], this.state.LEAP_parameter['industrial']['step'])
+        LC = this.decomposeInputParameter(this.state.LEAP_parameter['CAP pumping']['start'], this.state.LEAP_parameter['CAP pumping']['end'], this.state.LEAP_parameter['CAP pumping']['step'])
+        L_WTP = this.decomposeInputParameter(this.state.LEAP_parameter['WTP']['start'], this.state.LEAP_parameter['WTP']['end'], this.state.LEAP_parameter['WTP']['step'])
         WP.forEach(
             wp=>{WM.forEach(
                 wm=>{
                     WA.forEach(wa=>{
                         LP.forEach(
                             lp=>{
-                                LI.forEach(li=>{
-                                    scenarios.push(
-                                        {'wp':wp, 'wm':wm, 'wa':wa, 'lp':lp, 'li':li, 'name':'WP:'+wp+' WM:'+wm+' WA:'+wa+' LP:'+lp+' LI:'+li}
-                                    )
+                                LC.forEach(lc=>{
+                                    L_WTP.forEach(l_wtp=>{
+                                        scenarios.push(
+                                            {'wp':wp, 'wm':wm, 'wa':wa, 'lp':lp, 'li':lc, 'l_wtp': l_wtp,'name':'WP:'+wp+' WM:'+wm+' WA:'+wa+' LP:'+lp+' LC:'+lc+' LWTP:'+l_wtp})
+                                    })  
                                 })
                             }
                         )
@@ -215,6 +219,30 @@ export default class App extends Component {
             selectedScenarios:checkedKeys
         })
     };
+    handleWEAPinputChecked = (checkedKeys, info) =>{
+        let WEAPinputParameter = []
+        checkedKeys.forEach(v=>{
+            if(v!='WEAP-input'){
+                WEAPinputParameter.push(v)
+            }}
+        )
+        console.log(WEAPinputParameter)
+        this.setState({
+            checked_WEAP_parameter: WEAPinputParameter
+        })
+    }
+    handleLEAPinputChecked = (checkedKeys, info) =>{
+        let LEAPinputParameter = []
+        checkedKeys.forEach(v=>{
+            if(v!='LEAP-input'){
+                LEAPinputParameter.push(v)
+            }}
+        )
+        console.log(LEAPinputParameter)
+        this.setState({
+            checked_LEAP_parameter: LEAPinputParameter
+        })
+    }
 
     render() {
 
@@ -259,20 +287,72 @@ export default class App extends Component {
                     >
                         <Col span={9}>
                             <font size="5">Scenarios List</font>
-                            <Card style={{
-                                    height:380,
-                                    flex: 2,
-                                    marginTop: 16,
-                                    overflow: 'auto',
-                            }}>
-                                <CreatedScenarios scenarios={this.state.scenarios} selectedScenarios={this.state.selectedScenarios}
-                                parameters={this.state.parameters}
-                                handleNodeChecked={this.handleNodeChecked.bind(this)}/>
-                            </Card>
-                            
-                            <Button type="primary" onClick={this.createScenarios}>Create Scenario</Button>
+                            <Tabs type="card">
+                                <TabPane tab="Created Scenarios" key="1">
+                                    <Card style={{
+                                        height:380,
+                                        flex: 2,
+                                        marginTop: 16,
+                                        overflow: 'auto',
+                                    }}>
+                                        <CreatedScenarios scenarios={this.state.scenarios} selectedScenarios={this.state.selectedScenarios}
+                                        parameters={this.state.parameters}
+                                        WEAP_parameter={this.state.WEAP_parameter}
+                                        LEAP_parameter={this.state.LEAP_parameter}
+                                        handleNodeChecked={this.handleNodeChecked.bind(this)}/>
+                                    </Card>
+                                    <Button type="primary" onClick={this.createScenarios}>Create Scenario</Button>
+                                    <Button type="danger" onClick={this.deleteScenarios.bind(this)}>Delete</Button>
+                                </TabPane>
 
-                            <Button type="danger" onClick={this.deleteScenarios.bind(this)}>Delete</Button>
+                                <TabPane tab="Policy Parameters" key="2" >
+                                    <Card style={{
+                                        height:380,
+                                        flex: 2,
+                                        marginTop: 16,
+                                        overflow: 'auto',
+                                    }}>
+                                        <Col span={12}>
+                                            Policy Parameters
+                                            <Tree
+                                            checkable
+                                            defaultExpandedKeys={['WEAP-input']}
+                                            onCheck={this.handleWEAPinputChecked.bind(this)}
+                                            // onLoad={}
+                                            disabled={false}
+                                            >
+                                                <TreeNode title="WEAP" key="WEAP-input" >
+                                                    {Object.keys(this.state.WEAP_parameter).map(v => {
+                                                        return (<TreeNode
+                                                            title={v}
+                                                            key={v}
+                                                        />);
+                                                    })}
+                                                </TreeNode>
+                                            </Tree>
+                                            <Tree
+                                            checkable
+                                            defaultExpandedKeys={['LEAP-input']}
+                                            onCheck={this.handleLEAPinputChecked.bind(this)}
+                                            // onLoad={}
+                                            disabled={false}
+                                            >
+                                                <TreeNode title="LEAP" key="LEAP-input" >
+                                                        {Object.keys(this.state.LEAP_parameter).map(v => {
+                                                            return (<TreeNode
+                                                                title={v}
+                                                                key={v}
+                                                            />);
+                                                        })}
+                                                </TreeNode>
+                                            </Tree>
+                                        </Col> 
+                                    </Card>
+                                </TabPane>
+                            </Tabs>
+                            
+                            
+
 
                             {/* <Button type="primary" onClick={this.createScenarios} style={
                                 {marginLeft: '85px'}
@@ -282,10 +362,16 @@ export default class App extends Component {
                             <font size="5">Input Parameter</font>
                             <Tabs type="card">
                                 <TabPane tab="WEAP" key="1">
-                                    <InputParameter_WEAP WEAP_parameter={this.state.WEAP_parameter} />
+                                    <InputParameter_WEAP 
+                                    WEAP_parameter={this.state.WEAP_parameter}
+                                    checked_WEAP_parameter={this.state.checked_WEAP_parameter}
+                                    />
                                 </TabPane>
                                 <TabPane tab="LEAP" key="2" >
-                                    <InputParameter_LEAP LEAP_parameter={this.state.LEAP_parameter} />
+                                    <InputParameter_LEAP 
+                                    LEAP_parameter={this.state.LEAP_parameter}
+                                    checked_LEAP_parameter={this.state.checked_LEAP_parameter} 
+                                    />
                                 </TabPane>
                                 <TabPane tab="WEAP-MABIA" key="3">
                                     WEAP-MABIA Input will be incorporated!
@@ -369,7 +455,7 @@ export default class App extends Component {
                                     showSearch
                                     placeholder={'Select a scenario'}
                                     style={{
-                                        width: 200
+                                        width: 300
                                     }}
                                     disabled={this.state.activatedMethod === null}
                                     onChange={this.handleScenarioChange.bind(1)}
