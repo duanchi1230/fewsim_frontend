@@ -107,6 +107,7 @@ export default class App extends Component {
                 .then(r => r.json())
                 .then(newScenario => {
                     let newState = { ...this.state };
+                    console.log(newState);
                     proj[activatedMethod].scenario[candidateScenarioIdx] = newScenario;
                     newState.isLoadingScenario = false;
                     newState.activatedScenario = newScenario;
@@ -502,6 +503,7 @@ export default class App extends Component {
                                 activatedMethod={activatedMethod}
                                 activatedScenario={activatedScenario}
                                 selectedScenarios={this.state.selectedScenarios}
+                                scenarios={this.state.selectedScenarios}
                             />                        
                     </Content>
                 </Layout>

@@ -27,7 +27,7 @@ export default class PixelMapView extends Component {
         const {activatedScenario} = this.props;
         return (
             <Row
-                style={{height: '100%'}}
+                style={{height: 800}}
             >
                 {/*<Col span={2}>*/}
                     {/*<Form>*/}

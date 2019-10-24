@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import {Row, Col, Divider, Empty, Card, Button} from 'antd';
+import {Row, Col, Divider, Empty, Card, Button, Tabs} from 'antd';
 
 import VarTreeList from './VarTreeList';
 import PixelMapView from "./PixelMapView";
 
-
+const { TabPane } = Tabs;
 export default class MainScenarioComponent extends Component {
 
     constructor(props) {
@@ -39,7 +39,11 @@ export default class MainScenarioComponent extends Component {
             {checkedOutput:checkedKeys}
         )
     };
-
+    testButtonClicked = () => {
+        const scenarios = this.props.scenarios
+        
+        fetch('/proj/test/weap/scenario', { method: 'GET' }).then(r=>r.json()).then(d=>console.log(d))
+    }
     render() {
         
         const {proj, activatedMethod, activatedScenario} = this.props;
@@ -56,13 +60,13 @@ export default class MainScenarioComponent extends Component {
 
         return (
             <Row
-                gutter={16}
+                gutter={30}
                 style={{
                     height: '100%'
                 }}
             >
                 <Col
-                    span={4}
+                    span={5}
                     style={{
                         height: '100%',
                         display: 'flex',
@@ -76,6 +80,7 @@ export default class MainScenarioComponent extends Component {
                     >
                         <p>RUN: <Button type="primary" onClick={this.runModel} disabled={this.state.isButtonDisabled}>{this.state.runButton}</Button> 
                         </p>
+                        {/* <Button onClick={this.testButtonClicked.bind(this.props)}>Test</Button> */}
                         <p>Name: {activatedScenario.name}</p>
                         <p>Running Status: {this.state.modelStatus}</p>
                     </Card>
@@ -95,32 +100,36 @@ export default class MainScenarioComponent extends Component {
                     </Card>
                 </Col>
                 <Col
-                    span={20}
+                    span={30}
                     style={{
-                        height: '100%'
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column'
                     }}
                 >
-                    <Card
-                        title="Pixel Map (m^3/year)"
-                        // size="small"
-                        style={{
-                            height: '100%',
-                            display: 'flex',
-                            flexDirection: 'column'
-                        }}
-                        headStyle={{
-                            height: 57
-                        }}
-                        bodyStyle={{
-                            flex: 2,
-                            // height: '100%'
-                        }}
-                    >
-                        <PixelMapView
-                            activatedScenario={activatedScenario} checkedOutput={this.state.checkedOutput}
-                        />
-                    </Card>
-                </Col>
+                            
+                    <Tabs type="card">
+                        <TabPane tab="Pixel_Map" key="1">
+                            <Card 
+                            style={{
+                            height:'100%',
+                            flex: 10,
+                            marginTop: 0,
+                            overflow: 'auto',
+                            }}>
+                                <PixelMapView
+                                    activatedScenario={activatedScenario} checkedOutput={this.state.checkedOutput}
+                                />
+                            </Card>
+                        </TabPane>
+
+                        <TabPane tab="Sustainability Index" key="2" >
+                                    
+                        </TabPane>
+                                
+                    </Tabs>
+                </Col>  
+                
                 {/*<Col*/}
                 {/*span={10}*/}
                 {/*style={{*/}
