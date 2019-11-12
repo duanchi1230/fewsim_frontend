@@ -7,16 +7,16 @@ class Variables_Radial_Tree extends Component {
      }
 
     componentDidMount(){
-        fetch('/inputs/tree').then(data => data.json()).then((data)=>{console.log(data); this.updateCanvas(data['weap-inputs'][0])})
+        fetch('/inputs/tree').then(data => data.json()).then((data)=>{console.log(data); this.updateCanvas(data['weap-inputs'][0])});
     }
 
     updateCanvas(data){
-        console.log(data)
-        const width = 932
-        const radius = width/2
+        console.log(data);
+        const width = 932;
+        const radius = width/2;
         const tree = d3.tree()
                 .size([2 * Math.PI, radius])
-                .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth)
+                .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
         // var data = {
         //     "name": "A1",
         //     "children": [
@@ -43,12 +43,15 @@ class Variables_Radial_Tree extends Component {
         //           }
         //         ]
         //     }
-        const root = tree(d3.hierarchy(data))
+        const root = tree(d3.hierarchy(data));
         // .sort((a, b) => d3.ascending(a.data.name, b.data.name)))
-        console.log(root)
+        console.log(root);
         const svg = d3.select('#variables-radial-tree')
+                        .append('svg')
+                        .attr('id', 'svg1')
+                        .attr('width', 1000)
+                        .attr('height', 1200)
                         .style("max-width", "100%")
-                        .style("height", 1000)
                         .style("font", "10px sans-serif")
                         .style("margin", "5px")
         const link = svg.append("g")
@@ -74,7 +77,16 @@ class Variables_Radial_Tree extends Component {
         node.append("circle")
             .attr("fill", d => d.children ? "#555" : "#999")
             .attr("r", 2.5);
-    }
+        svg.attr("viewBox", [-580, -500, 1200, 1200]);
+        node.append("text")
+            .attr("dy", "0.31em")
+            .attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
+            .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
+            .attr("transform", d => d.x >= Math.PI ? "rotate(180)" : null)
+            .text(d => d.data.name)
+            .clone(true).lower()
+            .attr("stroke", "white");
+            }
 
     render() { 
         return ( 
