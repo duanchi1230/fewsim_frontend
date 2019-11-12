@@ -3,7 +3,7 @@ import {Row, Col, Divider, Empty, Card, Button, Tabs} from 'antd';
 
 import VarTreeList from './VarTreeList';
 import PixelMapView from "./PixelMapView";
-
+import Variables_Radial_Tree from './Variables_Radial_Tree'
 const { TabPane } = Tabs;
 export default class MainScenarioComponent extends Component {
 
@@ -124,7 +124,15 @@ export default class MainScenarioComponent extends Component {
                         </TabPane>
 
                         <TabPane tab="Sustainability Index" key="2" >
-                                    
+                            <Card 
+                                style={{
+                                height: 1000,
+                                flex: 10,
+                                marginTop: 0,
+                                overflow: 'auto',
+                                }}>
+                                <Variables_Radial_Tree/>     
+                            </Card>        
                         </TabPane>
                                 
                     </Tabs>

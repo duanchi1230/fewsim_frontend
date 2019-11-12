@@ -1,0 +1,88 @@
+import React, { Component } from 'react';
+import { Divider } from 'antd';
+import * as d3 from 'd3'
+class Variables_Radial_Tree extends Component {
+    state = { 
+        variables: []
+     }
+
+    componentDidMount(){
+        fetch('/inputs/tree').then(data => data.json()).then((data)=>{console.log(data); this.updateCanvas(data['weap-inputs'][0])})
+    }
+
+    updateCanvas(data){
+        console.log(data)
+        const width = 932
+        const radius = width/2
+        const tree = d3.tree()
+                .size([2 * Math.PI, radius])
+                .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth)
+        // var data = {
+        //     "name": "A1",
+        //     "children": [
+        //         {
+        //         "name": "B1",
+        //         "children": [
+        //           {
+        //             "name": "C1",
+        //             "value": 100
+        //           },
+        //           {
+        //             "name": "C2",
+        //             "value": 300
+        //           },
+        //           {
+        //             "name": "C3",
+        //             "value": 200
+        //           }
+        //         ]
+        //         },
+        //         {
+        //             "name": "B2",
+        //             "value": 200
+        //           }
+        //         ]
+        //     }
+        const root = tree(d3.hierarchy(data))
+        // .sort((a, b) => d3.ascending(a.data.name, b.data.name)))
+        console.log(root)
+        const svg = d3.select('#variables-radial-tree')
+                        .style("max-width", "100%")
+                        .style("height", 1000)
+                        .style("font", "10px sans-serif")
+                        .style("margin", "5px")
+        const link = svg.append("g")
+                        .attr("fill", "none")
+                        .attr("stroke", "#555")
+                        .attr("stroke-opacity", 0.4)
+                        .attr("stroke-width", 1.5)
+                        .selectAll("path")
+                        .data(root.links())
+                        .join("path")
+                        .attr("d", d3.linkRadial()
+                        .angle(d => d.x)
+                        .radius(d => d.y));
+        const node = svg.append("g")
+                        .attr("stroke-linejoin", "round")
+                        .attr("stroke-width", 3)
+                        .selectAll("g")
+                        .data(root.descendants().reverse())
+                        .join("g")
+                        .attr("transform", d => `
+                          rotate(${d.x * 180 / Math.PI - 90})
+                          translate(${d.y},0)`);
+        node.append("circle")
+            .attr("fill", d => d.children ? "#555" : "#999")
+            .attr("r", 2.5);
+    }
+
+    render() { 
+        return ( 
+            <div id='variables-radial-tree'>
+
+            </div>
+         );
+    }
+}
+ 
+export default Variables_Radial_Tree;

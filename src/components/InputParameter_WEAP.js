@@ -12,7 +12,7 @@ class InputParameter_WEAP extends React.Component {
   }
 
   onChange(value, para, name) {
-
+    
     this.state.parameter[name][para] = value
       this.setState({
         
