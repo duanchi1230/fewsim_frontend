@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
-import { Divider } from 'antd';
+import { Divider, Tree} from 'antd';
 import * as d3 from 'd3'
+const {TreeNode} = Tree;
 class Variables_Radial_Tree extends Component {
-    state = { 
-        variables: []
-     }
+    constructor(props) {
+        super(props);
+    
+        this.state = {
+          variables:[]
+        }
+      }
 
     componentDidMount(){
-        fetch('/inputs/tree').then(data => data.json()).then((data)=>{console.log(data); this.updateCanvas(data['weap-inputs'][0])});
+        fetch('/inputs/tree').then(data => data.json()).then((data)=>{console.log(data); this.updateCanvas(data['weap-variables'][0]); this.setState({variables: [data['weap-variables'][0],data['leap-variables'][0]]})}); 
     }
 
     updateCanvas(data){
@@ -17,32 +22,6 @@ class Variables_Radial_Tree extends Component {
         const tree = d3.tree()
                 .size([2 * Math.PI, radius])
                 .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
-        // var data = {
-        //     "name": "A1",
-        //     "children": [
-        //         {
-        //         "name": "B1",
-        //         "children": [
-        //           {
-        //             "name": "C1",
-        //             "value": 100
-        //           },
-        //           {
-        //             "name": "C2",
-        //             "value": 300
-        //           },
-        //           {
-        //             "name": "C3",
-        //             "value": 200
-        //           }
-        //         ]
-        //         },
-        //         {
-        //             "name": "B2",
-        //             "value": 200
-        //           }
-        //         ]
-        //     }
         const root = tree(d3.hierarchy(data));
         // .sort((a, b) => d3.ascending(a.data.name, b.data.name)))
         console.log(root);
@@ -87,12 +66,61 @@ class Variables_Radial_Tree extends Component {
             .clone(true).lower()
             .attr("stroke", "white");
             }
-
+    plotVariableTree(data){
+        console.log(data)
+        // data.map(d=>console.log(d))
+        return  data.map(v => {
+                        if (Object.keys(v).includes('children')){
+                            return (<TreeNode title={v.name} key={v.name}>
+                                        {this.plotVariableTree(v.children)}
+                                    </TreeNode>
+                                
+                            );}
+                        else{
+                            return (<TreeNode
+                                title={v.name}
+                                key={v.name}
+                            />);}
+                        }
+                        )
+    }
     render() { 
+        var fake_data = {
+            "name": "A1",
+            "children": [
+                {
+                "name": "B1",
+                "children": [
+                  {
+                    "name": "C1",
+                    "value": 100
+                  },
+                  {
+                    "name": "C2",
+                    "value": 300
+                  },
+                  {
+                    "name": "C3",
+                    "value": 200,
+                    "children": [
+                        {
+                            "name": "D1",
+                            "value": 100
+                        }
+                    ]
+                  }
+                ]
+                },
+                {
+                    "name": "B2",
+                    "value": 200
+                  }
+                ]
+            }
         return ( 
-            <div id='variables-radial-tree'>
 
-            </div>
+            <div id='variables-radial-tree'> </div>
+            
          );
     }
 }

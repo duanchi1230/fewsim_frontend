@@ -41,7 +41,8 @@ export default class App extends Component {
             finishedScenarios: [],
             selectedScenarios: [],
             checked_WEAP_parameter: [],
-            checked_LEAP_parameter: []
+            checked_LEAP_parameter: [],
+            variables: []
         };
 
         // Initialize data loading
@@ -130,7 +131,9 @@ export default class App extends Component {
             })
         }
     };
-
+    componentDidMount(){
+        fetch('/inputs/tree').then(data => data.json()).then((data)=>{console.log(data); this.setState({variables: data})});
+    }
     handleAddScenarioButtonClicked = () => {
         this.setState({ createScenarioModalVisible: true });
     };
@@ -245,6 +248,25 @@ export default class App extends Component {
         })
     }
 
+    plotVariableTree(data){
+    
+        // data.map(d=>console.log(d))
+        return  data.map(v => {
+                        if (Object.keys(v).includes('children')){
+                            return (<TreeNode title={v.name} key={v.name}>
+                                        {this.plotVariableTree(v.children)}
+                                    </TreeNode>
+                                
+                            );}
+                        else{
+                            return (<TreeNode
+                                title={v.name}
+                                key={v.name}
+                            />);}
+                        }
+                        )
+    }
+
     render() {
 
         const {
@@ -317,6 +339,21 @@ export default class App extends Component {
                                             Policy Parameters
                                             <Tree
                                             checkable
+                                            defaultExpandedKeys={['model-input']}
+                                            // onCheck={this.handleWEAPinputChecked.bind(this)}
+                                            // onLoad={}
+                                            disabled={false}
+                                            >
+                                                <TreeNode title="WEAP" key="WEAP" >
+                                                    {this.plotVariableTree([this.state.variables['weap-variables'][0]])}
+                                                </TreeNode>
+                                                <TreeNode title="LEAP" key="LEAP" >
+                                                    {this.plotVariableTree([this.state.variables['leap-variables'][0]])}
+                                                </TreeNode>
+                                            </Tree>
+
+                                            {/* <Tree
+                                            checkable
                                             defaultExpandedKeys={['WEAP-input']}
                                             onCheck={this.handleWEAPinputChecked.bind(this)}
                                             // onLoad={}
@@ -330,8 +367,8 @@ export default class App extends Component {
                                                         />);
                                                     })}
                                                 </TreeNode>
-                                            </Tree>
-                                            <Tree
+                                            </Tree> */}
+                                            {/* <Tree
                                             checkable
                                             defaultExpandedKeys={['LEAP-input']}
                                             onCheck={this.handleLEAPinputChecked.bind(this)}
@@ -346,7 +383,7 @@ export default class App extends Component {
                                                             />);
                                                         })}
                                                 </TreeNode>
-                                            </Tree>
+                                            </Tree> */}
                                         </Col> 
                                     </Card>
                                 </TabPane>
