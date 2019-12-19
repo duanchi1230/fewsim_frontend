@@ -16,10 +16,10 @@ export default class PixelMapCanvas extends Component {
     componentDidMount() {
         // fetch('/proj/1/weap/scenario/0').then(r=>r.json()).then(data=>this.initCanvas(data))
         const {activatedScenario} = this.props;
-        const {width, height} = findDOMNode(this).getBoundingClientRect();
+        var {width, height} = findDOMNode(this).getBoundingClientRect();
 
         console.log('this is activescenario', activatedScenario)
-
+        height = activatedScenario['var']['output'].length * 30 +150
         this.initCanvas(activatedScenario, width, height);
     }
 
@@ -452,11 +452,11 @@ function calCoordinate(flow, origin, start_year, end_year) {
 
 function mapColor(d) {
 
-    let base_color = [[141,211,199], [255,255,179], [190,186,218], [251,128,114], [128,177,211],[253,180,98], [179,222,105], [252,205,229], [217,217,217], [188,128,189]]
+    let base_color = [[141,211,199], [255,255,179], [190,186,218], [251,128,114], [128,177,211],[253,180,98], [179,222,105], [252,205,229], [217,217,217], [188,128,189], [141,211,199], [255,255,179], [190,186,218], [251,128,114], [128,177,211],[253,180,98], [179,222,105], [252,205,229], [217,217,217], [188,128,189]]
     
     let color = {}
     let [max_value, min_value] = findRange(d)
-    // console.log('max', min_value, max_value)
+    console.log('max', min_value, max_value)
     let i =0
     Object.keys(max_value).forEach(
         key=>{color[key]= base_color[i];

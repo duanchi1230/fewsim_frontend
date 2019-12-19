@@ -8,6 +8,7 @@ class InputParameter_WEAP extends React.Component {
 
     this.state = {
       parameter:this.props.WEAP_parameter,
+      checked_parameter_name: this.props.checked_WEAP_parameter
     }
   }
 
@@ -19,15 +20,23 @@ class InputParameter_WEAP extends React.Component {
       })
     
   }
-
+  componentWillReceiveProps(){
+    console.log("1")
+    console.log(this.state.checked_parameter_name)
+  }
   render() {
+    console.log(this.state.parameter)
     return (
         <div>
           {Object.entries(this.state.parameter).map(([k, v])=>{
-            if(this.props.checked_WEAP_parameter.includes(k)){
+            console.log(k,v)
+            if  (true
+              // this.props.checked_WEAP_parameter.includes(k)
+              )
+            {
             return (
               <div>
-                {v['name']}
+              {v['name']}
               <Row>  
               <Col span={8}>
                 <div className='scenario-input'>Start(Min {v['min']}%)</div>

@@ -126,7 +126,7 @@ export default class MainScenarioComponent extends Component {
                         <TabPane tab="Sustainability Index" key="2" >
                             <Card 
                                 style={{
-                                height: 1000,
+                                height: '100%',
                                 flex: 10,
                                 marginTop: 0,
                                 overflow: 'auto',

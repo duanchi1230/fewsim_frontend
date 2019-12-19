@@ -19,6 +19,7 @@ class InputParameter_LEAP extends React.Component {
     }
   
     render() {
+      console.log(this.state.parameter)
       return (
         <div>
           {Object.entries(this.state.parameter).map(([k, v])=>{

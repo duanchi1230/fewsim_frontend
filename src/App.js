@@ -225,31 +225,36 @@ export default class App extends Component {
     };
     handleWEAPinputChecked = (checkedKeys, info) =>{
         let WEAPinputParameter = []
+        let checked_parameter = {}
+        console.log(checkedKeys)
         checkedKeys.forEach(v=>{
-            if(v!='WEAP-input'){
+            if(v!='WEAP'){
                 WEAPinputParameter.push(v)
+                checked_parameter[v] = {'start': 1, 'end': 1, 'step': 1 , 'min':0, 'max':10, 'step-min':0.1, 'step-max':10, 'name':v}
             }}
         )
         console.log(WEAPinputParameter)
+        console.log(checked_parameter)
         this.setState({
-            checked_WEAP_parameter: WEAPinputParameter
+            checked_WEAP_parameter: WEAPinputParameter,
+            WEAP_parameter: checked_parameter
         })
     }
     handleLEAPinputChecked = (checkedKeys, info) =>{
         let LEAPinputParameter = []
         checkedKeys.forEach(v=>{
-            if(v!='LEAP-input'){
+            if(v!='LEAP'){
                 LEAPinputParameter.push(v)
             }}
         )
         console.log(LEAPinputParameter)
-        this.setState({
-            checked_LEAP_parameter: LEAPinputParameter
-        })
+        // this.setState({
+        //     checked_LEAP_parameter: LEAPinputParameter
+        // })
     }
 
     plotVariableTree(data){
-    
+        
         // data.map(d=>console.log(d))
         return  data.map(v => {
                         if (Object.keys(v).includes('children')){
@@ -338,20 +343,27 @@ export default class App extends Component {
                                         <Col span={12}>
                                             Policy Parameters
                                             <Tree
-                                            checkable
+                                            checkable={true}
                                             defaultExpandedKeys={['model-input']}
-                                            // onCheck={this.handleWEAPinputChecked.bind(this)}
+                                            onCheck={this.handleWEAPinputChecked.bind(this)}
                                             // onLoad={}
                                             disabled={false}
                                             >
                                                 <TreeNode title="WEAP" key="WEAP" >
-                                                    {this.plotVariableTree([this.state.variables['weap-variables'][0]])}
-                                                </TreeNode>
-                                                <TreeNode title="LEAP" key="LEAP" >
-                                                    {this.plotVariableTree([this.state.variables['leap-variables'][0]])}
+                                                    {this.plotVariableTree([this.state.variables['children'][0]])}
                                                 </TreeNode>
                                             </Tree>
-
+                                            <Tree
+                                            checkable={true}
+                                            defaultExpandedKeys={['model-input']}
+                                            onCheck={this.handleLEAPinputChecked.bind(this)}
+                                            // onLoad={}
+                                            disabled={false}
+                                            >
+                                                <TreeNode title="LEAP" key="LEAP" >
+                                                    {this.plotVariableTree([this.state.variables['children'][2]])}
+                                                </TreeNode>
+                                            </Tree>
                                             {/* <Tree
                                             checkable
                                             defaultExpandedKeys={['WEAP-input']}
