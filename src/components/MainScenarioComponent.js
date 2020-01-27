@@ -4,6 +4,7 @@ import {Row, Col, Divider, Empty, Card, Button, Tabs} from 'antd';
 import VarTreeList from './VarTreeList';
 import PixelMapView from "./PixelMapView";
 import Variables_Radial_Tree from './Variables_Radial_Tree'
+import Sustainability_Index from "./Sustainability_Index"
 const { TabPane } = Tabs;
 export default class MainScenarioComponent extends Component {
 
@@ -15,7 +16,9 @@ export default class MainScenarioComponent extends Component {
             isButtonDisabled: false,
             runButton: "Run Model",
             modelStatus:"Finished",
-            checkedOutput: []
+            checkedOutput: [],
+            sustainability_variables: [],
+            sustainability_index: []
         };
     }
 
@@ -44,8 +47,19 @@ export default class MainScenarioComponent extends Component {
         
         fetch('/proj/test/weap/scenario', { method: 'GET' }).then(r=>r.json()).then(d=>console.log(d))
     }
+
+    getSuatainabilityIndex(sustainability_index, sustainability_variables){
+        this.setState({sustainability_index: sustainability_index,
+            sustainability_variables:sustainability_variables})
+        console.log(sustainability_variables, sustainability_index)
+    }
+
+    componentDidUpdate(){
+        console.log(this.state.sustainability_index)
+    }
+
     render() {
-        
+        console.log(this.props)
         const {proj, activatedMethod, activatedScenario} = this.props;
 
         // console.log(activatedScenario);
@@ -109,7 +123,18 @@ export default class MainScenarioComponent extends Component {
                 >
                             
                     <Tabs type="card">
-                        <TabPane tab="Pixel_Map" key="1">
+                        <TabPane tab="FEW Nexus" key="0" >
+                            <Card 
+                                style={{
+                                height: '100%',
+                                flex: 10,
+                                marginTop: 0,
+                                overflow: 'scroll',
+                                }}>
+ 
+                            </Card>        
+                        </TabPane>
+                        <TabPane tab="Pixel_Map_WEAP" key="1">
                             <Card 
                             style={{
                             height:'100%',
@@ -122,19 +147,40 @@ export default class MainScenarioComponent extends Component {
                                 />
                             </Card>
                         </TabPane>
-
-                        <TabPane tab="Sustainability Index" key="2" >
+                        <TabPane tab="Visualization_LEAP" key="2">
+                            <Card 
+                            style={{
+                            height:'100%',
+                            flex: 10,
+                            marginTop: 0,
+                            overflow: 'auto',
+                            }}>
+                               
+                            </Card>
+                        </TabPane>
+                        <TabPane tab="Sustainability Index Variable Selection" key="3" >
                             <Card 
                                 style={{
                                 height: '100%',
                                 flex: 10,
                                 marginTop: 0,
-                                overflow: 'auto',
+                                overflow: 'scroll',
                                 }}>
-                                <Variables_Radial_Tree/>     
+
+                                <Variables_Radial_Tree variables={this.props.variables} getSuatainabilityIndex={this.getSuatainabilityIndex.bind(this)}/>  
                             </Card>        
                         </TabPane>
-                                
+                        <TabPane tab="Sustainability Index" key="4" >
+                            <Card 
+                                style={{
+                                height: '100%',
+                                flex: 10,
+                                marginTop: 0,
+                                overflow: 'scroll',
+                                }}>
+                                <Sustainability_Index sustainability_variables={this.state.sustainability_variables} sustainability_index={this.state.sustainability_index}/>
+                            </Card>        
+                        </TabPane>
                     </Tabs>
                 </Col>  
                 

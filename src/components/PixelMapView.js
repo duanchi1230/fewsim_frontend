@@ -52,7 +52,7 @@ export default class PixelMapView extends Component {
                     {/*</Form>*/}
                 {/*</Col>*/}
                 <Col
-                    span={24}
+                    span={25}
                     style={{height: '100%'}}
                 >
                     <PixelMapCanvas

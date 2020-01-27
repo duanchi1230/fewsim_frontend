@@ -81,7 +81,7 @@ export default class App extends Component {
                 } catch (err) {
                     console.log(err);
                 }
-            });
+            });       
     }
 
     handleMethodChange = (value) => {
@@ -254,22 +254,22 @@ export default class App extends Component {
     }
 
     plotVariableTree(data){
-        
-        // data.map(d=>console.log(d))
-        return  data.map(v => {
-                        if (Object.keys(v).includes('children')){
-                            return (<TreeNode title={v.name} key={v.name}>
-                                        {this.plotVariableTree(v.children)}
-                                    </TreeNode>
-                                
-                            );}
-                        else{
-                            return (<TreeNode
-                                title={v.name}
-                                key={v.name}
-                            />);}
-                        }
-                        )
+    // data.map(d=>console.log(d))
+    return  data.map(v => {
+                    if (Object.keys(v).includes('children')){
+                        return (<TreeNode title={v.name} key={v.name}>
+                                    {this.plotVariableTree(v.children)}
+                                </TreeNode>
+                            
+                        );}
+                    else{
+                        return (<TreeNode
+                            title={v.name}
+                            key={v.name}
+                        />);}
+                    }
+                    )
+
     }
 
     render() {
@@ -553,6 +553,7 @@ export default class App extends Component {
                                 activatedScenario={activatedScenario}
                                 selectedScenarios={this.state.selectedScenarios}
                                 scenarios={this.state.selectedScenarios}
+                                variables={this.state.variables}
                             />                        
                     </Content>
                 </Layout>
