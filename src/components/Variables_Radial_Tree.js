@@ -85,7 +85,8 @@ class Variables_Radial_Tree extends Component {
 
     }
 
-    node_edge(d){
+    node_edge_width(d){
+
       var d_children = []
       var d_leaf = []
       // console.log(d['data'])
@@ -96,13 +97,30 @@ class Variables_Radial_Tree extends Component {
         return 1
       }
       else{return 0}
+
+    }
+
+    node_edge_color(d){
+
+      let color = {"weap":"#3288bd", "leap":"#f46d43", "mabia":"#276419", "FEW": "grey"}
+      return color[d["data"]["model"]]
+
     }
     
+    node_color(d, color){
+
+      // let color = {"weap":"#2b8cbe", "leap":"#fe9929", "mabia":"#a6d96a", "FEW": "grey"}
+      console.log(d)
+      return color[d["data"]["model"]]
+
+    }
+
     updateCanvas(data){
       // console.log(data)
       // console.log(this.state.leaf_to_show)
       const width = 2850;
       const radius = width/2;
+      let color = {"weap":"#2b8cbe", "leap":"#fe9929", "mabia":"#a6d96a", "FEW": "grey"};
       const tree = d3.tree()
                 .size([2 * Math.PI, radius])
                 .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
@@ -138,10 +156,10 @@ class Variables_Radial_Tree extends Component {
                             rotate(${d.x * 180 / Math.PI - 90})
                             translate(${d.y},0)`);
       node.append("circle")
-          .attr("fill", d => {if (d.children){return "#555"} if(Object.keys(d['data']).includes("value")){return "#d95f0e"} else{return "#999"}})
+          .attr("fill", d => this.node_color(d))
           .attr("r", 2.5)
-          .attr("stroke", "green")
-          .attr("stroke-width", d=> this.node_edge(d))
+          .attr("stroke", "grey")
+          .attr("stroke-width", d=>this.node_edge_width(d))
           .on('click',d=>this.handleMouseClick(d));
                 
       node.append("text")
@@ -159,6 +177,7 @@ class Variables_Radial_Tree extends Component {
         console.log(data);
         const width = 2850;
         const radius = width/2;
+        let color = {"weap":"#2b8cbe", "leap":"#fe9929", "mabia":"#a6d96a", "FEW": "grey"};
         const tree = d3.tree()
                 .size([2 * Math.PI, radius])
                 .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
@@ -166,7 +185,7 @@ class Variables_Radial_Tree extends Component {
         // .sort((a, b) => d3.ascending(a.data.name, b.data.name)))
         // console.log(root);
         const svg = d3.select('#variables-radial-tree')
-                        .append('svg')
+                        .append("svg")
                         .attr('id', 'radial-tree-svg')
                         .attr('width', 750)
                         .attr('height', 750)
@@ -180,10 +199,48 @@ class Variables_Radial_Tree extends Component {
                         .on("zoom", function(){svg.attr("transform", d3.event.transform)}))
                         .append("g")
 
+        const svglegend = d3.select('#radial-tree-svg')                
+                        .append("g")
+                        .attr("id", "legend")
+                        // .attr("cx",50).attr("cy",-350)
+                        // .attr("width", 200).attr("height", 200)
+        
+        svglegend.append("circle")
+                  .attr("cx", 350)
+                  .attr("cy", -450)
+                  .attr("r", 10)
+                  .style("fill", color["weap"])
+        svglegend.append("circle")
+                  .attr("cx", 350)
+                  .attr("cy", -400)
+                  .attr("r", 10)
+                  .style("fill", color["leap"])
+        svglegend.append("circle")
+                  .attr("cx", 350)
+                  .attr("cy", -350)
+                  .attr("r", 10)
+                  .style("fill", color["mabia"])
+
+        svglegend.append("text")
+                  .attr("x", 350)
+                  .attr("y", -450)
+                  .text("water (WEAP)")
+                  .style("fill", color["weap"])
+        svglegend.append("text")
+                  .attr("x", 350)
+                  .attr("y", -400)
+                  .text("energy (LEAP)")
+                  .style("fill", color["leap"])
+        svglegend.append("text")
+                  .attr("x", 350)
+                  .attr("y", -350)
+                  .text("food (Mabia agriculture)")
+                  .style("fill", color["mabia"])
+            
         const link = svg.append("g")
                         .attr("id", "radial-tree-link")
                         .attr("fill", "none")
-                        .attr("stroke", "#4393c3")
+                        .attr("stroke", "#555")
                         .attr("stroke-opacity", 0.5)
                         .attr("stroke-width", 1.5)
                         .selectAll("path")
@@ -207,10 +264,10 @@ class Variables_Radial_Tree extends Component {
                           translate(${d.y},0)`);
         node.append("circle")
             .attr("id", "tree-node-element")
-            .attr("fill", d => {if (d.children){return "#555"} if(Object.keys(d['data']).includes("value")){return "#d95f0e"} else{return "#999"}})
+            .attr("fill", d => this.node_color(d, color))
             .attr("r", 2.5)
-            .attr("stroke", "green")
-            .attr("stroke-width", d=> this.node_edge(d))
+            .attr("stroke", "grey")
+            .attr("stroke-width", d=> this.node_edge_width(d))
             .on('click',d=>this.handleMouseClick(d));
 
         node.append("text")
@@ -432,6 +489,7 @@ class Variables_Radial_Tree extends Component {
               }}
           >
             <div id='variables-radial-tree'> 
+              {/* <svg width={800} height={800} id='variables-radial-treee'></svg> */}
             </div>
           </Col> 
           <Col
@@ -482,5 +540,6 @@ class Variables_Radial_Tree extends Component {
          );
     }
 }
+
  
 export default Variables_Radial_Tree;
