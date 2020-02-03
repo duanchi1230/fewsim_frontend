@@ -156,7 +156,7 @@ class Variables_Radial_Tree extends Component {
                             rotate(${d.x * 180 / Math.PI - 90})
                             translate(${d.y},0)`);
       node.append("circle")
-          .attr("fill", d => this.node_color(d))
+          .attr("fill", d => this.node_color(d,color))
           .attr("r", 2.5)
           .attr("stroke", "grey")
           .attr("stroke-width", d=>this.node_edge_width(d))
@@ -187,8 +187,8 @@ class Variables_Radial_Tree extends Component {
         const svg = d3.select('#variables-radial-tree')
                         .append("svg")
                         .attr('id', 'radial-tree-svg')
-                        .attr('width', 750)
-                        .attr('height', 750)
+                        .attr('width', 800)
+                        .attr('height', 800)
                         .attr("viewBox", [-580, -500, 1200, 1200])
                         .style("max-width", "100%")
                         .style("border", "1px solid black")
@@ -204,37 +204,48 @@ class Variables_Radial_Tree extends Component {
                         .attr("id", "legend")
                         // .attr("cx",50).attr("cy",-350)
                         // .attr("width", 200).attr("height", 200)
-        
+        let legend_x = 590
+        let legend_text_x = legend_x - 12
+
         svglegend.append("circle")
-                  .attr("cx", 350)
-                  .attr("cy", -450)
-                  .attr("r", 10)
+                  .attr("cx", legend_x)
+                  .attr("cy", -480)
+                  .attr("r", 8)
                   .style("fill", color["weap"])
         svglegend.append("circle")
-                  .attr("cx", 350)
-                  .attr("cy", -400)
-                  .attr("r", 10)
+                  .attr("cx", legend_x)
+                  .attr("cy", -455)
+                  .attr("r", 8)
                   .style("fill", color["leap"])
         svglegend.append("circle")
-                  .attr("cx", 350)
-                  .attr("cy", -350)
-                  .attr("r", 10)
+                  .attr("cx", legend_x)
+                  .attr("cy", -430)
+                  .attr("r", 8)
                   .style("fill", color["mabia"])
 
         svglegend.append("text")
-                  .attr("x", 350)
-                  .attr("y", -450)
+                  .attr("x", legend_text_x)
+                  .attr("y", -480)
                   .text("water (WEAP)")
+                  .attr("text-anchor", "end")
+                  .attr("font-size", "25px")
+                  .attr("alignment-baseline", "middle")
                   .style("fill", color["weap"])
         svglegend.append("text")
-                  .attr("x", 350)
-                  .attr("y", -400)
+                  .attr("x", legend_text_x)
+                  .attr("y", -455)
                   .text("energy (LEAP)")
+                  .attr("text-anchor", "end")
+                  .attr("font-size", "25px")
+                  .attr("alignment-baseline", "middle")
                   .style("fill", color["leap"])
         svglegend.append("text")
-                  .attr("x", 350)
-                  .attr("y", -350)
+                  .attr("x", legend_text_x)
+                  .attr("y", -430)
                   .text("food (Mabia agriculture)")
+                  .attr("text-anchor", "end")
+                  .attr("font-size", "25px")
+                  .attr("alignment-baseline", "middle")
                   .style("fill", color["mabia"])
             
         const link = svg.append("g")
@@ -480,17 +491,28 @@ class Variables_Radial_Tree extends Component {
                 style={{
                 height: '100%'
             }}>
+
           <Col
-              span={15}
+              span={13.5}
               style={{
-                  height: 800,
+                  height: "100%",
                   display: 'flex',
                   flexDirection: 'column'
               }}
           >
-            <div id='variables-radial-tree'> 
+            <div id='variables-radial-tree' > 
               {/* <svg width={800} height={800} id='variables-radial-treee'></svg> */}
             </div>
+          </Col> 
+          <Col
+              span={1}
+              style={{
+                  height: "100%",
+                  display: 'flex',
+                  flexDirection: 'column'
+              }}
+          >
+            
           </Col> 
           <Col
               span={9}

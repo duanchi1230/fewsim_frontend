@@ -25,15 +25,7 @@ export default class VarTreeList extends Component {
                 defaultExpandedKeys={['output']}
                 onCheck={this.props.handleNodeChecked}
             >
-                <TreeNode title="Input" key="input">
-                    {Object.keys(vars.input).map(key => {
-                        return (<TreeNode
-                            title={key}
-                            key={key}
-                        />);
-                    })}
-                </TreeNode>
-                <TreeNode title="Output" key="output">
+                <TreeNode title="Water_Flows" key="weap-flows">
                     {vars.output.map(v => {
                         return (<TreeNode
                             title={v.name}

@@ -18,7 +18,8 @@ export default class MainScenarioComponent extends Component {
             modelStatus:"Finished",
             checkedOutput: [],
             sustainability_variables: [],
-            sustainability_index: []
+            sustainability_index: [],
+            run_model_status: this.props.run_model_status
         };
     }
 
@@ -59,19 +60,19 @@ export default class MainScenarioComponent extends Component {
     }
 
     render() {
-        console.log(this.props)
-        const {proj, activatedMethod, activatedScenario} = this.props;
+        console.log(this.state.run_model_status)
+        const {proj, activatedMethod, activatedScenario} = this.props.run_model_status;
 
         // console.log(activatedScenario);
-        if (activatedScenario === null) {
+        if (this.props.run_model_status === 'null') {
             return (
                 <Empty
                     style={{marginTop: '20%'}}
-                    description={<span>Please select a scenario</span>}
+                    description={<span>Please Run Model</span>}
                 />
             );
         }
-
+        if(this.props.run_model_status === 'finished') {
         return (
             <Row
                 gutter={30}
@@ -79,40 +80,6 @@ export default class MainScenarioComponent extends Component {
                     height: '100%'
                 }}
             >
-                <Col
-                    span={5}
-                    style={{
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }}
-                >
-                    <Card
-                        title="Summary of Scenario"
-                        // style={{}}
-                        // size="small"
-                    >
-                        <p>RUN: <Button type="primary" onClick={this.runModel} disabled={this.state.isButtonDisabled}>{this.state.runButton}</Button> 
-                        </p>
-                        {/* <Button onClick={this.testButtonClicked.bind(this.props)}>Test</Button> */}
-                        <p>Name: {activatedScenario.name}</p>
-                        <p>Running Status: {this.state.modelStatus}</p>
-                    </Card>
-
-                    <Card
-                        title="Variables"
-                        // size="small"
-                        style={{
-                            marginTop: 16,
-                            flex: 2,
-                            overflow: 'scroll'
-                        }}
-                    >
-                        <VarTreeList
-                            vars={activatedScenario.var} handleNodeChecked={this.handleNodeChecked.bind(this)}
-                        />
-                    </Card>
-                </Col>
                 <Col
                     span={30}
                     style={{
@@ -123,17 +90,7 @@ export default class MainScenarioComponent extends Component {
                 >
                             
                     <Tabs type="card">
-                        <TabPane tab="FEW Nexus" key="0" >
-                            <Card 
-                                style={{
-                                height: '100%',
-                                flex: 10,
-                                marginTop: 0,
-                                overflow: 'scroll',
-                                }}>
- 
-                            </Card>        
-                        </TabPane>
+
                         <TabPane tab="Pixel_Map_WEAP" key="1">
                             <Card 
                             style={{
@@ -143,7 +100,7 @@ export default class MainScenarioComponent extends Component {
                             overflow: 'auto',
                             }}>
                                 <PixelMapView
-                                    activatedScenario={activatedScenario} checkedOutput={this.state.checkedOutput}
+                                    activatedScenario={activatedScenario} checkedOutput={this.state.checkedOutput} weap_flow={this.props.weap_flow}
                                 />
                             </Card>
                         </TabPane>
@@ -158,18 +115,7 @@ export default class MainScenarioComponent extends Component {
                                
                             </Card>
                         </TabPane>
-                        <TabPane tab="Sustainability Index Variable Selection" key="3" >
-                            <Card 
-                                style={{
-                                height: '100%',
-                                flex: 10,
-                                marginTop: 0,
-                                overflow: 'scroll',
-                                }}>
 
-                                <Variables_Radial_Tree variables={this.props.variables} getSuatainabilityIndex={this.getSuatainabilityIndex.bind(this)}/>  
-                            </Card>        
-                        </TabPane>
                         <TabPane tab="Sustainability Index" key="4" >
                             <Card 
                                 style={{
@@ -178,7 +124,7 @@ export default class MainScenarioComponent extends Component {
                                 marginTop: 0,
                                 overflow: 'scroll',
                                 }}>
-                                <Sustainability_Index sustainability_variables={this.state.sustainability_variables} sustainability_index={this.state.sustainability_index}/>
+                                <Sustainability_Index sustainability_variables={this.props.sustainability_variables} sustainability_index={this.props.sustainability_index}/>
                             </Card>        
                         </TabPane>
                     </Tabs>
@@ -201,6 +147,7 @@ export default class MainScenarioComponent extends Component {
                 {/*</Card>*/}
                 {/*</Col>*/}
             </Row>
-        );
+            );
+        }
     }
 }

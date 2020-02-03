@@ -15,16 +15,16 @@ export default class PixelMapCanvas extends Component {
     
     componentDidMount() {
         // fetch('/proj/1/weap/scenario/0').then(r=>r.json()).then(data=>this.initCanvas(data))
-        const {activatedScenario} = this.props;
+        
+        const weap_flow = this.props.weap_flow
         var {width, height} = findDOMNode(this).getBoundingClientRect();
 
-        console.log('this is activescenario', activatedScenario)
-        height = activatedScenario['var']['output'].length * 30 +150
-        this.initCanvas(activatedScenario, width, height);
+        height = weap_flow[0]['var']['output'].length * 30 +150
+        this.initCanvas(weap_flow[0], width, height);
     }
 
     handleMouseOver(x,y,d,name){
-        let data = this.props.activatedScenario
+        let data = this.props.weap_flow[0]
         let value = []
         data['var']['output'].forEach(
             v=> {if(v['name']==name){
@@ -221,15 +221,16 @@ export default class PixelMapCanvas extends Component {
         //             return `rotate(0, ${xRot},  ${yRot} )`})
     // }
 
-    componentWillReceiveProps(nextProps){
-        console.log()
-        const {activatedScenario} = this.props;
+    componentDidUpdate(){
+        
+        const data = this.props.weap_flow[0];
+        console.log(data)
         const {width, height} = findDOMNode(this).getBoundingClientRect();
-        this.updateCanvas(activatedScenario, nextProps.checkedOutput)
+        this.updateCanvas(data, this.props.checkedOutput)
     }
     
     updateCanvas(data, nextProps) {
-
+        console.log(data)
         let origin = {'x': 350, 'y': 50};
         let flow = data['var']['output'];
         let flow_filtered =[]
@@ -303,8 +304,10 @@ export default class PixelMapCanvas extends Component {
         return (
             <div
                 id='pixel-map'
-                style={{height: '100%'}}
-            />
+                style={{height: '100%', "overflow-x": "hidden"}}
+            >
+
+            </div>
             // <svg id='PixelCanvas'
             //     width={width}
             //     height={height}

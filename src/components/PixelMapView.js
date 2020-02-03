@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import {findDOMNode} from 'react-dom';
-import {Form, InputNumber, Button, Row, Col} from 'antd';
+import {Form, InputNumber, Button, Row, Col, Modal, Icon} from 'antd';
 import PixelMapCanvas from './PixelMapCanvas';
+import VarTreeList from './VarTreeList';
 
 
 export default class PixelMapView extends Component {
@@ -10,7 +11,9 @@ export default class PixelMapView extends Component {
         super(props);
 
         this.state = {
-            year: 1986
+            year: 1986,
+            filterModalVisible: false,
+            checkedOutput: []
         };
     }
 
@@ -23,12 +26,24 @@ export default class PixelMapView extends Component {
         this.setState({year: yearValue});
     }
 
+    showFilterModal(){
+        this.setState({filterModalVisible: true})
+    }
+
+    hideFilterModal(){
+        this.setState({filterModalVisible: false})
+    }
+
+    handleNodeChecked = (checkedKeys, info) => {     
+        this.setState(
+            {checkedOutput:checkedKeys}
+        )
+    };
+
     render() {
         const {activatedScenario} = this.props;
         return (
-            <Row
-                style={{height: 800}}
-            >
+            <Row>
                 {/*<Col span={2}>*/}
                     {/*<Form>*/}
                         {/*<Form.Item>*/}
@@ -51,16 +66,26 @@ export default class PixelMapView extends Component {
                         {/*</Form.Item>*/}
                     {/*</Form>*/}
                 {/*</Col>*/}
+                <Modal 
+                    width={500}
+                    visible={this.state.filterModalVisible}
+                    onCancel={this.hideFilterModal.bind(this)}
+                    footer={null}>
+                        <VarTreeList
+                            vars={this.props.weap_flow[0].var} handleNodeChecked={this.handleNodeChecked.bind(this)}
+                        />
+                </Modal>
                 <Col
                     span={25}
-                    style={{height: '100%'}}
+                    style={{height: '100%', overflow: 'auto'}}
                 >
+                    <Button onClick={this.showFilterModal.bind(this)} type="primary" style={{"backgroundColor":"#2b8cbe"}}> Filter Variables<Icon type="right" /></Button>
                     <PixelMapCanvas
                         // data={data}
                         width={700}
                         height={700}
-                        activatedScenario={activatedScenario}
-                        checkedOutput = {this.props.checkedOutput}
+                        weap_flow={this.props.weap_flow}
+                        checkedOutput = {this.state.checkedOutput}
                     />
                 </Col>
             </Row>

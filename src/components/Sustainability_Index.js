@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3'
 import { selectAll, values } from 'd3';
-import {Form, InputNumber, Button, Row, Col} from 'antd';
+import {Form, InputNumber, Button, Row, Col, Modal} from 'antd';
+import Variables_Radial_Tree from './Variables_Radial_Tree'
 
 class Sustainability_Index extends Component {
     constructor(props) {
@@ -9,7 +10,8 @@ class Sustainability_Index extends Component {
       
         this.state = {
           sustainability_variables: this.props.sustainability_variables,
-          sustainability_index:this.props.sustainability_index
+          sustainability_index:this.props.sustainability_index,
+          Sustainability_Creation_Modal: false
         }
       }
 
@@ -100,6 +102,7 @@ class Sustainability_Index extends Component {
             <Row
                 style={{height: 800}}
             >
+
                 <Col
                     span={25}
                     style={{height: '100%'}}

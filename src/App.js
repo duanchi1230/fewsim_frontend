@@ -3,7 +3,7 @@ import { Layout, Button, Row, Col, Divider, Select, Menu, Modal, Tabs, Spin, Car
 
 import MainScenarioComponent from './components/MainScenarioComponent';
 import './styles/App.css';
-
+import Variables_Radial_Tree from './components/Variables_Radial_Tree'
 import InputParameter_WEAP from './components/InputParameter_WEAP'
 import InputParameter_LEAP from './components/InputParameter_LEAP'
 import CreatedScenarios from './components/CreatedScenarios';
@@ -24,6 +24,9 @@ export default class App extends Component {
             activatedMethod: null,
             activatedScenario: null,
             isLoadingScenario: true,
+            run_model_status: 'null',
+            weap_flow: [],
+            leap_data: [],
 
             WEAP_parameter: {
                 'population': { 'start': 1, 'end': 1, 'step': 1 , 'min':0, 'max':10, 'step-min':0.1, 'step-max':10, 'name':'Population Growth'},
@@ -42,7 +45,11 @@ export default class App extends Component {
             selectedScenarios: [],
             checked_WEAP_parameter: [],
             checked_LEAP_parameter: [],
-            variables: []
+            variables: [],
+
+            Sustainability_Creation_Modal:false,
+            sustainability_variables: [],
+            sustainability_index: [],
         };
 
         // Initialize data loading
@@ -77,6 +84,7 @@ export default class App extends Component {
                             proj.supportedMethods = supportedMethods;
                             proj.supportedMethodsDisplayNames = { weap: 'WEAP' };
                             this.setState({ proj: proj });
+                            console.log("proj", proj)
                         });
                 } catch (err) {
                     console.log(err);
@@ -84,52 +92,57 @@ export default class App extends Component {
             });       
     }
 
+    
     handleMethodChange = (value) => {
         this.setState({ activatedMethod: value });
     };
 
-    handleScenarioChange = (sid) => {
+    runModel () {
         // Search for the scenario
         // load it into the main content
 
-        const { proj, activatedMethod } = this.state;
-        console.log(proj)
-        // 0. Set the spinning first
-        this.setState({ isLoadingScenario: true });
+        // const { proj, activatedMethod } = this.state;
+        // console.log(proj)
+        // // 0. Set the spinning first
+        // this.setState({ isLoadingScenario: true });
 
-        // 1. Test if the scenario has been loaded
-        const candidateScenarioIdx = proj[activatedMethod].scenario.findIndex(s => s.sid === sid),
-            candidateScenario = proj[activatedMethod].scenario[candidateScenarioIdx];
+        // // 1. Test if the scenario has been loaded
+        // const candidateScenarioIdx = proj[activatedMethod].scenario.findIndex(s => s.sid === sid),
+        //     candidateScenario = proj[activatedMethod].scenario[candidateScenarioIdx];
 
-        if (!candidateScenario['__filled']) {
-            fetch(`/proj/${proj.pid}/${activatedMethod}/scenario/${sid}`, {
-                method: 'GET'
-            })
-                .then(r => r.json())
-                .then(newScenario => {
-                    let newState = { ...this.state };
-                    console.log(newState);
-                    proj[activatedMethod].scenario[candidateScenarioIdx] = newScenario;
-                    newState.isLoadingScenario = false;
-                    newState.activatedScenario = newScenario;
+        // if (!candidateScenario['__filled']) {
+        //     fetch(`/proj/${proj.pid}/${activatedMethod}/scenario/${sid}`, {
+        //         method: 'GET'
+        //     })
+        //         .then(r => r.json())
+        //         .then(newScenario => {
+        //             let newState = { ...this.state };
+        //             console.log(newState);
+        //             proj[activatedMethod].scenario[candidateScenarioIdx] = newScenario;
+        //             newState.isLoadingScenario = false;
+        //             newState.activatedScenario = newScenario;
 
-                    this.setState(newState);
+        //             this.setState(newState);
 
-                    // let scenarioList = newState.proj[activatedMethod];
+        //             // let scenarioList = newState.proj[activatedMethod];
 
-                    // for (let i = 0; i < scenarioList.length; i++) {
-                    //     if (scenarioList[i].sid === sid) {
-                    //         scenarioList[i] = newScenario
-                    //     }
-                    // }
+        //             // for (let i = 0; i < scenarioList.length; i++) {
+        //             //     if (scenarioList[i].sid === sid) {
+        //             //         scenarioList[i] = newScenario
+        //             //     }
+        //             // }
 
-                })
-        } else {
-            this.setState({
-                activatedScenario: candidateScenario,
-                isLoadingScenario: false
-            })
-        }
+        //         })
+        // } else {
+        //     this.setState({
+        //         activatedScenario: candidateScenario,
+        //         isLoadingScenario: false
+        //     })
+        // }
+        console.log(this.state.scenarios)
+        Object.entries(this.state.scenarios).forEach((name, scenario)=>{ console.log(name, scenario)})
+        fetch("run/weap", {method: "POST", body: JSON.stringify(this.state.scenarios)}).then(r=>r.json()).then(r=>{console.log(r); this.setState({weap_flow: r['weap-flow'], leap_data:r['leap-data'], run_model_status:'finished'})})
+
     };
     componentDidMount(){
         fetch('/inputs/tree').then(data => data.json()).then((data)=>{console.log(data); this.setState({variables: data})});
@@ -142,6 +155,13 @@ export default class App extends Component {
         this.setState({ createScenarioModalVisible: false })
     };
 
+    openSustainabilityModal(){
+        this.setState({Sustainability_Creation_Modal:true})
+    }
+
+    closeSustainabilityModal(){
+        this.setState({Sustainability_Creation_Modal:false})
+    }
     handleSubmitNewScenario = () => {
 
     };
@@ -270,6 +290,12 @@ export default class App extends Component {
                     }
                     )
 
+    }
+
+    getSuatainabilityIndex(sustainability_index, sustainability_variables){
+        this.setState({sustainability_index: sustainability_index,
+            sustainability_variables:sustainability_variables})
+        console.log(sustainability_variables, sustainability_index)
     }
 
     render() {
@@ -431,6 +457,14 @@ export default class App extends Component {
                         </Col>
                     </Row>
                 </Modal>
+                <Modal 
+                    width={1550}
+                    visible={this.state.Sustainability_Creation_Modal}
+                    onCancel={this.closeSustainabilityModal.bind(this)}
+                    footer={null}
+                >
+                    <Variables_Radial_Tree variables={this.state.variables} getSuatainabilityIndex={this.getSuatainabilityIndex.bind(this)}></Variables_Radial_Tree>
+                </Modal>
                 <Layout
                     style={{ height: '100%' }}
                 >
@@ -450,7 +484,7 @@ export default class App extends Component {
                         >
                             <div
                                 style={{
-                                    fontSize: 18,
+                                    fontSize: 22,
                                     fontWeight: 'bold'
                                 }}
                             >
@@ -458,22 +492,36 @@ export default class App extends Component {
                             </div>
                             <div
                                 style={{
-                                    marginLeft: 48
+                                    marginLeft: 35
                                 }}
                             >
                                 <Button
                                     type="primary"
-                                    shape="circle"
-                                    icon="plus"
+                                    shape="round"
                                     onClick={this.handleAddScenarioButtonClicked.bind(this)}
-                                />
+                                >Scenario Creation</Button>
                             </div>
+
                             <div
                                 style={{
                                     marginLeft: 16
                                 }}
                             >
-                                <Select
+                                <Button
+                                    type="primary"
+                                    shape="round"
+                                    onClick={this.openSustainabilityModal.bind(this)}
+                                >
+                                    Sustainability Index Creation
+                                </Button>
+                            </div>
+
+                            <div
+                                style={{
+                                    marginLeft: 50
+                                }}
+                            >
+                                {/* <Select
                                     placeholder={'Select a model'}
                                     style={{
                                         width: 200
@@ -489,26 +537,30 @@ export default class App extends Component {
                                                 {supportedMethodsDisplayNames[method]}
                                                 
                                             </Option>
-                                        )
-                                    }
+                                        ) */}
+                                    {/* } */}
                                     {/*<Select.Option value="weap">WEAP</Select.Option>*/}
                                     {/*<Select.Option value="leap">LEAP</Select.Option>*/}
                                     {/*<Select.Option value="mabia">MABIA</Select.Option>*/}
-                                </Select>
+                                {/* </Select> */}
+                                <Button
+                                    type="primary"
+                                    shape="round"
+                                    onClick={this.runModel.bind(this)}
+                                >Run Model</Button>
                             </div>
                             <div
                                 style={{
                                     marginLeft: 16
                                 }}
                             >
-                                <Select
+                                {/* <Select
                                     showSearch
                                     placeholder={'Select a scenario'}
                                     style={{
                                         width: 300
                                     }}
                                     disabled={this.state.activatedMethod === null}
-                                    onChange={this.handleScenarioChange.bind(1)}
                                 >
                                     {
                                         (this.state.activatedMethod === null)
@@ -521,12 +573,12 @@ export default class App extends Component {
                                                     {scenario.name}
                                                 </Option>
                                             )
-                                    }
+                                    } */}
                                     {/*<Select.Option value="create">Create...</Select.Option>*/}
                                     {/*<Select.Option value="s1">Scenario 1</Select.Option>*/}
                                     {/*<Select.Option value="s2">Scenario 2</Select.Option>*/}
                                     {/*<Select.Option value="s3">Scenario 3</Select.Option>*/}
-                                </Select>
+                                {/* </Select> */}
                             </div>
 
                         </div>
@@ -549,11 +601,14 @@ export default class App extends Component {
                     >
                 <MainScenarioComponent
                                 proj={proj}
+                                run_model_status={this.state.run_model_status}
                                 activatedMethod={activatedMethod}
-                                activatedScenario={activatedScenario}
+                                weap_flow={this.state.weap_flow}
                                 selectedScenarios={this.state.selectedScenarios}
                                 scenarios={this.state.selectedScenarios}
                                 variables={this.state.variables}
+                                sustainability_variables={this.state.sustainability_variables}
+                                sustainability_index={this.state.sustainability_index}
                             />                        
                     </Content>
                 </Layout>
