@@ -139,8 +139,9 @@ export default class App extends Component {
         //         isLoadingScenario: false
         //     })
         // }
-        console.log(this.state.scenarios)
+        // console.log(this.state.scenarios)
         Object.entries(this.state.scenarios).forEach((name, scenario)=>{ console.log(name, scenario)})
+
         fetch("run/weap", {method: "POST", body: JSON.stringify(this.state.scenarios)}).then(r=>r.json()).then(r=>{console.log(r); this.setState({weap_flow: r['weap-flow'], leap_data:r['leap-data'], run_model_status:'finished'})})
 
     };
@@ -604,6 +605,7 @@ export default class App extends Component {
                                 run_model_status={this.state.run_model_status}
                                 activatedMethod={activatedMethod}
                                 weap_flow={this.state.weap_flow}
+                                leap_data={this.state.leap_data}
                                 selectedScenarios={this.state.selectedScenarios}
                                 scenarios={this.state.selectedScenarios}
                                 variables={this.state.variables}

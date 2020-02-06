@@ -110,7 +110,7 @@ class Variables_Radial_Tree extends Component {
     node_color(d, color){
 
       // let color = {"weap":"#2b8cbe", "leap":"#fe9929", "mabia":"#a6d96a", "FEW": "grey"}
-      console.log(d)
+      // console.log(d)
       return color[d["data"]["model"]]
 
     }

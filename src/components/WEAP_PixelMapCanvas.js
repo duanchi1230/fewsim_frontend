@@ -3,7 +3,7 @@ import {findDOMNode} from 'react-dom';
 import * as d3 from 'd3';
 // import calPixelMatrix from './calPixelMatrix'
 
-export default class PixelMapCanvas extends Component {
+export default class WEAP_PixelMapCanvas extends Component {
 
     constructor(props) {
         super(props);
@@ -304,7 +304,7 @@ export default class PixelMapCanvas extends Component {
         return (
             <div
                 id='pixel-map'
-                style={{height: '100%', "overflow-x": "hidden"}}
+                style={{height: '100%', "overflow-x": "scroll"}}
             >
 
             </div>

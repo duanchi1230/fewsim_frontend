@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import {Row, Col, Divider, Empty, Card, Button, Tabs} from 'antd';
 
 import VarTreeList from './VarTreeList';
-import PixelMapView from "./PixelMapView";
+import WEAP_PixelMapView from "./WEAP_PixelMapView";
+import LEAP_Visualization from "./LEAP_Visualization";
 import Variables_Radial_Tree from './Variables_Radial_Tree'
 import Sustainability_Index from "./Sustainability_Index"
 const { TabPane } = Tabs;
@@ -99,7 +100,7 @@ export default class MainScenarioComponent extends Component {
                             marginTop: 0,
                             overflow: 'auto',
                             }}>
-                                <PixelMapView
+                                <WEAP_PixelMapView
                                     activatedScenario={activatedScenario} checkedOutput={this.state.checkedOutput} weap_flow={this.props.weap_flow}
                                 />
                             </Card>
@@ -112,7 +113,7 @@ export default class MainScenarioComponent extends Component {
                             marginTop: 0,
                             overflow: 'auto',
                             }}>
-                               
+                               <LEAP_Visualization leap_data={this.props.leap_data}></LEAP_Visualization>
                             </Card>
                         </TabPane>
 

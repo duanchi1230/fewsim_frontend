@@ -7,7 +7,7 @@ class CreatedScenarios extends React.Component {
     constructor(props) {
         super(props);
     }
-
+    
     render() {
         let scenarios = this.props.scenarios
         let defaultChecked = []

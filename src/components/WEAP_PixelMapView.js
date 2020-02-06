@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {findDOMNode} from 'react-dom';
 import {Form, InputNumber, Button, Row, Col, Modal, Icon} from 'antd';
-import PixelMapCanvas from './PixelMapCanvas';
+import WEAP_PixelMapCanvas from './WEAP_PixelMapCanvas';
 import VarTreeList from './VarTreeList';
 
 
-export default class PixelMapView extends Component {
+export default class WEAP_PixelMapView extends Component {
 
     constructor(props) {
         super(props);
@@ -80,7 +80,7 @@ export default class PixelMapView extends Component {
                     style={{height: '100%', overflow: 'auto'}}
                 >
                     <Button onClick={this.showFilterModal.bind(this)} type="primary" style={{"backgroundColor":"#2b8cbe"}}> Filter Variables<Icon type="right" /></Button>
-                    <PixelMapCanvas
+                    <WEAP_PixelMapCanvas
                         // data={data}
                         width={700}
                         height={700}

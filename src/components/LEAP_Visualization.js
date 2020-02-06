@@ -1,0 +1,154 @@
+import React, { Component } from 'react';
+
+
+
+class LEAP_Visualization extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {  };
+    }
+
+    componentDidMount(){
+        console.log(this.props.leap_data)
+    }
+
+    render() {
+        const leap_data = this.props.leap_data 
+        return (
+            <div
+            id='leap-pixel-map'
+            style={{height: '100%', "overflow-x": "scroll"}}
+        >
+
+        </div>
+        );
+    }
+}
+
+function calPixelMatrix(flow, origin, start_year = 1986, end_year = 2008, sort = 1) {
+    let year1 = start_year
+    let year2 = end_year
+    let d = []
+    if (sort === 1) {
+        d = flow_byDemand(flow, origin, year1, year2)
+    }
+
+    mapColor(d)
+    // console.log('d', d)
+    return d
+}
+
+function flow_byDemand(flow, origin, start_year = 1986, end_year = 2008) {
+
+    let flow_value = []
+    let rowName = []
+    let source = []
+    let year = []
+    let site = []
+    let percentage = []
+    let d = []
+
+    for (let i = 0; i < flow.length; i++) {
+        for (let j = 0; j < flow[i]['value'].length; j++) {
+            flow_value.push(flow[i]['value'][j])
+            rowName.push(flow[i]['name'])
+            source.push(flow[i]['source'])
+            site.push(flow[i]['site'])
+            year.push(start_year + j)
+            // percentage.push(flow[i]['delta_to_reference'][j])
+
+        }
+    }
+    let [x, y, dx, dy] = calCoordinate(flow, origin, start_year, end_year)
+    for (let i = 0; i < x.length; i++) {
+        d.push({
+            'x': x[i],
+            'y': y[i],
+            'dx': dx,
+            'dy': dy,
+            'flow_value': flow_value[i],
+            'source': source[i],
+            'site': site[i],
+            'rowName': rowName[i],
+            'color': '',
+            'year': year[i],
+            'percentage_change': percentage[i]
+        })
+    }
+
+    return d
+}
+
+function calCoordinate(flow, origin, start_year, end_year) {
+
+    let space = 0
+    let y0 = origin['y']
+    let x = []
+    let y = []
+    let dx = 30
+    let dy = dx
+    let num_scenarios = Object.keys(flow).length
+
+    for (let i = 0; i < flow.length; i++) {
+        let x0 = origin['x']
+        for (let j = start_year; j <= end_year; j++) {
+            x.push(x0)
+            x0 = x0 + dx + space
+        }
+    }
+
+    for (let i = 0; i < flow.length; i++) {
+        for (let j = start_year; j <= end_year; j++) {
+            y.push(y0)
+        }
+        y0 = y0 + dy + space
+    }
+
+    return [x, y, dx, dy]
+}
+
+function mapColor(d) {
+
+    let base_color = [[141,211,199], [255,255,179], [190,186,218], [251,128,114], [128,177,211],[253,180,98], [179,222,105], [252,205,229], [217,217,217], [188,128,189], [141,211,199], [255,255,179], [190,186,218], [251,128,114], [128,177,211],[253,180,98], [179,222,105], [252,205,229], [217,217,217], [188,128,189]]
+    
+    let color = {}
+    let [max_value, min_value] = findRange(d)
+    console.log('max', min_value, max_value)
+    let i =0
+    Object.keys(max_value).forEach(
+        key=>{color[key]= base_color[i];
+        i = i+1}
+    )
+    // console.log('color', color)
+    // console.log(base_color['Municipal'][0])
+    d.forEach(d => {
+        for (let i = 0; i < 3; i++) {
+            d['color'] = d['color'] + ' ' + (255 - (d['flow_value'] - min_value[d['site']]) * (255 - color[d['site']][i]) / (max_value[d['site']] - min_value[d['site']]+0.1)).toString()
+        }
+    })
+
+    function findRange(d) {
+        let max_value = {}
+        let min_value = {}
+        let site = []
+        d.forEach(pixel=>{ if (pixel['site'] in site ==false){
+            site.push(pixel['site'])
+            }
+        })
+        for (let i = 0; i < site.length; i++) {
+            let siteData = Object.values(d).filter(v => v['site'] == site[i])
+            let flow_value = []
+            for (let j = 0; j < siteData.length; j++) {
+
+                flow_value.push(siteData[j]['flow_value'])
+            }
+            max_value[site[i]] = Math.max(...flow_value)
+            min_value[site[i]] = Math.min(...flow_value)
+        }
+        return [max_value, min_value]
+
+    }
+
+}
+
+export default LEAP_Visualization;
