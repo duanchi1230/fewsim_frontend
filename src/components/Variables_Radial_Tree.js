@@ -39,7 +39,7 @@ class Variables_Radial_Tree extends Component {
       depth = depth + 1; 
       data['children'].map(d=>{if(Object.keys(d).includes('value')!=true){
         new_node.push(this.compressTreeLeaf(d, leaf_to_show, depth=depth)) }else{
-        if(this.state.leaf_to_show.includes(JSON.stringify(d['path']))== true){d['depth'] = depth; d['children']=[]; d['leaf_node']=[]; new_node.push(d); leaf_node.push(d)}
+        if(this.state.leaf_to_show.includes(JSON.stringify(d['path']))=== true){d['depth'] = depth; d['children']=[]; d['leaf_node']=[]; new_node.push(d); leaf_node.push(d)}
         else{d['depth'] = depth; d['children']=[]; d['leaf_node']=[]; leaf_node.push(d)}}}
         )
       data['children'] = new_node
@@ -63,12 +63,12 @@ class Variables_Radial_Tree extends Component {
 
         for(var i=0; i<d['data']['leaf_node'].length; i++){
           var v = JSON.stringify(d['data']['leaf_node'][i]['path'])
-          if (leaf_to_show.includes(v)==false){
+          if (leaf_to_show.includes(v)===false){
           leaf_to_show.push(v);
           }  
         }
         if (d_leaf.length!=0){
-          leaf_to_show.map(l => {if(d_leaf.includes(l)==false){
+          leaf_to_show.map(l => {if(d_leaf.includes(l)===false){
                 leaf.push(l)
               }
             }
@@ -93,7 +93,7 @@ class Variables_Radial_Tree extends Component {
       d['data']['children'].map(d=>{if(Object.keys(d).includes('value')){d_children.push(JSON.stringify(d.path))}})
       d['data']['leaf_node'].map(d=>{if(Object.keys(d).includes('value')){d_leaf.push(JSON.stringify(d.path))}})
       // console.log(d_leaf.length)
-      if(d_children.length == 0 && d_leaf.length != 0){
+      if(d_children.length === 0 && d_leaf.length != 0){
         return 1
       }
       else{return 0}
@@ -123,7 +123,7 @@ class Variables_Radial_Tree extends Component {
       let color = {"weap":"#2b8cbe", "leap":"#fe9929", "mabia":"#a6d96a", "FEW": "grey"};
       const tree = d3.tree()
                 .size([2 * Math.PI, radius])
-                .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
+                .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
       const root = tree(d3.hierarchy(data));
       const svgDoc = d3.selectAll('#radial-tree-svg')
 
@@ -180,7 +180,7 @@ class Variables_Radial_Tree extends Component {
         let color = {"weap":"#2b8cbe", "leap":"#fe9929", "mabia":"#a6d96a", "FEW": "grey"};
         const tree = d3.tree()
                 .size([2 * Math.PI, radius])
-                .separation((a, b) => (a.parent == b.parent ? 1 : 2) / a.depth);
+                .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
         const root = tree(d3.hierarchy(data));
         // .sort((a, b) => d3.ascending(a.data.name, b.data.name)))
         // console.log(root);
@@ -356,7 +356,7 @@ class Variables_Radial_Tree extends Component {
       let variables = []
       let keys = []
       sustainability_variables.map(v=>{keys.push(v["name"])})
-      keys.sort().map(k=>{ sustainability_variables.map(v=>{if(v["name"]==k){variables.push(v)}})})
+      keys.sort().map(k=>{ sustainability_variables.map(v=>{if(v["name"]===k){variables.push(v)}})})
       console.log(variables)
       return variables
     }

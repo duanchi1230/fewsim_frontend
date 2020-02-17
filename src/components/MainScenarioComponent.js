@@ -5,6 +5,7 @@ import VarTreeList from './VarTreeList';
 import WEAP_PixelMapView from "./WEAP_PixelMapView";
 import LEAP_Visualization from "./LEAP_Visualization";
 import Variables_Radial_Tree from './Variables_Radial_Tree'
+import LEAP_PixelMapView from './LEAP_PixelMapView'
 import Sustainability_Index from "./Sustainability_Index"
 const { TabPane } = Tabs;
 export default class MainScenarioComponent extends Component {
@@ -92,7 +93,7 @@ export default class MainScenarioComponent extends Component {
                             
                     <Tabs type="card">
 
-                        <TabPane tab="Pixel_Map_WEAP" key="1">
+                        <TabPane tab="Pixel_Map_WEAP" key="0">
                             <Card 
                             style={{
                             height:'100%',
@@ -105,7 +106,7 @@ export default class MainScenarioComponent extends Component {
                                 />
                             </Card>
                         </TabPane>
-                        <TabPane tab="Visualization_LEAP" key="2">
+                        <TabPane tab="Visualization_LEAP" key="1">
                             <Card 
                             style={{
                             height:'100%',
@@ -113,11 +114,12 @@ export default class MainScenarioComponent extends Component {
                             marginTop: 0,
                             overflow: 'auto',
                             }}>
-                               <LEAP_Visualization leap_data={this.props.leap_data}></LEAP_Visualization>
+                                <LEAP_PixelMapView leap_data={this.props.leap_data} ></LEAP_PixelMapView>
+                               
                             </Card>
                         </TabPane>
 
-                        <TabPane tab="Sustainability Index" key="4" >
+                        <TabPane tab="Sustainability Index" key="2" >
                             <Card 
                                 style={{
                                 height: '100%',
