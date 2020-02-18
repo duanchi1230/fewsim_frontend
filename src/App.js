@@ -596,22 +596,23 @@ export default class App extends Component {
                     </Header>
                     <Content
                         style={{
-                            height: '100%',
+                            // height: 100,
                             padding: 16,
+                            overflow: "auto"
                         }}
                     >
-                <MainScenarioComponent
-                                proj={proj}
-                                run_model_status={this.state.run_model_status}
-                                activatedMethod={activatedMethod}
-                                weap_flow={this.state.weap_flow}
-                                leap_data={this.state.leap_data}
-                                selectedScenarios={this.state.selectedScenarios}
-                                scenarios={this.state.selectedScenarios}
-                                variables={this.state.variables}
-                                sustainability_variables={this.state.sustainability_variables}
-                                sustainability_index={this.state.sustainability_index}
-                            />                        
+                        <MainScenarioComponent
+                            proj={proj}
+                            run_model_status={this.state.run_model_status}
+                            activatedMethod={activatedMethod}
+                            weap_flow={this.state.weap_flow}
+                            leap_data={this.state.leap_data}
+                            selectedScenarios={this.state.selectedScenarios}
+                            scenarios={this.state.selectedScenarios}
+                            variables={this.state.variables}
+                            sustainability_variables={this.state.sustainability_variables}
+                            sustainability_index={this.state.sustainability_index}
+                        />                        
                     </Content>
                 </Layout>
             </div>

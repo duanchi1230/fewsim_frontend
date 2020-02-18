@@ -79,7 +79,8 @@ export default class MainScenarioComponent extends Component {
             <Row
                 gutter={30}
                 style={{
-                    height: '100%'
+                    height: '100%',
+                    overflow: "auto"
                 }}
             >
                 <Col
@@ -87,11 +88,17 @@ export default class MainScenarioComponent extends Component {
                     style={{
                         height: '100%',
                         display: 'flex',
-                        flexDirection: 'column'
+                        flexDirection: 'column',
+                        overflow: "auto"
                     }}
                 >
                             
-                    <Tabs type="card">
+                    <Tabs type="card"style={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        overflow: "auto"
+                    }}>
 
                         <TabPane tab="Pixel_Map_WEAP" key="0">
                             <Card 

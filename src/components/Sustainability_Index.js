@@ -46,7 +46,7 @@ class Sustainability_Index extends Component {
         }
 
         if(this.state.display==="Sustainability Variable"){
-            for(var i=0; i<this.state.sustainability_index.length; i++){
+            for(var i=0; i<this.state.sustainability_variables.length; i++){
                 this.initVariableCanvas(this.state.sustainability_variables[i], base_color[i])
             }
         }

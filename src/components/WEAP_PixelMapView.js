@@ -43,7 +43,7 @@ export default class WEAP_PixelMapView extends Component {
     render() {
         const {activatedScenario} = this.props;
         return (
-            <Row>
+            <Row style={{height: '100%', overflow: 'auto'}}>
                 {/*<Col span={2}>*/}
                     {/*<Form>*/}
                         {/*<Form.Item>*/}
@@ -79,7 +79,8 @@ export default class WEAP_PixelMapView extends Component {
                     span={25}
                     style={{height: '100%', overflow: 'auto'}}
                 >
-                    <Button onClick={this.showFilterModal.bind(this)} type="primary" style={{"backgroundColor":"#2b8cbe"}}> Filter Variables<Icon type="right" /></Button>
+                    <Button onClick={this.showFilterModal.bind(this)} type="primary" style={{"backgroundColor":"#2b8cbe"}}>Filter Variables<Icon type="right" /></Button>
+                    
                     <WEAP_PixelMapCanvas
                         // data={data}
                         width={700}

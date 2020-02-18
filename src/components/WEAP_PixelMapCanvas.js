@@ -304,7 +304,7 @@ export default class WEAP_PixelMapCanvas extends Component {
         return (
             <div
                 id='pixel-map'
-                style={{height: '100%', "overflow-x": "scroll"}}
+                style={{height: '100%', overflow: "auto"}}
             >
 
             </div>
