@@ -9,7 +9,7 @@ class CreatedScenarios extends React.Component {
     }
     
     render() {
-        let scenarios = this.props.scenarios
+        let scenarios = this.props.created_scenarios
         let defaultChecked = []
         scenarios.map(s=>{
             defaultChecked.push(s.name)

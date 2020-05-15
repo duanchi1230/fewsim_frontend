@@ -147,7 +147,7 @@ class LEAP_PixelMapView extends Component {
                 <Button onClick={this.showDemandModal.bind(this)} type="primary" style={{"backgroundColor":"#fdae61", marginLeft: 35}}> Demand <Icon type="right" /></Button>
                 <Button onClick={this.showTransformationModal.bind(this)} type="primary" style={{"backgroundColor":"#fdae61", marginLeft: 35}}> Transformation <Icon type="right" /></Button>
                 <Button onClick={this.showResourceModal.bind(this)} type="primary" style={{"backgroundColor":"#fdae61", marginLeft: 35}}> Resource <Icon type="right" /></Button>
-                <LEAP_Visualization leap_data={this.props.leap_data} type={this.state.type} variable={this.state.variable}></LEAP_Visualization>
+                <LEAP_Visualization leap_data={this.props.leap_data} type={this.state.type} variable={this.state.variable} handleLEAPResultVariableClick={this.props.handleLEAPResultVariableClick}></LEAP_Visualization>
             </div>
         );
     }

@@ -9,7 +9,10 @@ class LEAP_Visualization extends Component {
     constructor(props) {
         super(props);
         this.state = {branches_to_visualize: ['null'],
-                    data: []};
+                    data: [],
+                    type: '',
+                    variable:''
+                };
     }
 
     componentDidMount(){
@@ -64,7 +67,9 @@ class LEAP_Visualization extends Component {
         }
 
         this.setState({
-            data: data
+            data: data,
+            type: this.props.type,
+            variable: this.props.variable
         })
         console.log(data)
         let timeRange = [leap_data['timeRange'][0], leap_data['timeRange'][1]]
@@ -73,60 +78,67 @@ class LEAP_Visualization extends Component {
 
     componentWillReceiveProps(){
         const leap_data = this.props.leap_data[0]
+        console.log(this.state.type, this.props.type)
+        if(this.state.type!==this.props.type || this.state.variable!==this.props.variable){
 
-        var {width, height} = findDOMNode(this).getBoundingClientRect();
- 
-        var height = leap_data['var']['output'].length * 30 +150
-        console.log(this.props.type, this.props.variable)
-        let data = leap_data['var']['output'][this.props.type][this.props.variable]
-        let minimum_depth = 100
-        let root = []
+            var {width, height} = findDOMNode(this).getBoundingClientRect();
+    
+            var height = leap_data['var']['output'].length * 30 +150
+            console.log(this.props.type, this.props.variable)
+            let data = leap_data['var']['output'][this.props.type][this.props.variable]
+            let minimum_depth = 100
+            let root = []
 
-        data.forEach(d=>{
-            let name = d['branch'].split('\\')[d['branch'].split('\\').length-1];
-            let parent_branch = d['branch'].substring(0, d['branch'].length - name.length -1)
-            let parents = []
-            data.forEach(i=>{
-                if(i['branch']===parent_branch){
-                    parents.push(i['branch'])
+            data.forEach(d=>{
+                let name = d['branch'].split('\\')[d['branch'].split('\\').length-1];
+                let parent_branch = d['branch'].substring(0, d['branch'].length - name.length -1)
+                let parents = []
+                data.forEach(i=>{
+                    if(i['branch']===parent_branch){
+                        parents.push(i['branch'])
+                    }
+                })
+                if(parents.length===0){
+                    root.push(d['branch'])
                 }
             })
-            if(parents.length===0){
-                root.push(d['branch'])
-            }
-        })
 
-        console.log(root)
+            console.log(root)
 
-        let branches_to_visualize = ['null']
-        root.forEach(r=>{
-            branches_to_visualize.push(r)
-        })
+            let branches_to_visualize = ['null']
+            root.forEach(r=>{
+                branches_to_visualize.push(r)
+            })
 
-        this.setState({})
+            
 
-        for(let i=0; i< data.length; i++){
-            data[i] = this.parseBranchPath(data[i], root)
-            if(data[i]['depth']<minimum_depth){
-                minimum_depth = data[i]['depth']
-            }
-        }
-
-        for(let i=0;i<data.length;i++){
-            data[i]['children']=[]
-            for(let j=i+1;j<data.length;j++){
-                if(data[i]['branch']==data[j]['parent']){
-                    data[i]['children'].push(data[j]['branch'])
+            for(let i=0; i< data.length; i++){
+                data[i] = this.parseBranchPath(data[i], root)
+                if(data[i]['depth']<minimum_depth){
+                    minimum_depth = data[i]['depth']
                 }
             }
-            
+
+            for(let i=0;i<data.length;i++){
+                data[i]['children']=[]
+                for(let j=i+1;j<data.length;j++){
+                    if(data[i]['branch']==data[j]['parent']){
+                        data[i]['children'].push(data[j]['branch'])
+                    }
+                }
+                
+            }
+
+            this.setState({
+                data: data,
+                branches_to_visualize: branches_to_visualize,
+                type: this.props.type,
+                variable: this.props.variable
+            })
+            console.log(data)
+            console.log(branches_to_visualize)
         }
 
-        this.setState({
-            data: data,
-            branches_to_visualize:branches_to_visualize
-        })
-        console.log(data)
     }
     
     componentDidUpdate(){
@@ -285,6 +297,25 @@ class LEAP_Visualization extends Component {
         return row['name']+mark+space
     }
 
+    handleMouseClick(d){
+        
+        let leap_result_variable = []
+        let leap_data = JSON.parse(JSON.stringify(this.props.leap_data))
+        console.log(d) 
+        leap_data.forEach(
+            data=>{data['var']['output'][this.props.type][this.props.variable].forEach(f=>{
+                if(f['branch']+f['variable']===d['branch']+d['variable']){
+                    f['name'] = d['name']
+                    
+                    f['scenario'] = data['name']
+                    leap_result_variable.push(f)
+                }
+            })
+        })
+        // console.log(leap_result_variable)
+        this.props.handleLEAPResultVariableClick(leap_result_variable)
+    }
+
     initCanvas(data, width, height, timeRange) {
 
         console.log(findDOMNode(this))
@@ -325,6 +356,8 @@ class LEAP_Visualization extends Component {
             .attr('fill', d => 'rgb(' + d['color'] + ')') //d => 'rgb(' + d['color'] + ')'
             // .attr('fill', d => d['color'])
             .attr('stroke', 'rgb(50 50 50)')
+            .on('click', d=>this.handleMouseClick(d))
+            .on('mouseover', d=>{console.log(d)})
             // .on('mouseover',d=>this.handleMouseOver(d['x'] ,d['y'] ,d['value'] , d['name']))
             // .on('mouseout', d=>this.handleMouseOut());
             // svg.append('g')
@@ -414,6 +447,8 @@ class LEAP_Visualization extends Component {
                 .attr('ry', 0)
                 .attr('fill', d => 'rgb(' + d['color'] + ')')
                 .attr('stroke', 'rgb(50 50 50)')
+                .on('click', d=>this.handleMouseClick(d))
+                // .on('mouseover', d=>{console.log(d)})
 
             // svg.append('g')
             // .attr('id', 'text-reference')

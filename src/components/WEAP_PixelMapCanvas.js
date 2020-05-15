@@ -68,7 +68,21 @@ export default class WEAP_PixelMapCanvas extends Component {
             .remove()
     }
 
-
+    handleMouseClick(d){
+        console.log(d)
+        let weap_result_variable = []
+        let weap_flow = JSON.parse(JSON.stringify(this.props.weap_flow))
+        weap_flow.forEach(
+            flow=>{flow['var']['output'].forEach(f=>{
+                if(f['name']===d['rowName']){
+                    f['scenario'] = flow['name']
+                    weap_result_variable.push(f)
+                }
+            })
+        })
+        // console.log(weap_result_variable)
+        this.props.handleWEAPResultVariableClick(weap_result_variable)
+    }
     // componentWillReceiveProps(nextProps, nextContext) {
     //     this.updateCanvas();
     //     fetch('/proj/1/weap/scenario/1').then(r=>r.json()).then(data=>console.log(data))
@@ -85,7 +99,7 @@ export default class WEAP_PixelMapCanvas extends Component {
             .attr('id', 'svg1')
             .attr('width', width+500)
             .attr('height', height);
-
+        console.log(data)
         let origin = {'x': 350, 'y': 50};
         let flow = data['var']['output'];
         let start_year = data['timeRange'][0];
@@ -111,7 +125,8 @@ export default class WEAP_PixelMapCanvas extends Component {
             // .attr('fill', d => d['color'])
             .attr('stroke', 'rgb(50 50 50)')
             .on('mouseover',d=>this.handleMouseOver(d['x'] ,d['y'] ,d['flow_value'] , d['rowName']))
-            .on('mouseout', d=>this.handleMouseOut());
+            .on('mouseout', d=>this.handleMouseOut())
+            .on('click', d=>this.handleMouseClick(d));
             // svg.append('g')
             // .attr('id', 'text-reference')
             // .selectAll('text')
@@ -253,6 +268,7 @@ export default class WEAP_PixelMapCanvas extends Component {
                 .append('rect')
                 .on('mouseover',d=>this.handleMouseOver(d['x'] ,d['y'] ,d['flow_value'] , d['rowName']))
                 .on('mouseout', d=>this.handleMouseOut())
+                .on('click', d=>this.handleMouseClick(d))
                 .attr('x', d => d['x'])
                 .attr('y', d => d['y'])
                 .attr('width', d => d['dx'])
@@ -341,6 +357,7 @@ function flow_byDemand(flow, origin, start_year = 1986, end_year = 2008) {
     let percentage = []
     let d = []
 
+    console.log(flow)
     for (let i = 0; i < flow.length; i++) {
         for (let j = 0; j < flow[i]['value'].length; j++) {
             flow_value.push(flow[i]['value'][j])

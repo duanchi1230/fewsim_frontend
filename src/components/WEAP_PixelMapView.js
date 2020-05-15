@@ -17,6 +17,18 @@ export default class WEAP_PixelMapView extends Component {
         };
     }
 
+    componentWillMount(){
+        
+        let checkedOutput = []
+        let weap_flow =this.props.weap_flow
+
+       for(let i=0; i<weap_flow[0]['var']['output'].length; i++){
+           checkedOutput.push(weap_flow[0]['var']['output'][i]['name'])
+        }
+        console.log(checkedOutput)
+
+    }
+
     handleSubmit() {
         alert('submit with ' + this.state.year);
     }
@@ -72,7 +84,7 @@ export default class WEAP_PixelMapView extends Component {
                     onCancel={this.hideFilterModal.bind(this)}
                     footer={null}>
                         <VarTreeList
-                            vars={this.props.weap_flow[0].var} handleNodeChecked={this.handleNodeChecked.bind(this)}
+                            vars={this.props.weap_flow[0].var} handleNodeChecked={this.handleNodeChecked.bind(this)} checkedOutput = {this.state.checkedOutput}
                         />
                 </Modal>
                 <Col
@@ -87,6 +99,8 @@ export default class WEAP_PixelMapView extends Component {
                         height={700}
                         weap_flow={this.props.weap_flow}
                         checkedOutput = {this.state.checkedOutput}
+                        handleWEAPResultVariableClick = {this.props.handleWEAPResultVariableClick}
+                        
                     />
                 </Col>
             </Row>

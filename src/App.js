@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout, Button, Row, Col, Divider, Select, Menu, Modal, Tabs, Spin, Card, Tree } from 'antd';
+import { Layout, Button, Row, Col, Divider, Select, Menu, Modal, Tabs, Spin, Card, Tree, Input, notification, InputNumber } from 'antd';
 
 import MainScenarioComponent from './components/MainScenarioComponent';
 import './styles/App.css';
@@ -12,7 +12,7 @@ const {TreeNode} = Tree;
 const { Header, Content } = Layout;
 const { TabPane } = Tabs;
 const { Option } = Select;
-
+const ButtonGroup = Button.Group;
 
 export default class App extends Component {
 
@@ -27,29 +27,29 @@ export default class App extends Component {
             run_model_status: 'null',
             weap_flow: [],
             leap_data: [],
-
-            WEAP_parameter: {
-                'population': { 'start': 1, 'end': 1, 'step': 1 , 'min':0, 'max':10, 'step-min':0.1, 'step-max':10, 'name':'Population Growth'},
-                'municipal': { 'start': 85, 'end': 85, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'Municipal Efficiency'},
-                'agriculture': { 'start': 85, 'end': 85, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'Agriculture Efficiency'}
-            },
-
-            LEAP_parameter: {
-                'population': { 'start': 1, 'end': 1, 'step': 1, 'min':0, 'max':10, 'step-min':0.1, 'step-max':10, 'name':'Population Growth'},
-                'CAP pumping': { 'start': 85, 'end': 85, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'CAP pumping Efficiency' },
-                'WTP': { 'start': 85, 'end': 85, 'step': 6, 'min':50, 'max':100, 'step-min':0.1, 'step-max':20, 'name':'WTP Efficiency'}
-            },
-
-            scenarios: [],
-            finishedScenarios: [],
-            selectedScenarios: [],
-            checked_WEAP_parameter: [],
-            checked_LEAP_parameter: [],
             variables: [],
+
+            created_scenarios: [],
+            created_scenario_name: '',
+            scenario_in_summary: '',
+            selectedScenarios: [],
+            existing_scenarios: [],
+            existing_scenarios_summary: "",
 
             Sustainability_Creation_Modal:false,
             sustainability_variables: [],
             sustainability_index: [],
+
+            leap_inputs:[],
+            weap_inputs: [],
+            mabia_inputs: [],
+
+            simulation_time_range: [],
+
+            weap_result_variable: [],
+            leap_result_variable: [],
+
+            simulation_run_status: "Running"
         };
 
         // Initialize data loading
@@ -83,8 +83,8 @@ export default class App extends Component {
 
                             proj.supportedMethods = supportedMethods;
                             proj.supportedMethodsDisplayNames = { weap: 'WEAP' };
-                            this.setState({ proj: proj });
                             console.log("proj", proj)
+                            this.setState({ proj: proj });
                         });
                 } catch (err) {
                     console.log(err);
@@ -94,7 +94,7 @@ export default class App extends Component {
 
     
     handleMethodChange = (value) => {
-        this.setState({ activatedMethod: value });
+        this.setState({ activatedMethod: value});
     };
 
     runModel () {
@@ -140,16 +140,117 @@ export default class App extends Component {
         //     })
         // }
         // console.log(this.state.scenarios)
-        Object.entries(this.state.scenarios).forEach((name, scenario)=>{ console.log(name, scenario)})
+        // Object.entries(this.state.scenarios).forEach((name, scenario)=>{ console.log(name, scenario)})
 
-        fetch("run/weap", {method: "POST", body: JSON.stringify(this.state.scenarios)}).then(r=>r.json()).then(r=>{console.log(r); this.setState({weap_flow: r['weap-flow'], leap_data:r['leap-data'], run_model_status:'finished'})})
+        if(this.state.created_scenarios.length===0){
+            this.openNotification('No scenario exists!', 'Please create and load scenarios to run!')
+            console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        }
+        else{
+            
+            let xhr = new XMLHttpRequest();
+            xhr.timeout = 10000;
+            xhr.open('POST', 'run/weap')
+            xhr.send(JSON.stringify(this.state.created_scenarios))
+            xhr.onload = function() {
+                if (xhr.status != 200) { // analyze HTTP status of the response
+                //   alert(`Error ${xhr.status}: ${xhr.statusText}`); // e.g. 404: Not Found
+                } else { // show the result
+                    console.log(JSON.parse(xhr.response))
+                //   alert(`Done, got ${xhr.response.length} bytes`); // responseText is the server
+                }
+            };
+            xhr.onprogress = function(event) {
+            if (event.lengthComputable) {
+                // alert(`Received ${event.loaded} of ${event.total} bytes`);
+            } else {
+                // alert(`Received ${event.loaded} bytes`); // no Content-Length
+            }
+            
+            };
+            
+            xhr.onerror = function() {
+            // alert("Request failed");
+            };
+
+            let created_scenarios = this.state.created_scenarios
+            let setState = this.setState.bind(this)
+            if(this.state.simulation_run_status==="Running"){
+                var t=setInterval(function() { getRunLog(created_scenarios, setState); },1000);
+            }
+        }
+        
+        
+        
+        function getRunLog(created_scenarios, setState){
+            
+            fetch('log').then(r=>r.json()).then(r=>{
+                console.log(r, r[r.length-1]); 
+                if(r[r.length-1]["message"] === "Completed"){
+                    console.log("Runing Completed")
+                    getData(created_scenarios, setState)
+                    clearInterval(t);
+                }
+                })
+            
+        }
+
+        function getData(created_scenarios, setState){
+            console.log("sending created scenarios")
+            fetch("run/weap", {method: "GET"})
+                .then(r=>r.json())
+                .then(r=>{console.log(r); 
+                            setState({weap_flow: r['weap-flow'], leap_data:r['leap-data'], run_model_status:'finished', simulation_time_range:r['weap-flow'][0]['timeRange']})
+                            let weap_result_variable = []
+                            let leap_result_variable = []
+                            
+                            let weap_flow = r['weap-flow']
+                            let leap_data = r['leap-data']
+                            for(let i=0; i<weap_flow.length; i++){
+                                let v = JSON.parse(JSON.stringify(weap_flow[i]['var']['output'][0]))
+                                v['scenario'] = weap_flow[i]['name']
+                                weap_result_variable.push(v)
+                            }
+                    
+                            for(let i=0; i<leap_data.length; i++){
+                                let v = JSON.parse(JSON.stringify(leap_data[i]['var']['output']['Demand']['Energy Demand Final Units'][0]))
+                                v['scenario'] = leap_data[i]['name']
+                                v['name'] = 'Demand'
+                                leap_result_variable.push(v)
+                            }
+                            console.log(weap_result_variable)
+                            console.log(leap_result_variable)
+                            setState({weap_result_variable: weap_result_variable, leap_result_variable: leap_result_variable})
+                        })
+        }
+
+        fetch('/inputs/tree').then(data => data.json()).then((data)=>{console.log(data)});
+        
 
     };
+
+    handleWEAPResultVariableClick(weap_result_variable){
+        weap_result_variable = JSON.parse(JSON.stringify(weap_result_variable))
+        console.log(weap_result_variable)
+        this.setState({weap_result_variable: weap_result_variable})
+    }   
+
+    handleLEAPResultVariableClick(leap_result_variable){
+        leap_result_variable = JSON.parse(JSON.stringify(leap_result_variable))
+        console.log(leap_result_variable)
+        this.setState({leap_result_variable: leap_result_variable})
+    } 
+
+    
     componentDidMount(){
+        
         fetch('/inputs/tree').then(data => data.json()).then((data)=>{console.log(data); this.setState({variables: data})});
+        
     }
+
     handleAddScenarioButtonClicked = () => {
         this.setState({ createScenarioModalVisible: true });
+        fetch('/load-scenarios').then(d => d.json()).then((d)=>{console.log(d); this.setState({existing_scenarios: d['scenarios']})});
     };
 
     handleAddScenarioModalClosed = () => {
@@ -163,80 +264,6 @@ export default class App extends Component {
     closeSustainabilityModal(){
         this.setState({Sustainability_Creation_Modal:false})
     }
-    handleSubmitNewScenario = () => {
-
-    };
-
-    createScenarios = () => {
-        let WP = []
-        let WM = []
-        let WA = []
-        let LP = []
-        let LC = []
-        let L_WTP = []
-        let scenarios = []
-        // console.log(this.state.WEAP_parameter)
-        WP = this.decomposeInputParameter(this.state.WEAP_parameter['population']['start'], this.state.WEAP_parameter['population']['end'], this.state.WEAP_parameter['population']['step'])
-        WM = this.decomposeInputParameter(this.state.WEAP_parameter['municipal']['start'], this.state.WEAP_parameter['municipal']['end'], this.state.WEAP_parameter['municipal']['step'])
-        WA = this.decomposeInputParameter(this.state.WEAP_parameter['agriculture']['start'], this.state.WEAP_parameter['agriculture']['end'], this.state.WEAP_parameter['agriculture']['step'])
-        LP = this.decomposeInputParameter(this.state.LEAP_parameter['population']['start'], this.state.LEAP_parameter['population']['end'], this.state.LEAP_parameter['population']['step'])
-        LC = this.decomposeInputParameter(this.state.LEAP_parameter['CAP pumping']['start'], this.state.LEAP_parameter['CAP pumping']['end'], this.state.LEAP_parameter['CAP pumping']['step'])
-        L_WTP = this.decomposeInputParameter(this.state.LEAP_parameter['WTP']['start'], this.state.LEAP_parameter['WTP']['end'], this.state.LEAP_parameter['WTP']['step'])
-        WP.forEach(
-            wp=>{WM.forEach(
-                wm=>{
-                    WA.forEach(wa=>{
-                        LP.forEach(
-                            lp=>{
-                                LC.forEach(lc=>{
-                                    L_WTP.forEach(l_wtp=>{
-                                        scenarios.push(
-                                            {'wp':wp, 'wm':wm, 'wa':wa, 'lp':lp, 'li':lc, 'l_wtp': l_wtp,'name':'WP:'+wp+' WM:'+wm+' WA:'+wa+' LP:'+lp+' LC:'+lc+' LWTP:'+l_wtp})
-                                    })  
-                                })
-                            }
-                        )
-                    })
-                }
-            )}
-        )
-        
-        let selected = []
-        scenarios.map(s=>{
-            selected.push(s['name'])
-        })
-        this.setState({
-            scenarios: scenarios,
-            selectedScenarios: []
-        })
-    }
-
-    
-    decomposeInputParameter = (start, end, step) => {
-        let input = []
-        for (let i = start; i.toFixed(1) <= end; i = i + step) {
-            input.push(i.toFixed(1))
-        }
-        return input
-    }
-
-    deleteScenarios(){
-
-        console.log(this.state.selectedScenarios)
-        let selected = []
-        this.state.scenarios.map(
-            s=>{
-                if(this.state.selectedScenarios.includes(s['name']) != true){
-                    selected.push(s)
-                }
-                
-            }
-        )
-
-        this.setState({
-            scenarios: selected,
-        })
-    }
 
     handleNodeChecked = (checkedKeys, info) => {
         console.log(checkedKeys)
@@ -244,49 +271,60 @@ export default class App extends Component {
             selectedScenarios:checkedKeys
         })
     };
+
     handleWEAPinputChecked = (checkedKeys, info) =>{
-        let WEAPinputParameter = []
-        let checked_parameter = {}
-        console.log(checkedKeys)
-        checkedKeys.forEach(v=>{
-            if(v!='WEAP'){
-                WEAPinputParameter.push(v)
-                checked_parameter[v] = {'start': 1, 'end': 1, 'step': 1 , 'min':0, 'max':10, 'step-min':0.1, 'step-max':10, 'name':v}
+        let data = this.state.variables['children'][0]
+        let weap_inputs = []
+        data = this.expandData([data], [])
+        data.forEach(d=>{
+            if(checkedKeys.includes(d.fullname+':'+d.name)){
+                d['percentage_of_default'] = 100
+                weap_inputs.push(d)
             }}
         )
-        console.log(WEAPinputParameter)
-        console.log(checked_parameter)
-        this.setState({
-            checked_WEAP_parameter: WEAPinputParameter,
-            WEAP_parameter: checked_parameter
-        })
+        this.setState({weap_inputs:weap_inputs})
+        console.log(weap_inputs)
     }
+
     handleLEAPinputChecked = (checkedKeys, info) =>{
-        let LEAPinputParameter = []
-        checkedKeys.forEach(v=>{
-            if(v!='LEAP'){
-                LEAPinputParameter.push(v)
+        let data = this.state.variables['children'][2]
+        let leap_inputs = []
+        data = this.expandData([data], [])
+        data.forEach(d=>{
+            if(checkedKeys.includes(d.fullname+':'+d.name)){
+                d['percentage_of_default'] = 100
+                leap_inputs.push(d)
             }}
         )
-        console.log(LEAPinputParameter)
-        // this.setState({
-        //     checked_LEAP_parameter: LEAPinputParameter
-        // })
+        this.setState({leap_inputs:leap_inputs})
+        console.log(leap_inputs)
+    }
+
+    expandData(data, expanedData){
+        data.map(v => {
+            if (Object.keys(v).includes('children')){
+                expanedData = this.expandData(v.children, expanedData)
+                }
+            else{
+                expanedData.push(v)
+                }
+            }
+        )
+        return expanedData
     }
 
     plotVariableTree(data){
     // data.map(d=>console.log(d))
     return  data.map(v => {
                     if (Object.keys(v).includes('children')){
-                        return (<TreeNode title={v.name} key={v.name}>
+                        return (<TreeNode title={v.name} key={v.name} checkable={false}>
                                     {this.plotVariableTree(v.children)}
                                 </TreeNode>
-                            
                         );}
                     else{
                         return (<TreeNode
                             title={v.name}
-                            key={v.name}
+                            key={v.fullname+":"+v.name}
                         />);}
                     }
                     )
@@ -299,6 +337,113 @@ export default class App extends Component {
         console.log(sustainability_variables, sustainability_index)
     }
 
+    createScenarios = () => {
+        console.log(this.state.weap_inputs, this.state.leap_inputs)
+        let created_scenarios = this.state.created_scenarios
+        let created_scenarios_names = []
+        let weap = JSON.parse(JSON.stringify(this.state.weap_inputs))
+        let leap = JSON.parse(JSON.stringify(this.state.leap_inputs))
+        let mabia = JSON.parse(JSON.stringify(this.state.mabia_inputs))
+        let name = JSON.parse(JSON.stringify(this.state.created_scenario_name))
+        created_scenarios.forEach(scenario=>{
+            created_scenarios_names.push(scenario.name)
+        })
+        if(created_scenarios_names.includes(this.state.created_scenario_name) != true){
+            created_scenarios.push({'name': name, 'weap':weap, 'leap': leap, 'mabia':mabia})
+            console.log(created_scenarios)
+            this.setState({created_scenarios:created_scenarios, created_scenario_name: ''})
+        }
+        if(created_scenarios_names.includes(this.state.created_scenario_name) == true){
+            this.openNotification('Scenario name already exists!', 'Please rename the scenario!')
+        }
+        
+    }
+
+    deleteScenario(){
+
+    }
+
+    loadExistingScenarios(element){
+        console.log(element.target.id)
+        let name = element.target.id
+        let existing_scenarios = this.state.existing_scenarios
+        let created_scenarios = this.state.created_scenarios
+        let created_scenarios_names = []
+        let scenarios_to_load = {}
+
+        created_scenarios.forEach(scenario=>{
+            created_scenarios_names.push(scenario.name)
+        })
+
+        existing_scenarios.forEach(e_scenario=>{
+            if(e_scenario["name"]===name){
+                e_scenario["type"] = "existing"
+                scenarios_to_load = e_scenario
+            }
+        })
+
+
+        if(created_scenarios_names.includes(name) !=+ true){
+            created_scenarios.push(scenarios_to_load)
+            console.log(created_scenarios)
+            this.setState({created_scenarios:created_scenarios})
+        }
+        if(created_scenarios_names.includes(name) === true){
+            this.openNotification('Scenario name already exists!', 'Please load another scenario!')
+        }
+    }
+
+    deleteExistingScenario(){
+
+    }
+
+    showScenarioSummary(element){
+        console.log(element.target.id)
+        this.setState({scenario_in_summary:element.target.id})
+    }
+
+    showExistingScenarioSummary(element){
+        this.setState({existing_scenarios_summary:element.target.id})
+    }
+
+    openNotification(message, description){
+      notification.open({
+        message: message,
+        description: description,
+        // onClick: () => {
+        //   console.log('Notification Clicked!');
+        // },
+      });
+    }
+
+    inputScenarioName(user_input){
+        console.log(user_input.target.value)
+        this.setState({created_scenario_name: user_input.target.value})
+    }
+
+    weapVariablesOnChange(value, input){
+        let weap_inputs = this.state.weap_inputs
+        for(let i=0; i<weap_inputs.length; i++){
+            if(weap_inputs[i].fullname+':'+weap_inputs[i].name==input){
+                weap_inputs[i].percentage_of_default = value
+            }
+        }
+        console.log(weap_inputs)
+        console.log(this.state.created_scenarios)
+        this.setState({weap_inputs: weap_inputs})
+    }
+
+    leapVariablesOnChange(value, input){
+        let leap_inputs = this.state.leap_inputs
+        for(let i=0; i<leap_inputs.length; i++){
+            if(leap_inputs[i].fullname+':'+leap_inputs[i].name==input){
+                leap_inputs[i].percentage_of_default = value
+            }
+        }
+        console.log(leap_inputs)
+        this.setState({leap_inputs: leap_inputs})
+    }
+
     render() {
 
         const {
@@ -306,7 +451,7 @@ export default class App extends Component {
             activatedScenario,
             activatedMethod
         } = this.state;
-
+        let scenario_in_summary = this.state.scenario_in_summary
         if (proj === undefined) {
             return <div
                 style={{ height: '100%' }}
@@ -322,16 +467,12 @@ export default class App extends Component {
             </div>;
         }
 
-        const { supportedMethods, supportedMethodsDisplayNames } = proj;
-
-        // console.log(proj);
-
         return (
             <div
                 style={{ height: '100%' }}
             >
                 <Modal
-                    width={1250}
+                    width={1350}
                     visible={this.state.createScenarioModalVisible}
                     onCancel={this.handleAddScenarioModalClosed.bind(this)}
                     footer={null}
@@ -340,91 +481,245 @@ export default class App extends Component {
                         gutter={16}
                         style={{ minHeight: 380 }}
                     >
-                        <Col span={9}>
+                        <Col span={36}>
                             <font size="5">Scenarios List</font>
                             <Tabs type="card">
-                                <TabPane tab="Created Scenarios" key="1">
-                                    <Card style={{
-                                        height:380,
-                                        flex: 2,
-                                        marginTop: 16,
-                                        overflow: 'auto',
-                                    }}>
-                                        <CreatedScenarios scenarios={this.state.scenarios} selectedScenarios={this.state.selectedScenarios}
-                                        parameters={this.state.parameters}
-                                        WEAP_parameter={this.state.WEAP_parameter}
-                                        LEAP_parameter={this.state.LEAP_parameter}
-                                        handleNodeChecked={this.handleNodeChecked.bind(this)}/>
-                                    </Card>
-                                    <Button type="primary" onClick={this.createScenarios}>Create Scenario</Button>
-                                    <Button type="danger" onClick={this.deleteScenarios.bind(this)}>Delete</Button>
+                                <TabPane tab="Input Variable Selection" key="0" >
+                                    <Col span={6}>
+                                        <Card style={{
+                                            height:380,
+                                            flex: 0,
+                                            marginTop: 0,
+                                            overflow: 'auto',
+                                        }}>
+                                                FEW variables
+                                                <Tree
+                                                checkable={true}
+                                                defaultExpandedKeys={['model-input']}
+                                                onCheck={this.handleWEAPinputChecked.bind(this)}
+                                                // onLoad={}
+                                                disabled={false}
+                                                >
+                                                    <TreeNode title="WEAP" key="WEAP" checkable={false}>
+                                                        {this.plotVariableTree([this.state.variables['children'][0]])}
+                                                    </TreeNode>
+                                                </Tree>
+                                                <Tree
+                                                checkable={true}
+                                                defaultExpandedKeys={['model-input']}
+                                                onCheck={this.handleLEAPinputChecked.bind(this)}
+                                                // onLoad={}
+                                                disabled={false}
+                                                >
+                                                    <TreeNode title="LEAP" key="LEAP" checkable={false}>
+                                                        {this.plotVariableTree([this.state.variables['children'][2]])}
+                                                    </TreeNode>
+                                                </Tree>
+                                        </Card>
+                                    </Col>
+                                    <Col span={17}>
+                                        <Card style={{
+                                                height:380,
+                                                flex: 0,
+                                                marginTop: 0,
+                                                overflow: 'auto',
+                                            }}>
+                                            <Input id="name" defaultValue="" value={this.state.created_scenario_name} onChange={this.inputScenarioName.bind(this)} addonBefore="name" />
+                                            <Tabs type="card" tabPosition="left">
+                                                <TabPane tab="WEAP" key="1">
+                                                    <InputParameter_WEAP 
+                                                    weapVariablesOnChange={this.weapVariablesOnChange.bind(this)}
+                                                    weap_inputs={this.state.weap_inputs}
+                                                    />
+                                                </TabPane>
+                                                <TabPane tab="LEAP" key="2" >
+                                                    <InputParameter_LEAP
+                                                    leapVariablesOnChange={this.leapVariablesOnChange.bind(this)}
+                                                    leap_inputs={this.state.leap_inputs}
+                                                    />
+                                                </TabPane>
+                                                <TabPane tab="WEAP-MABIA" key="3">
+                                                    WEAP-MABIA Input will be incorporated!
+                                                </TabPane>
+                                            </Tabs>
+                                        </Card>
+                                    </Col>
+                                    <Button type="primary" onClick={this.createScenarios}>Create Scenario</Button> 
                                 </TabPane>
+                                <TabPane tab="Scenarios Summary" key="1">
+                                 <Tabs type="card" tabPosition="left">
+                                    <TabPane tab="Run" key="1">
+                                        <Col span={6}>
+                                            <Card style={{
+                                                height:380,
+                                                flex: 2,
+                                                marginTop: 0,
+                                                overflow: 'auto',
+                                            }}>
+                                                {/* <Row gutter={8}>Scenarios to Run!</Row> */}
+                                                <Row gutter={8}>Created Scenarios </Row>
+                                                <ButtonGroup>
+                                                    {this.state.created_scenarios.map(scenario=>{
+                                                        if(Boolean(scenario["type"])===false){
+                                                            return <Row gutter={8} key={scenario.name}>
+                                                                        <Col span={21}>
+                                                                            <div><Button id={scenario.name} onClick={this.showScenarioSummary.bind(this)} block>{scenario.name}</Button> </div>
+                                                                        </Col>
+                                                                        <Col span={1}>
+                                                                            <div onClick={this.deleteScenario.bind(this)}> <div id={scenario.name}>x</div> </div>
+                                                                        </Col>
+                                                                    </Row> }})}    
+                                                </ButtonGroup>
 
-                                <TabPane tab="Policy Parameters" key="2" >
-                                    <Card style={{
-                                        height:380,
-                                        flex: 2,
-                                        marginTop: 16,
-                                        overflow: 'auto',
-                                    }}>
-                                        <Col span={12}>
-                                            Policy Parameters
-                                            <Tree
-                                            checkable={true}
-                                            defaultExpandedKeys={['model-input']}
-                                            onCheck={this.handleWEAPinputChecked.bind(this)}
-                                            // onLoad={}
-                                            disabled={false}
-                                            >
-                                                <TreeNode title="WEAP" key="WEAP" >
-                                                    {this.plotVariableTree([this.state.variables['children'][0]])}
-                                                </TreeNode>
-                                            </Tree>
-                                            <Tree
-                                            checkable={true}
-                                            defaultExpandedKeys={['model-input']}
-                                            onCheck={this.handleLEAPinputChecked.bind(this)}
-                                            // onLoad={}
-                                            disabled={false}
-                                            >
-                                                <TreeNode title="LEAP" key="LEAP" >
-                                                    {this.plotVariableTree([this.state.variables['children'][2]])}
-                                                </TreeNode>
-                                            </Tree>
-                                            {/* <Tree
-                                            checkable
-                                            defaultExpandedKeys={['WEAP-input']}
-                                            onCheck={this.handleWEAPinputChecked.bind(this)}
-                                            // onLoad={}
-                                            disabled={false}
-                                            >
-                                                <TreeNode title="WEAP" key="WEAP-input" >
-                                                    {Object.keys(this.state.WEAP_parameter).map(v => {
-                                                        return (<TreeNode
-                                                            title={v}
-                                                            key={v}
-                                                        />);
-                                                    })}
-                                                </TreeNode>
-                                            </Tree> */}
-                                            {/* <Tree
-                                            checkable
-                                            defaultExpandedKeys={['LEAP-input']}
-                                            onCheck={this.handleLEAPinputChecked.bind(this)}
-                                            // onLoad={}
-                                            disabled={false}
-                                            >
-                                                <TreeNode title="LEAP" key="LEAP-input" >
-                                                        {Object.keys(this.state.LEAP_parameter).map(v => {
-                                                            return (<TreeNode
-                                                                title={v}
-                                                                key={v}
-                                                            />);
-                                                        })}
-                                                </TreeNode>
-                                            </Tree> */}
-                                        </Col> 
-                                    </Card>
+                                                <Row gutter={8}>Existing Scenarios</Row>
+                                                <ButtonGroup>
+                                                    {this.state.created_scenarios.map(scenario=>{
+                                                        if(Boolean(scenario["type"])!==false){
+                                                            return <Row gutter={8} key={scenario.name}>
+                                                                        <Col span={21}>
+                                                                            <div><Button id={scenario.name} onClick={this.showScenarioSummary.bind(this)} block>{scenario.name}</Button> </div>
+                                                                        </Col>
+                                                                        <Col span={1}>
+                                                                            <div onClick={this.deleteScenario.bind(this)}> <div id={scenario.name}>x</div> </div>
+                                                                        </Col>
+                                                                    </Row> }})}    
+                                                </ButtonGroup>
+                                                {/* <Button type="primary">Load Existing</Button> */}
+                                            </Card>
+                                        </Col>
+                                        <Col span={17}>
+                                            <Card style={{
+                                                height:380,
+                                                flex: 2,
+                                                marginTop: 0,
+                                                overflow: 'auto',
+                                            }}>
+                                                Scenario Summary (RUN):
+                                                {this.state.created_scenarios.map(scenario=>{
+                                                    let scenario_in_summary = this.state.scenario_in_summary
+                                                    if(scenario_in_summary==='' && scenario.name===this.state.created_scenarios[0].name){
+                                                        return <div key={scenario.name}>Please select the scenario to vew!</div>
+                                                    }
+                                                    if(scenario_in_summary===scenario.name){
+                                                        return <div key={scenario.name}>
+                                                                {scenario.name}
+                                                                <Row gutter={8}>WEAP</Row>
+                                                                    {scenario.weap.map(variable=>{
+                                                                        return <div key={variable.fullname+':'+variable.name}>
+                                                                                    {variable.fullname+':'+variable.name} <InputNumber
+                                                                                        defaultValue={variable.percentage_of_default}
+                                                                                        value={variable.percentage_of_default}
+                                                                                        disabled={true}
+                                                                                        min={0}
+                                                                                        max={300}
+                                                                                        step={0.1}
+                                                                                        formatter={value => `${value}%`}
+                                                                                        parser={value => value.replace('%', '')}
+                                                                                    /> Default
+                                                                                </div>
+                                                                    })}
+                                                                <Row gutter={8}>LEAP</Row>
+                                                                    {scenario.leap.map(variable=>{
+                                                                        return <div key={variable.fullname+':'+variable.name}>
+                                                                                    {variable.fullname+':'+variable.name} <InputNumber
+                                                                                        defaultValue={variable.percentage_of_default}
+                                                                                        value={variable.percentage_of_default}
+                                                                                        disabled={true}
+                                                                                        min={0}
+                                                                                        max={300}
+                                                                                        step={0.1}
+                                                                                        formatter={value => `${value}%`}
+                                                                                        parser={value => value.replace('%', '')}
+                                                                                    /> Default
+                                                                                </div>
+                                                                    })}
+                                                                <Row gutter={8}>WEAP-MABIA</Row>
+                                                                </div>
+                                                        
+                                                    }}) 
+                                                }
+                                            </Card>
+                                        </Col>
+                                    </TabPane>
+                                    <TabPane tab="Load" key="2" >
+                                        <Col span={6}>
+                                            <Card style={{
+                                                height:380,
+                                                flex: 2,
+                                                marginTop: 0,
+                                                overflow: 'auto',
+                                            }}>
+                                                <Row gutter={8}>Existing Scenarios</Row>
+                                                <ButtonGroup>
+                                                    {this.state.existing_scenarios.map(scenario=>{return <Row gutter={8} key={scenario.name}><Col span={21}><div><Button id={scenario.name} onClick={this.showExistingScenarioSummary.bind(this)} block>{scenario.name}</Button> </div></Col><Col span={1}><div onClick={this.deleteScenario.bind(this)}><div id={scenario.name}>x</div></div></Col></Row>})}
+                                                </ButtonGroup>
+                                                {/* <Button type="primary">Load Existing</Button> */}
+                                            </Card>
+                                        </Col>
+                                        <Col span={17}>
+                                            <Card style={{
+                                                height:380,
+                                                flex: 2,
+                                                marginTop: 0,
+                                                overflow: 'auto',
+                                            }}>
+                                                Exisiting Scenario Summary: 
+                                                {this.state.existing_scenarios.map(scenario=>{
+                                                    let existing_scenarios_summary = this.state.existing_scenarios_summary
+                                                    if(existing_scenarios_summary===''){
+                                                        return <div key={scenario.name}>Please select the scenario to view!</div>
+                                                    }
+                                                    if(existing_scenarios_summary==='Base'){
+                                                        return <div key={scenario.name}>      
+                                                                    This is Base scenario with every variable in default!
+                                                                    <Button id={scenario.name} type="dash" shape="round" onClick={this.loadExistingScenarios.bind(this)}>Load to Run</Button>
+                                                                </div>
+                                                    }
+                                                    if(existing_scenarios_summary===scenario.name && existing_scenarios_summary !== "Base"){
+                                                        return <div key={scenario.name}>
+                                                                
+                                                                {scenario.name} <Button id={scenario.name} type="dash" shape="round" onClick={this.loadExistingScenarios.bind(this)}>Load to Run</Button>
+                                                                <Row gutter={8}>WEAP</Row>
+                                                                    {scenario.weap.map(variable=>{
+                                                                        return <div key={variable.fullname+':'+variable.name}>
+                                                                                    {variable.fullname+':'+variable.name} <InputNumber
+                                                                                        defaultValue={variable.percentage_of_default}
+                                                                                        value={variable.percentage_of_default}
+                                                                                        disabled={true}
+                                                                                        min={0}
+                                                                                        max={300}
+                                                                                        step={0.1}
+                                                                                        formatter={value => `${value}%`}
+                                                                                        parser={value => value.replace('%', '')}
+                                                                                    /> Default
+                                                                                </div>
+                                                                    })}
+                                                                <Row gutter={8}>LEAP</Row>
+                                                                    {scenario.leap.map(variable=>{
+                                                                        return <div key={variable.fullname+':'+variable.name}>
+                                                                                    {variable.fullname+':'+variable.name} <InputNumber
+                                                                                        defaultValue={variable.percentage_of_default}
+                                                                                        value={variable.percentage_of_default}
+                                                                                        disabled={true}
+                                                                                        min={0}
+                                                                                        max={300}
+                                                                                        step={0.1}
+                                                                                        formatter={value => `${value}%`}
+                                                                                        parser={value => value.replace('%', '')}
+                                                                                    /> Default
+                                                                                </div>
+                                                                    })}
+                                                                <Row gutter={8}>WEAP-MABIA</Row>
+                                                                </div>
+                                                        
+                                                    }}) 
+                                                }
+                                            </Card>
+                                        </Col>
+                                    </TabPane>
+
+                                </Tabs>
+                                
                                 </TabPane>
                             </Tabs>
                             
@@ -435,27 +730,7 @@ export default class App extends Component {
                                 {marginLeft: '85px'}
                             }>Move to Batch</Button> */}
                         </Col>
-                        <Col span={15}>
-                            <font size="5">Input Parameter</font>
-                            <Tabs type="card">
-                                <TabPane tab="WEAP" key="1">
-                                    <InputParameter_WEAP 
-                                    WEAP_parameter={this.state.WEAP_parameter}
-                                    checked_WEAP_parameter={this.state.checked_WEAP_parameter}
-                                    />
-                                </TabPane>
-                                <TabPane tab="LEAP" key="2" >
-                                    <InputParameter_LEAP 
-                                    LEAP_parameter={this.state.LEAP_parameter}
-                                    checked_LEAP_parameter={this.state.checked_LEAP_parameter} 
-                                    />
-                                </TabPane>
-                                <TabPane tab="WEAP-MABIA" key="3">
-                                    WEAP-MABIA Input will be incorporated!
-                                </TabPane>
-                            </Tabs>
-
-                        </Col>
+                        
                     </Row>
                 </Modal>
                 <Modal 
@@ -550,37 +825,7 @@ export default class App extends Component {
                                     onClick={this.runModel.bind(this)}
                                 >Run Model</Button>
                             </div>
-                            <div
-                                style={{
-                                    marginLeft: 16
-                                }}
-                            >
-                                {/* <Select
-                                    showSearch
-                                    placeholder={'Select a scenario'}
-                                    style={{
-                                        width: 300
-                                    }}
-                                    disabled={this.state.activatedMethod === null}
-                                >
-                                    {
-                                        (this.state.activatedMethod === null)
-                                            ? null
-                                            : proj[this.state.activatedMethod].scenario.map(
-                                                scenario => <Option
-                                                    key={scenario.sid}
-                                                    value={scenario.sid}
-                                                >
-                                                    {scenario.name}
-                                                </Option>
-                                            )
-                                    } */}
-                                    {/*<Select.Option value="create">Create...</Select.Option>*/}
-                                    {/*<Select.Option value="s1">Scenario 1</Select.Option>*/}
-                                    {/*<Select.Option value="s2">Scenario 2</Select.Option>*/}
-                                    {/*<Select.Option value="s3">Scenario 3</Select.Option>*/}
-                                {/* </Select> */}
-                            </div>
+                            
 
                         </div>
                         <div>
@@ -612,6 +857,11 @@ export default class App extends Component {
                             variables={this.state.variables}
                             sustainability_variables={this.state.sustainability_variables}
                             sustainability_index={this.state.sustainability_index}
+                            simulation_time_range={this.state.simulation_time_range}
+                            handleWEAPResultVariableClick={this.handleWEAPResultVariableClick.bind(this)}
+                            handleLEAPResultVariableClick={this.handleLEAPResultVariableClick.bind(this)}
+                            weap_result_variable={this.state.weap_result_variable}
+                            leap_result_variable={this.state.leap_result_variable}
                         />                        
                     </Content>
                 </Layout>

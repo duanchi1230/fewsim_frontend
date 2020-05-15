@@ -7,6 +7,8 @@ import LEAP_Visualization from "./LEAP_Visualization";
 import Variables_Radial_Tree from './Variables_Radial_Tree'
 import LEAP_PixelMapView from './LEAP_PixelMapView'
 import Sustainability_Index from "./Sustainability_Index"
+import WEAP_Result_Graph from './WEAP_Result_Graph'
+import LEAP_Result_Graph from './LEAP_Result_Graph'
 const { TabPane } = Tabs;
 export default class MainScenarioComponent extends Component {
 
@@ -21,7 +23,8 @@ export default class MainScenarioComponent extends Component {
             checkedOutput: [],
             sustainability_variables: [],
             sustainability_index: [],
-            run_model_status: this.props.run_model_status
+            run_model_status: this.props.run_model_status,
+            
         };
     }
 
@@ -31,7 +34,7 @@ export default class MainScenarioComponent extends Component {
             runButton: "Running...",
             modelStatus:"Running"
         })
-        console.log(this.state.isButtonDisabled)
+        // console.log(this.state.isButtonDisabled)
 
         fetch('/proj/1/weap/scenario/0', {method: 'POST', body: JSON.stringify({'data':'1'})}).then(r=>r.json()).then(r=>this.setState({
             isButtonDisabled: false,
@@ -59,10 +62,11 @@ export default class MainScenarioComponent extends Component {
 
     componentDidUpdate(){
         console.log(this.state.sustainability_index)
-    }
+        
+    }  
 
     render() {
-        console.log(this.state.run_model_status)
+        
         const {proj, activatedMethod, activatedScenario} = this.props.run_model_status;
 
         // console.log(activatedScenario);
@@ -100,38 +104,58 @@ export default class MainScenarioComponent extends Component {
                         overflow: "auto"
                     }}>
 
-                        <TabPane tab="Pixel_Map_WEAP" key="0">
+                        <TabPane tab="Visualization_WEAP" key="0">
+                            <Card 
+                                style={{
+                                height:'100%',
+                                flex: 10,
+                                marginTop: 0,
+                                overflow: 'auto',
+                                }}>
+                                
+                                <WEAP_Result_Graph weap_result_variable={this.props.weap_result_variable} simulation_time_range={this.props.simulation_time_range}/>
+                            </Card>
                             <Card 
                             style={{
                             height:'100%',
                             flex: 10,
-                            marginTop: 0,
+                            marginTop: 10,
                             overflow: 'auto',
                             }}>
                                 <WEAP_PixelMapView
-                                    activatedScenario={activatedScenario} checkedOutput={this.state.checkedOutput} weap_flow={this.props.weap_flow}
+                                    activatedScenario={activatedScenario} checkedOutput={this.state.checkedOutput} weap_flow={this.props.weap_flow} weap_result_variable={this.state.weap_result_variable}
+                                    handleWEAPResultVariableClick={this.props.handleWEAPResultVariableClick}
                                 />
                             </Card>
                         </TabPane>
                         <TabPane tab="Visualization_LEAP" key="1">
                             <Card 
+                                style={{
+                                height:'100%',
+                                flex: 10,
+                                marginTop: 0,
+                                overflow: 'auto',
+                                }}>
+                                <LEAP_Result_Graph leap_result_variable={this.props.leap_result_variable} simulation_time_range={this.props.simulation_time_range}/>
+                            </Card>
+                            <Card 
                             style={{
                             height:'100%',
                             flex: 10,
-                            marginTop: 0,
+                            marginTop: 10,
                             overflow: 'auto',
                             }}>
-                                <LEAP_PixelMapView leap_data={this.props.leap_data} ></LEAP_PixelMapView>
-                               
+                                <LEAP_PixelMapView leap_data={this.props.leap_data} handleLEAPResultVariableClick={this.props.handleLEAPResultVariableClick}></LEAP_PixelMapView>
                             </Card>
                         </TabPane>
 
                         <TabPane tab="Sustainability Index" key="2" >
+                            
                             <Card 
                                 style={{
                                 height: '100%',
                                 flex: 10,
-                                marginTop: 0,
+                                marginTop: 10,
                                 overflow: 'scroll',
                                 }}>
                                 <Sustainability_Index sustainability_variables={this.props.sustainability_variables} sustainability_index={this.props.sustainability_index}/>
