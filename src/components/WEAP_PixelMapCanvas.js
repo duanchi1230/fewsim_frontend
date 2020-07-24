@@ -17,13 +17,15 @@ export default class WEAP_PixelMapCanvas extends Component {
         // fetch('/proj/1/weap/scenario/0').then(r=>r.json()).then(data=>this.initCanvas(data))
         
         const weap_flow = this.props.weap_flow
+        console.log(weap_flow)
         var {width, height} = findDOMNode(this).getBoundingClientRect();
-
+        let scenario_to_show = this.props.scenario_to_show
+        console.log(scenario_to_show)
         height = weap_flow[0]['var']['output'].length * 30 +150
         this.initCanvas(weap_flow[0], width, height);
     }
 
-    handleMouseOver(x,y,d,name){
+    handleMouseOver(x,y,flow_value,name, d){
         let data = this.props.weap_flow[0]
         let value = []
         data['var']['output'].forEach(
@@ -31,40 +33,75 @@ export default class WEAP_PixelMapCanvas extends Component {
                 value = v['value']
             }}
         )
-        console.log(value)
+        console.log(x,y,name,flow_value,d)
         const svg = d3.select('#svg1')
-        
+
         svg.append('rect')
-        .attr('id', 'tooltip-pixelmap')
+            .attr('id', 'tooltip-pixelmap')
             .attr('x', x)
             .attr('y', y-30)
             .attr('height', 30)
-            .attr('width', 60)
+            .attr('width', 180)
             .attr('rx', 2)
             .attr('ry', 2)
             .attr('fill', 'grey')
             .attr('stroke', 'rgb(50 50 50)')
             .style('opacity', 1)
 
-        svg.append('text')
+            svg.append('text')
             .attr('id', 'tooltip-pixelmap')
             .attr('x', x+5)
             .attr('y', y-5)
-            .text(d.toExponential(2))
+            .text(flow_value.toExponential(2))
             .attr('font-size', '15px')
             .attr('fill', 'black')
             .style('opacity', 1)
 
-        // svg.append('path')
-        //     .attr('id', 'tooltip-pixelmap')
-        //     .attr('d', function(){
-        //         return 'M '+ x.toString() + ' ' + y.toString()+ ' ' +'L '+ (x+30).toString() 
-        //     })
-
+        const linearGradient = svg.append('defs')
+            .attr('class', 'scale-def')
+            .append('linearGradient')
+            .attr('id', 'grad1')
+            .attr('x1', '0%')
+            .attr('y1', '0%')
+            .attr('x2', '100%')
+            .attr('y2', '0%')
+        linearGradient.append('stop')
+            .attr('offset', '0%')
+            .style('stop-color', 'rgb(255, 255, 255)')
+            .style('stop-opacity', '1')
+        linearGradient.append('stop')
+            .attr('offset', '100%')
+            .style('stop-color', d['base-color'])
+            .style('stop-opacity', '1')
+        svg.append('rect')
+            .attr('id', 'tooltip-pixelmap')
+            .attr('x', x+60)
+            .attr('y', y-25)
+            .attr('height', 25)
+            .attr('width', 120)
+            .attr('rx', 2)
+            .attr('ry', 2)
+            .attr('fill', 'url(#grad1)')
+            .attr('stroke', 'rgb(50 50 50)')
+            .style('opacity', 1)
+        svg.append('polyline')
+            .attr('id', "tooltip-pixelmap")
+            .attr('points', String(x+60+d['scale-factor']*120)+','+String(y-25)+' '+String(x+60+d['scale-factor']*120-5)+','+String(y-25-5)+' '+String(x+60+d['scale-factor']*120+5)+','+String(y-25-5))
+            .attr('fill', 'black')
+        svg.append('polyline')
+            .attr('id', "tooltip-pixelmap")
+            .attr('points', String(x+60+d['scale-factor']*120)+','+String(y-25)+' '+String(x+60+d['scale-factor']*120)+','+String(y))
+            .attr('stroke', 'grey')
+            .attr('stroke-width', 1)
+            .attr("stroke-opacity", 1)
+            .attr('fill', 'none')
         
     }
+
     handleMouseOut(){
         d3.selectAll('#tooltip-pixelmap')
+            .remove()
+        d3.selectAll('.scale-def')
             .remove()
     }
 
@@ -89,7 +126,7 @@ export default class WEAP_PixelMapCanvas extends Component {
     // }
 
     initCanvas(data, width, height) {
-
+        
         // fetch('/proj/1/weap/scenario/0', {method: 'POST', body: JSON.stringify({'data':'1'})}).then(r=>r.json()).then(r=>console.log(r))
         const svg = d3.select(
         // '#PixelMap'
@@ -105,7 +142,9 @@ export default class WEAP_PixelMapCanvas extends Component {
         let start_year = data['timeRange'][0];
         let end_year = data['timeRange'][1];
 
-        let d = calPixelMatrix(flow, origin, start_year, end_year);
+        let d = calPixelMatrix(flow, origin, start_year, end_year, this.props.sortType)
+            
+
         svg.append('Tooltip')
         .attr('title', '12301230')
         .text('this is a tooltip')
@@ -124,7 +163,7 @@ export default class WEAP_PixelMapCanvas extends Component {
             .attr('fill', d => 'rgb(' + d['color'] + ')')
             // .attr('fill', d => d['color'])
             .attr('stroke', 'rgb(50 50 50)')
-            .on('mouseover',d=>this.handleMouseOver(d['x'] ,d['y'] ,d['flow_value'] , d['rowName']))
+            .on('mouseover',d=>this.handleMouseOver(d['x'] ,d['y'] ,d['flow_value'] , d['rowName'],d))
             .on('mouseout', d=>this.handleMouseOut())
             .on('click', d=>this.handleMouseClick(d));
             // svg.append('g')
@@ -238,8 +277,22 @@ export default class WEAP_PixelMapCanvas extends Component {
 
     componentDidUpdate(){
         
-        const data = this.props.weap_flow[0];
-        console.log(data)
+        let data = []
+        
+        let scenario_to_show = ''
+        if(this.props.scenario_to_show===''){
+            scenario_to_show = this.props.weap_flow[0].name
+        }
+
+        else{
+            scenario_to_show = this.props.scenario_to_show
+        }
+        this.props.weap_flow.forEach(flow=>{
+            if(flow.name===scenario_to_show){
+                data = flow
+            }
+        })
+        console.log(scenario_to_show)
         const {width, height} = findDOMNode(this).getBoundingClientRect();
         this.updateCanvas(data, this.props.checkedOutput)
     }
@@ -257,7 +310,7 @@ export default class WEAP_PixelMapCanvas extends Component {
             }
         })
 
-        let d = calPixelMatrix(flow_filtered, origin, start_year, end_year);
+        let d = calPixelMatrix(flow_filtered, origin, start_year, end_year, this.props.sortType);
   
         const rect = d3.select('#map')
                 .selectAll('rect')
@@ -266,7 +319,7 @@ export default class WEAP_PixelMapCanvas extends Component {
                 .data(d)
                 .enter()
                 .append('rect')
-                .on('mouseover',d=>this.handleMouseOver(d['x'] ,d['y'] ,d['flow_value'] , d['rowName']))
+                .on('mouseover',d=>this.handleMouseOver(d['x'] ,d['y'] ,d['flow_value'] , d['rowName'], d))
                 .on('mouseout', d=>this.handleMouseOut())
                 .on('click', d=>this.handleMouseClick(d))
                 .attr('x', d => d['x'])
@@ -335,20 +388,25 @@ export default class WEAP_PixelMapCanvas extends Component {
 }
 
 
-function calPixelMatrix(flow, origin, start_year = 1986, end_year = 2008, sort = 1) {
+
+function calPixelMatrix(flow, origin, start_year, end_year, sort) {
     let year1 = start_year
     let year2 = end_year
     let d = []
-    if (sort === 1) {
-        d = flow_byDemand(flow, origin, year1, year2)
-    }
+    console.log(sort)
+    d = flowToCoordinate(flow, origin, year1, year2)
 
-    mapColor(d)
+    if(sort===1){
+        mapColorByDemandSite(d)
+    }
+    if(sort===2){
+        mapColorBySupplySource(d)
+    }
     // console.log('d', d)
     return d
 }
 
-function flow_byDemand(flow, origin, start_year = 1986, end_year = 2008) {
+function flowToCoordinate(flow, origin, start_year, end_year) {
     let flow_value = []
     let rowName = []
     let source = []
@@ -470,7 +528,7 @@ function calCoordinate(flow, origin, start_year, end_year) {
 
 // }
 
-function mapColor(d) {
+function mapColorByDemandSite(d) {
 
     let base_color = [[141,211,199], [255,255,179], [190,186,218], [251,128,114], [128,177,211],[253,180,98], [179,222,105], [252,205,229], [217,217,217], [188,128,189], [141,211,199], [255,255,179], [190,186,218], [251,128,114], [128,177,211],[253,180,98], [179,222,105], [252,205,229], [217,217,217], [188,128,189]]
     
@@ -485,9 +543,13 @@ function mapColor(d) {
     // console.log('color', color)
     // console.log(base_color['Municipal'][0])
     d.forEach(d => {
+        d['base-color'] = 'rgb('
         for (let i = 0; i < 3; i++) {
             d['color'] = d['color'] + ' ' + (255 - (d['flow_value'] - min_value[d['site']]) * (255 - color[d['site']][i]) / (max_value[d['site']] - min_value[d['site']]+0.1)).toString()
+            d['base-color'] = d['base-color'] + color[d['site']][i] + ','
         }
+        d['base-color'] = d['base-color'].slice(0, -1) +')'
+        d['scale-factor'] = (d['flow_value'] - min_value[d['site']])/(max_value[d['site']] - min_value[d['site']]+0.01)
     })
 
     function findRange(d) {
@@ -511,5 +573,49 @@ function mapColor(d) {
         return [max_value, min_value]
 
     }
-
 }
+function mapColorBySupplySource(d) {
+
+    let base_color = [[141,211,199], [255,255,179], [190,186,218], [251,128,114], [128,177,211],[253,180,98], [179,222,105], [252,205,229], [217,217,217], [188,128,189], [141,211,199], [255,255,179], [190,186,218], [251,128,114], [128,177,211],[253,180,98], [179,222,105], [252,205,229], [217,217,217], [188,128,189]]
+    
+    let color = {}
+    let [max_value, min_value] = findRange(d)
+    console.log('max', min_value, max_value)
+    let i =0
+    Object.keys(max_value).forEach(
+        key=>{color[key]= base_color[i];
+        i = i+1}
+    )
+    // console.log('color', color)
+    // console.log(base_color['Municipal'][0])
+    d.forEach(d => {
+        d['base-color'] = 'rgb('
+        for (let i = 0; i < 3; i++) {
+            d['color'] = d['color'] + ' ' + (255 - (d['flow_value'] - min_value[d['source']]) * (255 - color[d['source']][i]) / (max_value[d['source']] - min_value[d['source']]+0.1)).toString()
+            d['base-color'] = d['base-color'] + color[d['source']][i] + ','
+        }
+        d['base-color'] = d['base-color'].slice(0, -1) +')'
+        d['scale-factor'] = (d['flow_value'] - min_value[d['source']])/(max_value[d['source']] - min_value[d['source']]+0.01)
+    })
+
+    function findRange(d) {
+        let max_value = {}
+        let min_value = {}
+        let source = []
+        d.forEach(pixel=>{ if (pixel['source'] in source ==false){
+            source.push(pixel['source'])
+            }
+        })
+        for (let i = 0; i < source.length; i++) {
+            let sourceData = Object.values(d).filter(v => v['source'] == source[i])
+            let flow_value = []
+            for (let j = 0; j < sourceData.length; j++) {
+
+                flow_value.push(sourceData[j]['flow_value'])
+            }
+            max_value[source[i]] = Math.max(...flow_value)
+            min_value[source[i]] = Math.min(...flow_value)
+        }
+        return [max_value, min_value]
+
+    }}

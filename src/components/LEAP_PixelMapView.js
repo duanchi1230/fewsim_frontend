@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 import Variables_Radial_Tree from './Variables_Radial_Tree';
 import { node } from 'prop-types';
 import LEAP_Visualization from "./LEAP_Visualization";
-import {Form, InputNumber, Button, Row, Col, Modal, Icon, Radio, Input} from 'antd'
+import {Form, InputNumber, Button, Row, Col, Modal, Icon, Radio, Input, Card} from 'antd'
 
 class LEAP_PixelMapView extends Component {
     constructor(props) {
@@ -44,20 +44,24 @@ class LEAP_PixelMapView extends Component {
 
     showDemandModal(){
         this.setState({Demand_Modal:true, type: 'Demand', variable: this.state.demand_value})
+        this.props.setLeapDataType("Demand", this.state.demand_value)
     }
 
     closeDemandModal(){
         this.setState({Demand_Modal:false})
+        
     }
     onChangeDemand(e){
         this.setState({
             demand_value: e.target.value,
             variable: e.target.value
           });
+        this.props.setLeapDataType("Demand", e.target.value)
     }
 
     showTransformationModal(){
         this.setState({Transformation_Modal:true, type: 'Transformation', variable: this.state.transformation_value})
+        this.props.setLeapDataType("Transformation", this.state.transformation_value)
     }
 
     closeTransformationModal(){
@@ -68,10 +72,12 @@ class LEAP_PixelMapView extends Component {
             transformation_value: e.target.value,
             variable: e.target.value
           });
+        this.props.setLeapDataType("Transformation", e.target.value)
     }
 
     showResourceModal(){
         this.setState({Resource_Modal:true, type: 'Resource', variable: this.state.resource_value})
+        this.props.setLeapDataType("Resource", this.state.resource_value)
     }
 
     closeResourceModal(){
@@ -82,6 +88,7 @@ class LEAP_PixelMapView extends Component {
             resource_value: e.target.value,
             variable: e.target.value
           });
+        this.props.setLeapDataType("Resource", e.target.value)
     }
 
     render() {
@@ -90,7 +97,13 @@ class LEAP_PixelMapView extends Component {
             height: '30px',
             lineHeight: '30px',
           };
-       
+        let scenario_to_show = ''
+        if(this.props.scenario_to_show===''){
+            scenario_to_show = this.props.leap_data[0].name
+        }
+        else{
+            scenario_to_show = this.props.scenario_to_show
+        }
         return (
             <div>
                 <Modal 
@@ -144,10 +157,32 @@ class LEAP_PixelMapView extends Component {
                         })}                      
                     </Radio.Group>
                 </Modal>
-                <Button onClick={this.showDemandModal.bind(this)} type="primary" style={{"backgroundColor":"#fdae61", marginLeft: 35}}> Demand <Icon type="right" /></Button>
-                <Button onClick={this.showTransformationModal.bind(this)} type="primary" style={{"backgroundColor":"#fdae61", marginLeft: 35}}> Transformation <Icon type="right" /></Button>
-                <Button onClick={this.showResourceModal.bind(this)} type="primary" style={{"backgroundColor":"#fdae61", marginLeft: 35}}> Resource <Icon type="right" /></Button>
-                <LEAP_Visualization leap_data={this.props.leap_data} type={this.state.type} variable={this.state.variable} handleLEAPResultVariableClick={this.props.handleLEAPResultVariableClick}></LEAP_Visualization>
+                <Card 
+                    
+                    extra={<div>
+                        <Button onClick={this.showDemandModal.bind(this)} type="primary" style={{"backgroundColor":"#fdae61", marginLeft: 35}}> <Icon type="left" /> Demand <Icon type="right" /></Button>
+                        <Button onClick={this.showTransformationModal.bind(this)} type="primary" style={{"backgroundColor":"#fdae61", marginLeft: 35}}> <Icon type="left" /> Transformation <Icon type="right" /></Button>
+                        <Button onClick={this.showResourceModal.bind(this)} type="primary" style={{"backgroundColor":"#fdae61", marginLeft: 35}}> <Icon type="left" /> Resource <Icon type="right" /></Button></div>}
+                    title=
+                    { <div style={{display:"inline-block"}}>
+                                    <div style={{display:"inline-block"}}>LEAP Pixel Map </div> (<div style={{color:"#fdae61", display:"inline-block"}}>{scenario_to_show}</div>)
+                                </div> }
+                    style={{
+                    height:1010,
+                    flex: 0,
+                    marginTop: 10,
+                    overflow: 'auto',
+                    }}>
+                    <LEAP_Visualization 
+                        leap_data={this.props.leap_data} 
+                        type={this.state.type} 
+                        variable={this.state.variable} 
+                        handleLEAPResultVariableClick={this.props.handleLEAPResultVariableClick}
+                        scenario_to_show={this.props.scenario_to_show}>
+                    </LEAP_Visualization>
+                </Card>
+                
+                
             </div>
         );
     }

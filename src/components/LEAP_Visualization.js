@@ -16,7 +16,7 @@ class LEAP_Visualization extends Component {
     }
 
     componentDidMount(){
-        const leap_data = this.props.leap_data[0]
+        const leap_data = this.filterLeapData(JSON.parse(JSON.stringify(this.props.leap_data)), this.props.scenario_to_show) 
 
         var {width, height} = findDOMNode(this).getBoundingClientRect();
  
@@ -76,9 +76,9 @@ class LEAP_Visualization extends Component {
         this.initCanvas(data, width, height, timeRange)
     }
 
-    componentWillReceiveProps(){
-        const leap_data = this.props.leap_data[0]
-        console.log(this.state.type, this.props.type)
+    componentWillReceiveProps(nextProps){
+        const leap_data = this.filterLeapData(JSON.parse(JSON.stringify(this.props.leap_data)), nextProps.scenario_to_show) 
+        console.log(leap_data, this.state.type, this.props.type)
         if(this.state.type!==this.props.type || this.state.variable!==this.props.variable){
 
             var {width, height} = findDOMNode(this).getBoundingClientRect();
@@ -135,64 +135,112 @@ class LEAP_Visualization extends Component {
                 type: this.props.type,
                 variable: this.props.variable
             })
-            console.log(data)
-            console.log(branches_to_visualize)
+            // console.log(data)
+            // console.log(branches_to_visualize)
         }
 
     }
     
     componentDidUpdate(){
-        const leap_data = this.props.leap_data[0]
+        const leap_data = this.filterLeapData(JSON.parse(JSON.stringify(this.props.leap_data)), this.props.scenario_to_show) 
         let timeRange = [leap_data['timeRange'][0], leap_data['timeRange'][1]]
         var {width, height} = findDOMNode(this).getBoundingClientRect();
         var height = leap_data['var']['output'].length * 30 +15
         let data =this.state.data
-
+        console.log(data)
         this.updateCanvas(data, width, height, timeRange)
     }
 
-    handleMouseOver(x,y,d,name){
-        let data = this.props.weap_flow[0]
-        let value = []
-        data['var']['output'].forEach(
-            v=> {if(v['name']===name){
-                value = v['value']
-            }}
-        )
-        console.log(value)
-        const svg = d3.select('#svg1')
+    filterLeapData(leap_data, scenario_props){
+        let data = []
+        console.log(leap_data, scenario_props)
+        let scenario_to_show = ''
+        if(scenario_props===''){
+            scenario_to_show = leap_data[0].name
+        }
+        else{
+            scenario_to_show = scenario_props
+        }
+        leap_data.forEach(d=>{
+            if(d.name===scenario_to_show){
+                data = d
+            }
+        })
+        console.log(data)
+        return data
+    }
+
+       handleMouseOver(x,y,flow_value,name, d){
+
+        console.log(x,y,name,flow_value,d)
+        const svg = d3.select('#leap-svg1')
+
         svg.append('rect')
-        .attr('id', 'tooltip-pixelmap')
+            .attr('id', 'leap-tooltip-pixelmap')
             .attr('x', x)
             .attr('y', y-30)
             .attr('height', 30)
-            .attr('width', 60)
+            .attr('width', 180)
             .attr('rx', 2)
             .attr('ry', 2)
             .attr('fill', 'grey')
             .attr('stroke', 'rgb(50 50 50)')
             .style('opacity', 1)
 
-        svg.append('text')
-            .attr('id', 'tooltip-pixelmap')
+            svg.append('text')
+            .attr('id', 'leap-tooltip-pixelmap')
             .attr('x', x+5)
             .attr('y', y-5)
-            .text(d.toExponential(2))
+            .text(flow_value.toExponential(2))
             .attr('font-size', '15px')
             .attr('fill', 'black')
             .style('opacity', 1)
 
-        // svg.append('path')
-        //     .attr('id', 'tooltip-pixelmap')
-        //     .attr('d', function(){
-        //         return 'M '+ x.toString() + ' ' + y.toString()+ ' ' +'L '+ (x+30).toString() 
-        //     })
-
+        const linearGradient = svg.append('defs')
+            .attr('class', 'leap-scale-def')
+            .append('linearGradient')
+            .attr('id', 'grad1')
+            .attr('x1', '0%')
+            .attr('y1', '0%')
+            .attr('x2', '100%')
+            .attr('y2', '0%')
+        linearGradient.append('stop')
+            .attr('offset', '0%')
+            .style('stop-color', 'rgb(255, 255, 255)')
+            .style('stop-opacity', '1')
+        linearGradient.append('stop')
+            .attr('offset', '100%')
+            .style('stop-color', d['base-color'])
+            .style('stop-opacity', '1')
+        svg.append('rect')
+            .attr('id', 'leap-tooltip-pixelmap')
+            .attr('x', x+60)
+            .attr('y', y-25)
+            .attr('height', 25)
+            .attr('width', 120)
+            .attr('rx', 2)
+            .attr('ry', 2)
+            .attr('fill', 'url(#grad1)')
+            .attr('stroke', 'rgb(50 50 50)')
+            .style('opacity', 1)
+        svg.append('polyline')
+            .attr('id', "leap-tooltip-pixelmap")
+            .attr('points', String(x+60+d['scale-factor']*120)+','+String(y-25)+' '+String(x+60+d['scale-factor']*120-5)+','+String(y-25-5)+' '+String(x+60+d['scale-factor']*120+5)+','+String(y-25-5))
+            .attr('fill', 'black')
+        svg.append('polyline')
+            .attr('id', "leap-tooltip-pixelmap")
+            .attr('points', String(x+60+d['scale-factor']*120)+','+String(y-25)+' '+String(x+60+d['scale-factor']*120)+','+String(y))
+            .attr('stroke', 'grey')
+            .attr('stroke-width', 1)
+            .attr("stroke-opacity", 1)
+            .attr('fill', 'none')
         
     }
 
     handleMouseOut(){
-        d3.selectAll('#tooltip-pixelmap')
+        d3.selectAll('#leap-tooltip-pixelmap')
+            .remove()
+        d3.selectAll('.leap-scale-def')
             .remove()
     }
 
@@ -358,8 +406,8 @@ class LEAP_Visualization extends Component {
             .attr('stroke', 'rgb(50 50 50)')
             .on('click', d=>this.handleMouseClick(d))
             .on('mouseover', d=>{console.log(d)})
-            // .on('mouseover',d=>this.handleMouseOver(d['x'] ,d['y'] ,d['value'] , d['name']))
-            // .on('mouseout', d=>this.handleMouseOut());
+            .on('mouseover',d=>this.handleMouseOver(d['x'] ,d['y'] ,d['value'] , d['name'],d))
+            .on('mouseout', d=>this.handleMouseOut());
             // svg.append('g')
             // .attr('id', 'text-reference')
             // .selectAll('text')
@@ -435,8 +483,8 @@ class LEAP_Visualization extends Component {
                 .data(d)
                 .enter()
                 .append('rect')
-                // .on('mouseover',d=>this.handleMouseOver(d['x'] ,d['y'] ,d['flow_value'] , d['rowName']))
-                // .on('mouseout', d=>this.handleMouseOut())
+                .on('mouseover',d=>this.handleMouseOver(d['x'] ,d['y'] ,d['value'] , d['name'],d))
+                .on('mouseout', d=>this.handleMouseOut())
                 .attr('x', d => d['x'])
                 .attr('y', d => d['y'])
                 .attr('width', d => d['dx'])
@@ -600,9 +648,13 @@ function mapColor(d) {
     console.log('max', min_value, max_value)
     let i =0
     d.forEach(d => {
+        d['base-color'] = 'rgb('
         for (let i = 0; i < 3; i++) {
             d['color'] = d['color'] + ' ' + (255 - (d['value'] - min_value) * (255 - color[i]) / (max_value - min_value+0.1)).toString()
+            d['base-color'] = d['base-color'] + color[i] + ','
         }
+        d['base-color'] = d['base-color'].slice(0, -1) +')'
+        d['scale-factor'] = (d['value'] - min_value)/(max_value- min_value+0.01)
     })
 
     function findRange(d) {
@@ -619,6 +671,4 @@ function mapColor(d) {
     }
 
 }
-
-
 export default LEAP_Visualization;

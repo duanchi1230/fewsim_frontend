@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Button , Card, Col, Divider, Icon, Input,notification, Row, Tree} from 'antd';
+import { Button , Card, Col, Divider, Icon, Input, notification, Row, Tabs, Tree, Popconfirm, message, Modal, Switch} from 'antd';
 import * as d3 from 'd3'
 import { selectAll } from 'd3';
 import '../styles/App.css';
 const InputGroup = Input.Group;
 const {TreeNode} = Tree;
 const ButtonGroup = Button.Group;
+const { TabPane } = Tabs;
 class Variables_Radial_Tree extends Component {
     constructor(props) {
         super(props);
@@ -15,7 +16,15 @@ class Variables_Radial_Tree extends Component {
           user_input:{"name":"", "variable": "", "node":{}},
           index_input:{"index-name":"", "index-function": "", "value":[], "node": []},
           sustainability_variables:[],
-          sustainability_index:[]
+          sustainability_index:[],
+
+          Save_Index_Modal: false,
+          name_to_save: "",
+          saved_index_group:[],
+
+          Load_Index_Modal: false,
+          index_to_show_in_modal: [],
+          index_to_delete: ""
           // leaf_node_not_to_hide:[]
         }
       }
@@ -25,7 +34,7 @@ class Variables_Radial_Tree extends Component {
         console.log(this.props.variables)
         const variables = JSON.parse(JSON.stringify(this.props.variables))
         this.drawCanvas(this.compressTreeLeaf(variables, this.state.leaf_to_show))
-
+        fetch('/get-sustainability-index', { method: 'GET' }).then(r=>r.json()).then(d=>{console.log(d); this.setState({saved_index_group:d})})
     }
 
     componentDidUpdate(){
@@ -365,12 +374,25 @@ class Variables_Radial_Tree extends Component {
       console.log(element.target)
       let sustainability_variables = []
       let variables = this.state.sustainability_variables
-      variables.map(v=>{if(v["name"]!=element.target.id){
-        sustainability_variables.push(v)
-      }})
-      console.log(sustainability_variables)
-      this.setState({sustainability_variables:sustainability_variables})
-      this.getSuatainabilityIndex(this.state.sustainability_index,sustainability_variables)
+      let sustainability_variables_names = []
+      this.state.sustainability_index.forEach(index=>{
+        this.parseIndex(index["index-function"]).forEach(v=>{
+          if(sustainability_variables_names.includes(v)!==true){
+            sustainability_variables_names.push(v)
+          }
+        })
+      })
+      if(sustainability_variables_names.includes(element.target.id)){
+        this.openNotification("Variable "+ element.target.id +" is used in the index function!", "Please delete the index function containing " + element.target.id +" first!")
+      }else{
+        variables.map(v=>{if(v["name"]!=element.target.id){
+          sustainability_variables.push(v)
+        }})
+        console.log(sustainability_variables, this.state.sustainability_index, sustainability_variables_names)
+        this.setState({sustainability_variables:sustainability_variables})
+        this.getSuatainabilityIndex(this.state.sustainability_index,sustainability_variables)
+      }
+      
     }
 
     variableList(id){
@@ -417,6 +439,19 @@ class Variables_Radial_Tree extends Component {
       }
       
       return null
+    }
+
+    deleteIndex(element){
+      console.log(element.target)
+      let sustainability_index = []
+      let index = this.state.sustainability_index
+
+      index.map(v=>{if(v["index-name"]!=element.target.id){
+        sustainability_index.push(v)
+      }})
+      console.log(sustainability_index, this.state.sustainability_index)
+      this.setState({sustainability_index:sustainability_index})
+      this.getSuatainabilityIndex(sustainability_index, this.state.sustainability_variables)
     }
 
     calculateIndexFunction(index_functions){
@@ -474,7 +509,111 @@ class Variables_Radial_Tree extends Component {
       });
     }
 
-    render() { 
+    loadIndex(){
+
+    }
+
+    showSaveIndexModal(){
+      this.setState({
+        Save_Index_Modal: true
+      })
+    }
+
+    closeSaveIndexModal(){
+      this.setState({
+        Save_Index_Modal: false
+      })
+    }
+
+    handleIndexGroupNameChange(user_input){
+      console.log(user_input.target.value)
+      this.setState({
+        name_to_save: user_input.target.value
+      })
+    }
+
+    confirmSave(){
+      console.log(this.state.sustainability_variables, this.state.sustainability_index)
+      let saved_index_group = this.state.saved_index_group
+      let index_group_names = []
+      saved_index_group.forEach(index=>{
+        index_group_names.push(index["name"])
+      })
+      if(this.state.name_to_save!==""){
+        if(index_group_names.includes(this.state.name_to_save)){
+          this.openNotification("The index group name "+this.state.name_to_save+" already exists!", "Please rename the index group.")
+        }
+        else{
+          saved_index_group.push({"name": this.state.name_to_save, "variable": this.state.sustainability_variables, "index": this.state.sustainability_index, "loaded":false})
+          this.setState({
+            saved_index_group: saved_index_group
+          })
+          fetch('/get-sustainability-index', { method: 'POST', body: JSON.stringify(saved_index_group) }).then(r=>r.json()).then(d=>console.log(d))
+          this.openNotification("The index group is saved successfully!", "Saved.")
+        }
+      }
+      else{
+        this.openNotification("The index group name is empty!", "Please name the index group.")
+      }
+    }
+
+    loadIndexGroup(status, element){
+      let index_group = this.state.saved_index_group
+      index_group.forEach(index=>{
+        if(index["name"]===element.target.id){
+          index["loaded"] = status
+        }
+       
+      })
+      console.log(status, element.target.id, index_group)
+      this.setState({saved_index_group: index_group})
+      this.props.getLoadedSuatainabilityIndex(index_group)
+    }
+
+    confirmDeleteIndexGroup(element){
+      console.log(element.target, element.target.id)
+      let saved_index_group = []
+      this.state.saved_index_group.forEach(index=>{
+        if(index["name"]!==this.state.index_to_delete){
+          saved_index_group.push(index)
+        }
+      })
+      this.setState({
+        saved_index_group: saved_index_group
+      })
+      this.props.getLoadedSuatainabilityIndex(saved_index_group)
+    }
+
+    showLoadIndexModal(element){
+      console.log(element.target.id)
+      let index_to_show_in_modal = []
+      this.state.saved_index_group.forEach(index=>{
+        if(index["name"]===element.target.id){
+          index_to_show_in_modal = JSON.parse(JSON.stringify(index))
+          this.setState({
+            index_to_show_in_modal: index_to_show_in_modal
+          })
+        }
+      })
+      this.setState({
+        Load_Index_Modal:true
+      })
+    }
+
+    closeLoadIndexModal(){
+      this.setState({
+        Load_Index_Modal:false
+      })
+    }
+
+    deleteIndexGroup(element){
+      console.log(element.target)
+      this.setState({
+        index_to_delete: element.target.id
+      })
+    }
+
+    render() {
 
         const style = {
               width: '100px',
@@ -484,8 +623,53 @@ class Variables_Radial_Tree extends Component {
               top: '100px',
               left: '100px',
             };
+        let index_to_show_in_modal = JSON.parse(JSON.stringify(this.state.index_to_show_in_modal))
+        if(index_to_show_in_modal.length===0){
+          index_to_show_in_modal={"variable":[], "index":[], "name":""}
+        }
         return (
           <div>
+             <Modal 
+                    width={800}
+                    visible={this.state.Save_Index_Modal}
+                    onCancel={this.closeSaveIndexModal.bind(this)}
+                    footer={null}
+                >
+                    Name the Group of the Indices
+                    <Input id="index-group-name" defaultValue="" value={this.state.name_to_save} onChange={this.handleIndexGroupNameChange.bind(this)} addonBefore="Group" />
+                    <Popconfirm placement="bottomLeft" title={"Do you want to save the indices?"} onConfirm={this.confirmSave.bind(this)} okText="Yes" cancelText="No">
+                      <Button>Save The Indices Group</Button>
+                    </Popconfirm>
+              </Modal>
+
+              <Modal 
+                    width={800}
+                    visible={this.state.Load_Index_Modal}
+                    onCancel={this.closeLoadIndexModal.bind(this)}
+                    footer={null}
+                >
+                Variables:
+                {index_to_show_in_modal["variable"].map(v=>{return <Row gutter={8}>
+                                                                              <div class="tooltip">
+                                                                                <Button style={{ height: '100%',overflow: 'hidden'}} id={v["variable"]}>{v["name"]+"="+v["variable"].substring(0, 75)}</Button> 
+                                                                                <span class="tooltiptext">{v["variable"]}</span>
+                                                                              </div>
+                                                                          </Row>})}
+                Index:
+                {index_to_show_in_modal["index"].map(d=>{return <div>
+                                                                  <Row gutter={8}>
+                                                                        <div class="tooltip">
+                                                                          <Button>
+                                                                            {d["index-name"]}={d["index-function"]}
+                                                                            {/* <span class="tooltiptext">{v["variable"]}</span> */}
+                                                                          </Button> 
+                                                                        </div>
+                                                                  </Row>    
+                                                                  
+                                                                  
+                                                                </div>})}
+              </Modal>
+
           <Row gutter={30}
                 type="flex"
                 style={{
@@ -522,40 +706,104 @@ class Variables_Radial_Tree extends Component {
                   flexDirection: 'column'
               }}
           >
-          <Card title="Sustainability Variables">
-            <InputGroup size="large">
-              {/* {this.state.sustainability_variables.map(d=>{return <div onClick={this.variableList.bind(this.innerHTML)}>{d.name}={d.variable}</div>})} */}
-              <ButtonGroup>
-                {this.state.sustainability_variables.map(v=>{return <Row gutter={8}><Col span={21}><div class="tooltip"><Button id={v["variable"]}>{v["name"]+"="+v["variable"].substring(0, 60)}</Button> <span class="tooltiptext">{v["variable"]}</span></div></Col><Col span={1}><div onClick={this.deleteVariable.bind(this)}><div id={v["name"]}>x</div></div></Col></Row>})}
-              </ButtonGroup>
-              <Row gutter={8}>
-                <Col span={8}>
-                  <Input id="name" defaultValue="" value={this.state.user_input.name} onChange={this.handleChange.bind(this)} addonBefore="name" />
-                </Col>
-                <Col span={15}>
-                  <Input id="variable" defaultValue="" value={this.state.user_input.variable} onChange={this.handleChange.bind(this)} addonBefore="variable" disabled={true}/>
-                </Col>
-              </Row>
-            </InputGroup>
-            <Button type="dashed" onClick={this.addVariable.bind(this)} style={{ width: '60%' }}>
-              <Icon type="plus" /> Add a Variable
-            </Button>
-          </Card>
-          
-          <Card title="Sustainability Index Function">
-          {this.state.sustainability_index.map(d=>{return <div>{d["index-name"]}={d["index-function"]}</div>})}
-            <Row gutter={8}>
-                <Col span={8}>
-                  <Input id="index-name" defaultValue="" value={this.state.index_input["index-name"]} onChange={this.handleChange_Index.bind(this)} addonBefore="index" />
-                </Col>
-                <Col span={15}>
-                <Input id="index-function" defaultValue="" value={this.state.index_input["index-function"]} onChange={this.handleChange_Index.bind(this)} addonBefore="function" disabled={false}/>
-                </Col>
-              </Row>
-            <Button type="dashed" onClick={this.addIndex.bind(this)} style={{ width: '60%' }}>
-              <Icon type="plus" /> Add a Index
-            </Button>
-          </Card>
+            <Tabs 
+              type='card'
+              style={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  // overflow: 'auto',
+                  // marginLeft: 10,
+                  
+            }}>
+
+              <TabPane tab='Create' key='0'>
+                <Card title="Sustainability Variables">
+                  <InputGroup size="large">
+                    {/* {this.state.sustainability_variables.map(d=>{return <div onClick={this.variableList.bind(this.innerHTML)}>{d.name}={d.variable}</div>})} */}
+                    <ButtonGroup>
+                      {this.state.sustainability_variables.map(v=>{return <Row gutter={8}>
+                                                                            <Col span={23}>
+                                                                              <div class="tooltip">
+                                                                                <Button style={{ height: '100%',overflow: 'hidden'}} id={v["variable"]}>{v["name"]+"="+v["variable"].substring(0, 46)}</Button> 
+                                                                                <span class="tooltiptext">{v["variable"]}</span>
+                                                                              </div>
+                                                                            </Col>
+                                                                            <Col span={1}>
+                                                                              <div onClick={this.deleteVariable.bind(this)}>
+                                                                                <div id={v["name"]}>x</div>
+                                                                              </div>
+                                                                            </Col>
+                                                                          </Row>})}
+                    </ButtonGroup>
+                    <Row gutter={8}>
+                      <Col span={8}>
+                        <Input id="name" defaultValue="" value={this.state.user_input.name} onChange={this.handleChange.bind(this)} addonBefore="name" />
+                      </Col>
+                      <Col span={16}>
+                        <Input id="variable" defaultValue="" value={this.state.user_input.variable} onChange={this.handleChange.bind(this)} addonBefore="variable" disabled={true}/>
+                      </Col>
+                    </Row>
+                  </InputGroup>
+                  <Button type="dashed" onClick={this.addVariable.bind(this)} style={{ width: '60%' }}>
+                    <Icon type="plus" /> Add a Variable
+                  </Button>
+                </Card>
+                
+                <Card title="Sustainability Index Function" extra={<Button onClick={this.showSaveIndexModal.bind(this)}>Save</Button>}>
+                {this.state.sustainability_index.map(d=>{return <div>
+                                                                  <Row gutter={8}>
+                                                                      <Col span={23}>
+                                                                        <div class="tooltip">
+                                                                          <Button>
+                                                                            {d["index-name"]}={d["index-function"]}
+                                                                            {/* <span class="tooltiptext">{v["variable"]}</span> */}
+                                                                          </Button> 
+                                                                        </div>
+                                                                      </Col>
+                                                                      <Col span={1}>
+                                                                        <div onClick={this.deleteIndex.bind(this)}>
+                                                                          <div id={d["index-name"]}>x</div>
+                                                                        </div>
+                                                                      </Col>
+                                                                  </Row>    
+                                                                  
+                                                                  
+                                                                </div>})}
+                  <Row gutter={8}>
+                      <Col span={8}>
+                        <Input id="index-name" defaultValue="" value={this.state.index_input["index-name"]} onChange={this.handleChange_Index.bind(this)} addonBefore="index" />
+                      </Col>
+                      <Col span={15}>
+                      <Input id="index-function" defaultValue="" value={this.state.index_input["index-function"]} onChange={this.handleChange_Index.bind(this)} addonBefore="function" disabled={false}/>
+                      </Col>
+                    </Row>
+                  <Button type="dashed" onClick={this.addIndex.bind(this)} style={{ width: '60%' }}>
+                    <Icon type="plus" /> Add a Index
+                  </Button>
+                </Card>
+                
+              </TabPane>
+
+              <TabPane tab='Load Existing' key='1'>
+              <Card title="Saved Index">
+                {this.state.saved_index_group.map(index=>{
+                  return <Row gutter={8}>
+                            <Col span={21}>
+                              <Button  onClick={this.showLoadIndexModal.bind(this)} id={index["name"]}> {index["name"]} </Button>
+                              <Popconfirm id={index["name"]} placement="bottomLeft" title={"Do you want to delete this indice group?"} okButtonProps={"111"} onConfirm={this.confirmDeleteIndexGroup.bind(this)} okText="Yes" cancelText="No">
+                                <Button id={index["name"]} type="dashed" onClick={this.deleteIndexGroup.bind(this)} >x</Button>
+                              </Popconfirm>
+                            </Col>
+                            <Col span={3} >
+                              <Switch defaultChecked={index["loaded"]} onChange={this.loadIndexGroup.bind(this)} id={index["name"]}/>
+                            </Col>
+                            
+                          </Row> 
+                  })}
+                </Card>
+              </TabPane>
+            </Tabs>
           </Col>  
           </Row> 
           </div>

@@ -39,6 +39,9 @@ export default class App extends Component {
             Sustainability_Creation_Modal:false,
             sustainability_variables: [],
             sustainability_index: [],
+            sustainability_variables_calculated: [],
+            sustainability_index_calculated: [],
+            loaded_group_index: [],
 
             leap_inputs:[],
             weap_inputs: [],
@@ -49,7 +52,8 @@ export default class App extends Component {
             weap_result_variable: [],
             leap_result_variable: [],
 
-            simulation_run_status: "Running"
+            simulation_run_status: "Running",
+            run_log: []
         };
 
         // Initialize data loading
@@ -98,60 +102,15 @@ export default class App extends Component {
     };
 
     runModel () {
-        // Search for the scenario
-        // load it into the main content
-
-        // const { proj, activatedMethod } = this.state;
-        // console.log(proj)
-        // // 0. Set the spinning first
-        // this.setState({ isLoadingScenario: true });
-
-        // // 1. Test if the scenario has been loaded
-        // const candidateScenarioIdx = proj[activatedMethod].scenario.findIndex(s => s.sid === sid),
-        //     candidateScenario = proj[activatedMethod].scenario[candidateScenarioIdx];
-
-        // if (!candidateScenario['__filled']) {
-        //     fetch(`/proj/${proj.pid}/${activatedMethod}/scenario/${sid}`, {
-        //         method: 'GET'
-        //     })
-        //         .then(r => r.json())
-        //         .then(newScenario => {
-        //             let newState = { ...this.state };
-        //             console.log(newState);
-        //             proj[activatedMethod].scenario[candidateScenarioIdx] = newScenario;
-        //             newState.isLoadingScenario = false;
-        //             newState.activatedScenario = newScenario;
-
-        //             this.setState(newState);
-
-        //             // let scenarioList = newState.proj[activatedMethod];
-
-        //             // for (let i = 0; i < scenarioList.length; i++) {
-        //             //     if (scenarioList[i].sid === sid) {
-        //             //         scenarioList[i] = newScenario
-        //             //     }
-        //             // }
-
-        //         })
-        // } else {
-        //     this.setState({
-        //         activatedScenario: candidateScenario,
-        //         isLoadingScenario: false
-        //     })
-        // }
-        // console.log(this.state.scenarios)
-        // Object.entries(this.state.scenarios).forEach((name, scenario)=>{ console.log(name, scenario)})
-
         if(this.state.created_scenarios.length===0){
             this.openNotification('No scenario exists!', 'Please create and load scenarios to run!')
-            console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
         }
         else{
             
             let xhr = new XMLHttpRequest();
             xhr.timeout = 10000;
             xhr.open('POST', 'run/weap')
-            xhr.send(JSON.stringify(this.state.created_scenarios))
+            xhr.send(JSON.stringify([this.state.created_scenarios, this.state.sustainability_variables, this.state.loaded_group_index]))
             xhr.onload = function() {
                 if (xhr.status != 200) { // analyze HTTP status of the response
                 //   alert(`Error ${xhr.status}: ${xhr.statusText}`); // e.g. 404: Not Found
@@ -186,6 +145,7 @@ export default class App extends Component {
             
             fetch('log').then(r=>r.json()).then(r=>{
                 console.log(r, r[r.length-1]); 
+                setState({run_log: r})
                 if(r[r.length-1]["message"] === "Completed"){
                     console.log("Runing Completed")
                     getData(created_scenarios, setState)
@@ -200,7 +160,7 @@ export default class App extends Component {
             fetch("run/weap", {method: "GET"})
                 .then(r=>r.json())
                 .then(r=>{console.log(r); 
-                            setState({weap_flow: r['weap-flow'], leap_data:r['leap-data'], run_model_status:'finished', simulation_time_range:r['weap-flow'][0]['timeRange']})
+                            setState({weap_flow: r['weap-flow'], leap_data:r['leap-data'], run_model_status:'finished', simulation_time_range:r['weap-flow'][0]['timeRange'], sustainability_variables_calculated: r['sustainability_variables']})
                             let weap_result_variable = []
                             let leap_result_variable = []
                             
@@ -221,6 +181,7 @@ export default class App extends Component {
                             console.log(weap_result_variable)
                             console.log(leap_result_variable)
                             setState({weap_result_variable: weap_result_variable, leap_result_variable: leap_result_variable})
+
                         })
         }
 
@@ -337,6 +298,17 @@ export default class App extends Component {
         console.log(sustainability_variables, sustainability_index)
     }
 
+    getLoadedSuatainabilityIndex(loaded_group_index){
+        let index_group = []
+        console.log(loaded_group_index)
+        loaded_group_index.forEach(index=>{
+            if(index["loaded"]){
+                index_group.push(JSON.parse(JSON.stringify(index)))
+            }
+        })
+        this.setState({loaded_group_index: index_group})
+    }
+
     createScenarios = () => {
         console.log(this.state.weap_inputs, this.state.leap_inputs)
         let created_scenarios = this.state.created_scenarios
@@ -384,7 +356,12 @@ export default class App extends Component {
 
 
         if(created_scenarios_names.includes(name) !=+ true){
-            created_scenarios.push(scenarios_to_load)
+            if(scenarios_to_load['name']==='Base'){
+                created_scenarios.unshift(scenarios_to_load)
+            }
+            else{
+                created_scenarios.push(scenarios_to_load)
+            }
             console.log(created_scenarios)
             this.setState({created_scenarios:created_scenarios})
         }
@@ -739,7 +716,12 @@ export default class App extends Component {
                     onCancel={this.closeSustainabilityModal.bind(this)}
                     footer={null}
                 >
-                    <Variables_Radial_Tree variables={this.state.variables} getSuatainabilityIndex={this.getSuatainabilityIndex.bind(this)}></Variables_Radial_Tree>
+                    <Variables_Radial_Tree 
+                        variables={this.state.variables} 
+                        getSuatainabilityIndex={this.getSuatainabilityIndex.bind(this)}
+                        getLoadedSuatainabilityIndex={this.getLoadedSuatainabilityIndex.bind(this)}
+                    >
+                    </Variables_Radial_Tree>
                 </Modal>
                 <Layout
                     style={{ height: '100%' }}
@@ -848,6 +830,8 @@ export default class App extends Component {
                     >
                         <MainScenarioComponent
                             proj={proj}
+                            run_log={this.state.run_log}
+                            created_scenarios={this.state.created_scenarios}
                             run_model_status={this.state.run_model_status}
                             activatedMethod={activatedMethod}
                             weap_flow={this.state.weap_flow}
@@ -862,6 +846,7 @@ export default class App extends Component {
                             handleLEAPResultVariableClick={this.handleLEAPResultVariableClick.bind(this)}
                             weap_result_variable={this.state.weap_result_variable}
                             leap_result_variable={this.state.leap_result_variable}
+                            sustainability_variables_calculated={this.state.sustainability_variables_calculated}
                         />                        
                     </Content>
                 </Layout>
@@ -869,4 +854,3 @@ export default class App extends Component {
         );
     }
 }
-

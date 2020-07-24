@@ -18,40 +18,40 @@ class Sustainability_Index extends Component {
         }
       }
 
-    componentDidMount(){
-        console.log("Plot Sustainability_Index")
-        let base_color = ["#8dd3c7", "#fcdf03", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"]
+    // componentDidMount(){
+    //     console.log("Plot Sustainability_Index")
+    //     let base_color = ["#8dd3c7", "#fcdf03", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"]
 
-        console.log(this.state.sustainability_index)
-        console.log(this.state.sustainability_variables)
-        // d3.selectAll("#index-plot")
-        // .remove()
-        for(var i=0; i<this.state.sustainability_index.length; i++){
-            this.initIndexCanvas(this.state.sustainability_index[i], base_color[i])
-        }
-    }
+    //     console.log(this.state.sustainability_index)
+    //     console.log(this.state.sustainability_variables)
+    //     // d3.selectAll("#index-plot")
+    //     // .remove()
+    //     for(var i=0; i<this.state.sustainability_index.length; i++){
+    //         this.initIndexCanvas(this.state.sustainability_index[i], base_color[i])
+    //     }
+    // }
 
-    componentDidUpdate(){
-        let base_color = ["#8dd3c7", "#fcdf03", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"]
+    // componentDidUpdate(){
+    //     let base_color = ["#8dd3c7", "#fcdf03", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"]
 
-        d3.selectAll('#sustainability-variable-plot')
-            .remove()
-        d3.selectAll('#sustainability-index-plot')
-            .remove()
+    //     d3.selectAll('#sustainability-variable-plot')
+    //         .remove()
+    //     d3.selectAll('#sustainability-index-plot')
+    //         .remove()
 
-        if(this.state.display==="Sustainability Index"){
-            for(var i=0; i<this.state.sustainability_index.length; i++){
-                this.initIndexCanvas(this.state.sustainability_index[i], base_color[i])
-            }
-        }
+    //     if(this.state.display==="Sustainability Index"){
+    //         for(var i=0; i<this.state.sustainability_index.length; i++){
+    //             this.initIndexCanvas(this.state.sustainability_index[i], base_color[i])
+    //         }
+    //     }
 
-        if(this.state.display==="Sustainability Variable"){
-            for(var i=0; i<this.state.sustainability_variables.length; i++){
-                this.initVariableCanvas(this.state.sustainability_variables[i], base_color[i])
-            }
-        }
+    //     if(this.state.display==="Sustainability Variable"){
+    //         for(var i=0; i<this.state.sustainability_variables.length; i++){
+    //             this.initVariableCanvas(this.state.sustainability_variables[i], base_color[i])
+    //         }
+    //     }
         
-    }
+    // }
 
     initIndexCanvas(index, base_color){
 
@@ -309,7 +309,7 @@ class Sustainability_Index extends Component {
                 
                 <Col
                     span={7}
-                    style={{height: 3000, marginRight: 35}}
+                    style={{height: 1010, marginRight: 35}}
                 >
                     <div>
                         <Card title="Sustainability Variables">
@@ -346,7 +346,7 @@ class Sustainability_Index extends Component {
                     style={{height: '100%'}}
                 >
                     <b>{this.state.display}</b>
-                    <div id="sustainability-index">
+                    <div id="sustainability-index1230">
                             
                     </div>
                 </Col>
