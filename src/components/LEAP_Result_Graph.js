@@ -22,7 +22,7 @@ class LEAP_Result_Graph extends Component {
 
     initVariableCanvas(leap_result_variable, base_color){
 
-        var margin = {top: 10, right: 30, bottom: 60, left: 80},
+        var margin = {top: 10, right: 30, bottom: 80, left: 80},
         width = 1000 - margin.left - margin.right,
         height = 170 - margin.top - margin.bottom;
 
@@ -107,7 +107,8 @@ class LEAP_Result_Graph extends Component {
             .x(function(d) { return x(d.year) })
             .y(function(d) { return y(d.value) })
             )
-
+        
+        var lengend_space = 120
         svg.append("g")
             .selectAll("dot")
             .data(data[i])
@@ -125,19 +126,19 @@ class LEAP_Result_Graph extends Component {
             .attr("fill", base_color[i])
         svg.append("g")
                 .append("circle")
-                .attr("cx", width/2-(100*data.length)/2 + 100*i )
+                .attr("cx", width/2-(120*data.length)/2 + lengend_space*i )
                 .attr("cy", height + margin.top + 45 )
                 .attr("r", 5)
                 .attr("fill", base_color[i])
             svg.append("g")
                 .append("text")
-                .attr("x", width/2-(100*data.length)/2 + 100*i + 15 )
+                .attr("x", width/2-(lengend_space*data.length)/2 + lengend_space*i + 15 )
                 .attr("y", height + margin.top + 45 )
                 .attr("text-anchor", "left")
                 .attr('alignment-baseline', 'middle')
                 .text(data[i][0]['scenario']);
             svg.append('polyline')
-                .attr('points', String(width/2-(100*data.length)/2 + 100*i-10)+','+String(height + margin.top + 45)+' '+String(width/2-(100*data.length)/2 + 100*i+10)+','+String(height + margin.top + 45))
+                .attr('points', String(width/2-(lengend_space*data.length)/2 + lengend_space*i-10)+','+String(height + margin.top + 45)+' '+String(width/2-(lengend_space*data.length)/2 + lengend_space*i+10)+','+String(height + margin.top + 45))
                 .attr('stroke',base_color[i])
                 .attr('stroke-width', 1)
                 .attr("stroke-opacity", 1)
@@ -240,5 +241,6 @@ class LEAP_Result_Graph extends Component {
         );
     }
 }
+
 
 export default LEAP_Result_Graph;

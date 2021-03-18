@@ -148,7 +148,7 @@ class FEW_Nexus_Panel extends Component {
             .attr('width', 100)
             .attr('rx', 0)
             .attr('ry', 0)
-            .attr('fill', "#b3de69")
+            .attr('fill', "#ffffcc")
             .attr('stroke', 'rgb(50 50 50)')
             .attr('fill-opacity', 0.5)
             .on('click', d=>this.mouseClickMPM());
@@ -172,13 +172,13 @@ class FEW_Nexus_Panel extends Component {
             .attr('orient', 'auto')
             .append('path')
             .attr('d', 'M 0 -5 L 10 0 L 0 5 z')
-            .attr('fill', '#b3de69')
+            .attr('fill', 'grey')
 
         svg.append('g')
             .append('polyline')
             // .attr('d', "M 20 35 L 120 100 L 0 100 Z")
             .attr('points', String(x_element_mpm+100)+', '+String(y_element+65)+' '+ String(x_element_weap-13)+', '+String(y_element+65))
-            .attr('stroke', '#b3de69')
+            .attr('stroke', 'grey')
             .attr('stroke-width', 5)
             .attr("stroke-opacity", 1)
             .attr('fill', 'none')
@@ -325,7 +325,7 @@ class FEW_Nexus_Panel extends Component {
                             <h1>Coupled Variables between WEAP and LEAP</h1>
                             {this.props.coupled_parameters.map(parameter=>{
                                 return <div style={{'fontSize': 3}}>
-                                            {parameter[0]}, --->{parameter[1]}
+                                            {parameter[0]}, ---&gt{parameter[1]}
                                         </div>
                             })}
                         </TabPane>
@@ -348,13 +348,17 @@ class FEW_Nexus_Panel extends Component {
                             <h1>Coupled Variables between WEAP and LEAP</h1>
                             {this.props.coupled_parameters.map(parameter=>{
                                 return <div style={{'fontSize': 3}}>
-                                            {parameter[0]}, --->{parameter[1]}
+                                            {parameter[0]}, ---&gt {parameter[1]}
                                         </div>
                             })}
                         </TabPane>
                     </Tabs>
                 </Modal>
                 <Card
+                    size="small" 
+                    headStyle={{
+                        background: 'rgb(236, 236, 236)'
+                    }}
                     title='FEW Nexus Summary'
                     style={{
                     height:270,
@@ -363,7 +367,7 @@ class FEW_Nexus_Panel extends Component {
                     overflow: 'auto',
                 }}>
                     {/* This could display some text content or summary visualizarion content */}
-                    Model: Food-->MPM, Water-->WEAP, Energy-->LEAP
+                    Model: Food--&gt MPM, Water--&gt WEAP, Energy--&gt LEAP
                     <div id="concept-diagram"></div>
                 </Card>
             </div>

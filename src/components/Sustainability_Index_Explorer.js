@@ -7,8 +7,14 @@ class Sustainability_Index_Explorer extends Component {
     constructor(props) {
         super(props);
         this.state = { 
+            customized_sustainability_index_calculated:[],
+            customized_sustainability_variables_calculated:[],
             sustainability_index_calculated: [],
-            index_to_show: ""
+            sustainability_variables_calculated:[],
+            index_to_show: "",
+            loaded_group_index_simulated:[],
+
+            index_group_to_show: ""
          };
     }
     
@@ -23,10 +29,22 @@ class Sustainability_Index_Explorer extends Component {
             console.log(sustainability_index)
             console.log(this.props.weap_flow)
             this.setState({
-                sustainability_index_calculated: sustainability_index,
+                customized_sustainability_index_calculated: sustainability_index,
+                customized_sustainability_variables_calculated:sustainability_variables_calculated,
                 index_to_show: index_to_show
         })}
-        
+
+        let loaded_group_index_simulated = JSON.parse(JSON.stringify(this.props.loaded_group_index_simulated))
+        loaded_group_index_simulated.forEach(index_group=>{
+            index_group["index"].forEach(index=>{
+                console.log(index)
+                index["value"] = this.calculateIndexFunction(index["index-function"], index_group["variable"])
+            })
+        })
+        this.setState({
+            loaded_group_index_simulated: loaded_group_index_simulated
+        })
+        console.log(loaded_group_index_simulated)
     }
 
     calculateIndexFunction(index_functions, sustainability_variables_calculated){
@@ -99,31 +117,40 @@ class Sustainability_Index_Explorer extends Component {
     componentDidUpdate(){
 
         let base_color = ["#8dd3c7", "#fcdf03", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f"]
-        let sustainability_variables_calculated = JSON.parse(JSON.stringify(this.props.sustainability_variables_calculated))
+        let sustainability_variables_calculated = JSON.parse(JSON.stringify(this.state.sustainability_variables_calculated))
         let sustainability_index_calculated = JSON.parse(JSON.stringify(this.state.sustainability_index_calculated))
         console.log(sustainability_index_calculated)
         // d3.selectAll("#index-plot")
         // .remove()
-        if(sustainability_variables_calculated.length>0 && sustainability_index_calculated.length>0){
-            for(let i=0; i<sustainability_variables_calculated.length;i++){
-                if(sustainability_variables_calculated[i]["name"]===this.state.index_to_show){
-                    d3.selectAll('#sustainability-variable-plot')
-                        .remove()
-                    d3.selectAll('#sustainability-index-plot')
-                        .remove()
-                    this.initVariableCanvas(sustainability_variables_calculated[i], base_color)
+        if(this.state.index_to_show===""){
+            d3.selectAll('#sustainability-variable-plot')
+                .remove()
+            d3.selectAll('#sustainability-index-plot')
+                .remove()
+        }
+        else{
+            if(sustainability_variables_calculated.length>0 && sustainability_index_calculated.length>0){
+                for(let i=0; i<sustainability_variables_calculated.length;i++){
+                    if(sustainability_variables_calculated[i]["name"]===this.state.index_to_show){
+                        d3.selectAll('#sustainability-variable-plot')
+                            .remove()
+                        d3.selectAll('#sustainability-index-plot')
+                            .remove()
+                        this.initVariableCanvas(sustainability_variables_calculated[i], base_color)
+                    }
                 }
-            }
-            for(let i=0; i<sustainability_index_calculated.length;i++){
-                if(sustainability_index_calculated[i]["index-name"]===this.state.index_to_show){
-                    d3.selectAll('#sustainability-variable-plot')
-                        .remove()
-                    d3.selectAll('#sustainability-index-plot')
-                        .remove()
-                    this.initIndexCanvas(sustainability_index_calculated[i], base_color)
+                for(let i=0; i<sustainability_index_calculated.length;i++){
+                    if(sustainability_index_calculated[i]["index-name"]===this.state.index_to_show){
+                        d3.selectAll('#sustainability-variable-plot')
+                            .remove()
+                        d3.selectAll('#sustainability-index-plot')
+                            .remove()
+                        this.initIndexCanvas(sustainability_index_calculated[i], base_color)
+                    }
                 }
             }
         }
+        
         
     }
 
@@ -415,7 +442,7 @@ class Sustainability_Index_Explorer extends Component {
         }
     }
 
-    handleChange(element){
+    handleIndexChange(element){
         console.log(element)
         
         this.setState({
@@ -430,9 +457,34 @@ class Sustainability_Index_Explorer extends Component {
         // })
     }
 
+    handleIndexGroupChange(element){
+        let sustainability_variables_calculated = []
+        let sustainability_index_calculated = []
+        this.state.loaded_group_index_simulated.forEach(group_index=>{
+            if(group_index["name"]===element){
+                this.setState({
+                    index_group_to_show: element,
+                    index_to_show:"",
+                    sustainability_variables_calculated:group_index["variable"],
+                    sustainability_index_calculated: group_index["index"]
+
+                })
+            }
+        })
+        if(element==="Customized"){
+            this.setState({
+                index_group_to_show: element,
+                index_to_show:"",
+                sustainability_variables_calculated: this.state.customized_sustainability_variables_calculated,
+                sustainability_index_calculated: this.state.customized_sustainability_index_calculated
+            })
+        }
+        
+    }
+
     render() {
         let index_to_show = ''
-        let sustainability_variables_calculated = JSON.parse(JSON.stringify(this.props.sustainability_variables_calculated))
+        let sustainability_variables_calculated = JSON.parse(JSON.stringify(this.state.sustainability_variables_calculated))
         let sustainability_index_calculated = JSON.parse(JSON.stringify(this.state.sustainability_index_calculated))
         for(let i=0; i<sustainability_variables_calculated.length;i++){
             if(sustainability_variables_calculated[i]["name"]===this.state.index_to_show){
@@ -445,8 +497,10 @@ class Sustainability_Index_Explorer extends Component {
             }
         }
         console.log(sustainability_variables_calculated, sustainability_index_calculated)
-        let height = 368
-        if(sustainability_variables_calculated.length>0 && sustainability_index_calculated.length>0){
+        let height = 367
+        let loaded_group_index_simulated = JSON.parse(JSON.stringify(this.props.loaded_group_index_simulated))
+        
+        if((sustainability_variables_calculated.length>0 && sustainability_index_calculated.length>0) || loaded_group_index_simulated.length>0){
             return (
                 <div>
                     
@@ -479,18 +533,29 @@ class Sustainability_Index_Explorer extends Component {
                     </Tabs> */}
                 <Card
                     title="Sustainability Index"
-                    extra={<Select defaultValue={sustainability_index_calculated[0]["index-name"]} style={{ width: 120 }} onChange={this.handleChange.bind(this)}>
-                            <OptGroup label="Index">
-                                {sustainability_index_calculated.map(sustainability_index=>{
-                                    return <Option value={sustainability_index["index-name"]}>{sustainability_index["index-name"]}</Option>  
-                                })}
-                            </OptGroup>
-                            <OptGroup label="Variable">
-                                {sustainability_variables_calculated.map(sustainability_variable=>{
-                                    return <Option value={sustainability_variable["name"]}>{sustainability_variable["name"]}</Option>  
-                                })}
-                            </OptGroup>
-                            </Select>
+                    extra={<div>
+                                <Select  style={{ width: 150 }} onChange={this.handleIndexGroupChange.bind(this)}>
+                                    <Option value={"Customized"}>Customized</Option>
+                                    <OptGroup label="Loaded">
+                                        {loaded_group_index_simulated.map(sustainability_group=>{
+                                            return <Option value={sustainability_group["name"]}>{sustainability_group["name"]}</Option>  
+                                        })}
+                                    </OptGroup>
+                                </Select>
+
+                                <Select style={{ width: 100 }} onChange={this.handleIndexChange.bind(this)}>
+                                    <OptGroup label="Index">
+                                        {sustainability_index_calculated.map(sustainability_index=>{
+                                            return <Option value={sustainability_index["index-name"]}>{sustainability_index["index-name"]}</Option>  
+                                        })}
+                                    </OptGroup>
+                                    <OptGroup label="Variable">
+                                        {sustainability_variables_calculated.map(sustainability_variable=>{
+                                            return <Option value={sustainability_variable["name"]}>{sustainability_variable["name"]}</Option>  
+                                        })}
+                                    </OptGroup>
+                                </Select>
+                            </div>
                             }
                     style={{
                     height: height,

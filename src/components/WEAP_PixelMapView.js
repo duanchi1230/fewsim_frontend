@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {findDOMNode} from 'react-dom';
-import {Form, InputNumber, Button, Row, Col, Modal, Icon, Card, Radio} from 'antd';
+import {Form, InputNumber, Button, Row, Col, Modal, Card, Radio} from 'antd';
+import Icon from '@ant-design/icons'
 import WEAP_PixelMapCanvas from './WEAP_PixelMapCanvas';
 import VarTreeList from './VarTreeList';
 
@@ -101,7 +102,7 @@ export default class WEAP_PixelMapView extends Component {
             weap_flow = weap_flow_sorted_by_source
         }
         return (
-            <Row style={{height: '100%', overflow: 'auto'}}>
+            <div style={{height: '100%', overflow: 'auto'}}>
                 {/*<Col span={2}>*/}
                     {/*<Form>*/}
                         {/*<Form.Item>*/}
@@ -133,7 +134,11 @@ export default class WEAP_PixelMapView extends Component {
                             vars={weap_flow[0].var} handleNodeChecked={this.handleNodeChecked.bind(this)} checkedOutput = {this.state.checkedOutput}
                         />
                 </Modal>
-                    <Card 
+                    <Card
+                        size="small" 
+                        headStyle={{
+                            background: 'rgb(236, 236, 236)'
+                        }}
                         extra={<Button onClick={this.showFilterModal.bind(this)} type="primary" style={{"backgroundColor":"#2b8cbe"}}><Icon type="left" /> Flow Variables Filter<Icon type="right" /></Button>}
                         title={ <div style={{display:"inline-block"}}>
                                     <div style={{display:"inline-block"}}>WEAP Pixel Map </div> (<div style={{color:"#2b8cbe", display:"inline-block"}}>{scenario_to_show}</div>)
@@ -159,7 +164,7 @@ export default class WEAP_PixelMapView extends Component {
                             scenario_to_show={scenario_to_show}
                             />
                     </Card>  
-            </Row>
+            </div>
         );
     }
 }

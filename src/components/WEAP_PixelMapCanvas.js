@@ -18,7 +18,7 @@ export default class WEAP_PixelMapCanvas extends Component {
         
         const weap_flow = this.props.weap_flow
         console.log(weap_flow)
-        var {width, height} = findDOMNode(this).getBoundingClientRect();
+        let {width, height} = findDOMNode(this).getBoundingClientRect();
         let scenario_to_show = this.props.scenario_to_show
         console.log(scenario_to_show)
         height = weap_flow[0]['var']['output'].length * 30 +150

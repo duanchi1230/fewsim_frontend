@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {findDOMNode} from 'react-dom';
 import {Row, Col, Divider, Empty, Card, Button, Tabs} from 'antd';
 
 import VarTreeList from './VarTreeList';
@@ -14,6 +15,12 @@ import WEAP_Scenarios_Review from './Explorer_Scenarios_Review'
 import WEAP_Variables_Ranking from './WEAP_Variables_Ranking'
 import FEW_Nexus_Panel from './FEW_Nexus_Panel'
 import LEAP_Variables_Ranking from './LEAP_Variables_Ranking'
+import SI_Main_View from './SI_Main_View'
+import WEAP_Multi_Tab_Pixel_Map from './WEAP_Multi_Tab_Pixel_Map'
+import WEAP_Multi_Tab_Pixel_Map_map from './WEAP_Multi_Tab_Pixel_Map_map'
+import WEAP_Radar_Chart from './WEAP_Radar_Chart'
+
+
 const { TabPane } = Tabs;
 export default class MainScenarioComponent extends Component {
 
@@ -29,10 +36,10 @@ export default class MainScenarioComponent extends Component {
             sustainability_variables: [],
             sustainability_index: [],
             run_model_status: this.props.run_model_status,
-            scenario_to_show: '',
-            type_ranking:"Demand",
-            variable_ranking: "Energy Demand Final Units",
-
+            scenario_to_show: 'Base',
+            type_ranking: 'Demand',
+            variable_ranking: 'Energy Demand Final Units',
+            pixel_map_supply_source: 'from SRP Withdrawal',
             coupled_parameters: []
             
         };
@@ -79,18 +86,31 @@ export default class MainScenarioComponent extends Component {
 
     componentDidUpdate(){
         console.log(this.state.sustainability_index)
+        console.log(this.props.loaded_group_index_simulated)
     }  
 
     componentDidMount(){
         fetch('get-coupled-parameters', { method: 'GET' }).then(r=>r.json()).then(d=>{console.log(d); this.setState({coupled_parameters: d})}) 
+        console.log(this.props.loaded_group_index_simulated)
     }
     setLeapDataType(type, variable){
         console.log(type, variable)
         this.setState({type_ranking: type, variable_ranking: variable})
     }
+
+    setSupplyPixelMap(name){
+        console.log(name)
+        this.setState({
+            pixel_map_supply_source: name
+        })
+        
+    }
+
     render() {
 
         console.log(this.props.created_scenarios);
+        // let {width, height} = findDOMNode(this).getBoundingClientRect();
+        // console.log(width, height)
 
         if (this.props.run_model_status === 'null' && this.props.run_log.length===0) {
             return (
@@ -109,7 +129,7 @@ export default class MainScenarioComponent extends Component {
                         <div>
                             <div>Model Running</div>
                             {this.props.run_log.map(log=>{
-                                return <div id={log.message}>{log.time}--->{log.message}</div>
+                                return <div id={log.message}>{log.time} {"--->"} {log.message}</div>
                             })}
                         </div>
                     }
@@ -133,7 +153,7 @@ export default class MainScenarioComponent extends Component {
                             style={{ height: '100%',
                                     overflow: 'auto' }}
                             >
-                                <Col>
+                                <Col span={24}>
                                     <FEW_Nexus_Panel coupled_parameters={this.state.coupled_parameters}></FEW_Nexus_Panel>
                                 </Col>
                                 
@@ -142,30 +162,38 @@ export default class MainScenarioComponent extends Component {
                         
                             <Row
                             gutter={0}
-                            style={{ height: '100%',
-                                    overflow: 'auto', 
+                            style={{ height: 850,
+                                    // overflow: 'auto', 
                                     flex:10}}
                             >
-                                <Col>
-                                    <WEAP_Scenarios_Review created_scenarios={this.props.created_scenarios} setScenarioToShow={this.setScenarioToShow.bind(this)}/>
+                                <Col span={24}>
+                                    <WEAP_Scenarios_Review created_scenarios={this.props.created_scenarios} 
+                                                            setScenarioToShow={this.setScenarioToShow.bind(this)} 
+                                                            sensitivity_graph={this.props.sensitivity_graph} 
+                                                            sustainability_variables_calculated={this.props.sustainability_variables_calculated}
+                                                            sustainability_variables={this.props.sustainability_variables}
+                                                            sustainability_index={this.props.sustainability_index}
+                                                            scenario_to_show={this.state.scenario_to_show}
+                                                            loaded_group_index_simulated={this.props.loaded_group_index_simulated}/>
                                 </Col>
                                 
                             </Row>
 
-                            <Row
+                            {/* <Row
                             gutter={0}
                             style={{ height: '100%',
                                     overflow: 'auto' }}
                             >
-                                <Col style={{height:'100%'}}>
+                                <Col style={{height: '100%'}}>
                                     <Sustainability_Index_Explorer 
                                         sustainability_variables_calculated={this.props.sustainability_variables_calculated} 
                                         sustainability_index={this.props.sustainability_index}
                                         weap_flow={this.props.weap_flow}
+                                        loaded_group_index_simulated={this.props.loaded_group_index_simulated}
                                     />
                                 </Col>
                                 
-                            </Row>
+                            </Row> */}
                         </div>
                     </Col>
                     <Col
@@ -189,10 +217,10 @@ export default class MainScenarioComponent extends Component {
                                 
                         }}>
     
-                            <TabPane tab='Visualization_WEAP' key='0'>
+                            <TabPane tab='WEAP View' key='0'>
                                 <Row
                                     gutter={[10, 10]}
-                                    style={{ marginTop: 0, height: '100%', overflow: 'auto',}}
+                                    style={{ marginTop: 0, overflow: 'auto',}}
                                     >
                                         <Col span={11}>
 
@@ -205,12 +233,16 @@ export default class MainScenarioComponent extends Component {
                                         </Col>
                                         <Col span={13}> 
                                             <Card
+                                                size="small" 
+                                                headStyle={{
+                                                    background: 'rgb(236, 236, 236)'
+                                                }}
                                                 title='Click Pixel Map to Choose the WEAP Variable' 
                                                 style={{
                                                 height:270,
                                                 flex: 10,
                                                 marginTop: 0,
-                                                marginLeft: 10,
+                                                marginLeft: 0,
                                                 overflow: 'auto',
                                                 }}>
                                                 
@@ -223,19 +255,78 @@ export default class MainScenarioComponent extends Component {
                                 gutter={0}
                                 style={{ height: '100%', overflow: 'auto', }}
                                 >
-                                    
-                                        <WEAP_PixelMapView
-                                                checkedOutput={this.state.checkedOutput} 
-                                                weap_flow={this.props.weap_flow}
-                                                scenario_to_show={this.state.scenario_to_show}
-                                                handleWEAPResultVariableClick={this.props.handleWEAPResultVariableClick}
-                                        />
-                                    
+                                   <Col span={24}>
+                                   <Tabs 
+                                        type='card'
+                                        style={{
+                                            height: '100%',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            // overflow: 'auto',
+                                            // marginLeft: 10,
+                                            
+                                    }}>
+                                        <TabPane tab='Multi-Tab Pixel-Map' key='1'>
+                                            <Row
+                                            gutter={[10, 10]}
+                                            style={{ marginTop: 0, overflow: 'auto',}}
+                                            >
+                                                <Col span={8}>
+                                                    <WEAP_Multi_Tab_Pixel_Map
+                                                        weap_flow={this.props.weap_flow}
+                                                        pixel_map_supply_source={this.state.pixel_map_supply_source}
+                                                        setSupplyPixelMap={this.setSupplyPixelMap.bind(this)}>
+                                                    </WEAP_Multi_Tab_Pixel_Map>
+                                                </Col>
+                                                <Col span={16}>
+                                                    <Row 
+                                                        gutter={0}
+                                                        style={{ height: 200, overflow: 'auto', }}
+                                                    >
+                                                        <Col span={24}>
+                                                            <WEAP_Radar_Chart></WEAP_Radar_Chart>
+                                                        </Col>
+                                                    </Row>
+                                                    <Row gutter={0}
+                                                        style={{ height: 800, overflow: 'auto', }}>
+                                                        <Col span={24}>
+                                                            <WEAP_Multi_Tab_Pixel_Map_map
+                                                                weap_flow={this.props.weap_flow}
+                                                                scenario_to_show={this.state.scenario_to_show}
+                                                                simulation_time_range={this.props.simulation_time_range}
+                                                                pixel_map_supply_source={this.state.pixel_map_supply_source}>
+
+                                                            </WEAP_Multi_Tab_Pixel_Map_map>
+                                                        </Col>
+                                                    </Row>
+                                                    
+                                                </Col>
+                                                
+                                            </Row>
+                                        </TabPane>
+
+                                        <TabPane tab='Pixe-Map' key='2'>
+                                        
+                                            <WEAP_PixelMapView
+                                                    checkedOutput={this.state.checkedOutput} 
+                                                    weap_flow={this.props.weap_flow}
+                                                    scenario_to_show={this.state.scenario_to_show}
+                                                    handleWEAPResultVariableClick={this.props.handleWEAPResultVariableClick}
+                                            />
+                                            
+                                        
+                                            
+
+                                        </TabPane>
+
+                                    </Tabs>
+                                        
+                                  </Col>
                                         
                                 </Row>      
                             </TabPane>
 
-                            <TabPane tab='Visualization_LEAP' key='1'>
+                            <TabPane tab='LEAP View' key='1'>
                                 <Row
                                 gutter={[8, 8]}
                                 style={{ marginTop: 1 }}
@@ -251,6 +342,10 @@ export default class MainScenarioComponent extends Component {
                                     </Col>
                                     <Col span={13}>
                                         <Card 
+                                            size="small" 
+                                            headStyle={{
+                                                background: 'rgb(236, 236, 236)'
+                                            }}
                                             title='Click Pixel Map to Choose the LEAP Variable'
                                             style={{
                                             height:270,
@@ -267,15 +362,33 @@ export default class MainScenarioComponent extends Component {
                                 gutter={0}
                                 style={{ marginTop: 1 }}
                                 >
-                                    <LEAP_PixelMapView 
-                                        leap_data={this.props.leap_data} 
-                                        handleLEAPResultVariableClick={this.props.handleLEAPResultVariableClick}
-                                        scenario_to_show={this.state.scenario_to_show}
-                                        setLeapDataType={this.setLeapDataType.bind(this)}>
-                                    </LEAP_PixelMapView>
+                                    <Col span={24}>
+                                        <LEAP_PixelMapView 
+                                            leap_data={this.props.leap_data} 
+                                            handleLEAPResultVariableClick={this.props.handleLEAPResultVariableClick}
+                                            scenario_to_show={this.state.scenario_to_show}
+                                            setLeapDataType={this.setLeapDataType.bind(this)}>
+                                        </LEAP_PixelMapView>
+                                    </Col>
                                 </Row>
                             </TabPane>
-
+                            <TabPane tab='FEW Index View' key='2'>
+                            <Row
+                                gutter={0}
+                                style={{ height: '100%', overflow: 'auto', }}
+                            >
+                                <SI_Main_View
+                                    sustainability_variables_calculated={this.props.sustainability_variables_calculated}
+                                    sustainability_index={this.props.sustainability_index}
+                                    weap_flow={this.props.weap_flow}
+                                    setScenarioToShow={this.setScenarioToShow.bind(this)}
+                                    // Loaded existing index:
+                                    loaded_group_index_simulated={this.props.loaded_group_index_simulated}
+                                ></SI_Main_View>
+                            </Row>   
+                                
+                                
+                            </TabPane>
                             {/* <TabPane tab='Sustainability Index' key='2' >
                                 
                                 <Card 

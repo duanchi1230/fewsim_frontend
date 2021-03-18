@@ -1,0 +1,15 @@
+@import '~antd/dist/antd.css';
+
+.App {
+  text-align: center;
+}
+
+::-webkit-scrollbar {
+    width: 0; /* remove scrollbar space */
+    background: transparent; /* optional: just make scrollbar invisible */
+}
+
+/* optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+    background: #000000;
+}

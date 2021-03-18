@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3'
 import { selectAll, values } from 'd3';
-import {Form, InputNumber, Button, Row, Col, Modal, Empty, Card,Divider, Icon, Input, Tree} from 'antd';
+import {Form, InputNumber, Button, Row, Col, Modal, Empty, Card,Divider, Input, Tree} from 'antd';
+import Icon from '@ant-design/icons'
 import Variables_Radial_Tree from './Variables_Radial_Tree'
 const InputGroup = Input.Group;
 const {TreeNode} = Tree;

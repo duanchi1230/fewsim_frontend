@@ -168,6 +168,10 @@ class WEAP_Variables_Ranking extends Component {
 
         return (
                 <Card
+                    size="small" 
+                    headStyle={{
+                        background: 'rgb(236, 236, 236)'
+                    }}
                     title='Response Level: WEAP Flow Variable'
                     style={{
                     height:270,

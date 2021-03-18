@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/fewsim-susview/static/css/main.47b6f1f4.chunk.css",
+    "main.js": "/fewsim-susview/static/js/main.a03708fc.chunk.js",
+    "main.js.map": "/fewsim-susview/static/js/main.a03708fc.chunk.js.map",
+    "runtime-main.js": "/fewsim-susview/static/js/runtime-main.f86e572a.js",
+    "runtime-main.js.map": "/fewsim-susview/static/js/runtime-main.f86e572a.js.map",
+    "static/css/2.48db8b0f.chunk.css": "/fewsim-susview/static/css/2.48db8b0f.chunk.css",
+    "static/js/2.76c7c7f0.chunk.js": "/fewsim-susview/static/js/2.76c7c7f0.chunk.js",
+    "static/js/2.76c7c7f0.chunk.js.map": "/fewsim-susview/static/js/2.76c7c7f0.chunk.js.map",
+    "index.html": "/fewsim-susview/index.html",
+    "precache-manifest.ed1a4c13cf3e88a2059f32ce54435f07.js": "/fewsim-susview/precache-manifest.ed1a4c13cf3e88a2059f32ce54435f07.js",
+    "service-worker.js": "/fewsim-susview/service-worker.js",
+    "static/css/2.48db8b0f.chunk.css.map": "/fewsim-susview/static/css/2.48db8b0f.chunk.css.map",
+    "static/css/main.47b6f1f4.chunk.css.map": "/fewsim-susview/static/css/main.47b6f1f4.chunk.css.map",
+    "static/js/2.76c7c7f0.chunk.js.LICENSE.txt": "/fewsim-susview/static/js/2.76c7c7f0.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.f86e572a.js",
+    "static/css/2.48db8b0f.chunk.css",
+    "static/js/2.76c7c7f0.chunk.js",
+    "static/css/main.47b6f1f4.chunk.css",
+    "static/js/main.a03708fc.chunk.js"
+  ]
+}

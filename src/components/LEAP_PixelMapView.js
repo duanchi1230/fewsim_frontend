@@ -4,7 +4,8 @@ import * as d3 from 'd3';
 import Variables_Radial_Tree from './Variables_Radial_Tree';
 import { node } from 'prop-types';
 import LEAP_Visualization from "./LEAP_Visualization";
-import {Form, InputNumber, Button, Row, Col, Modal, Icon, Radio, Input, Card} from 'antd'
+import {Form, InputNumber, Button, Row, Col, Modal, Radio, Input, Card} from 'antd'
+import Icon from '@ant-design/icons'
 
 class LEAP_PixelMapView extends Component {
     constructor(props) {
@@ -158,7 +159,10 @@ class LEAP_PixelMapView extends Component {
                     </Radio.Group>
                 </Modal>
                 <Card 
-                    
+                    size="small" 
+                    headStyle={{
+                        background: 'rgb(236, 236, 236)'
+                    }}
                     extra={<div>
                         <Button onClick={this.showDemandModal.bind(this)} type="primary" style={{"backgroundColor":"#fdae61", marginLeft: 35}}> <Icon type="left" /> Demand <Icon type="right" /></Button>
                         <Button onClick={this.showTransformationModal.bind(this)} type="primary" style={{"backgroundColor":"#fdae61", marginLeft: 35}}> <Icon type="left" /> Transformation <Icon type="right" /></Button>

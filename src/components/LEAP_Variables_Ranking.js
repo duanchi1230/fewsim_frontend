@@ -167,6 +167,10 @@ class LEAP_Variables_Ranking extends Component {
         return (
             <div>
             <Card
+              size="small" 
+              headStyle={{
+                  background: 'rgb(236, 236, 236)'
+              }}
                 title={ <div style={{display:"inline-block"}}>
                             <div style={{display:"inline-block"}}> Response Level: {this.props.variable} </div> (<div style={{color:"#fdae61", display:"inline-block"}}>{scenario_to_show}</div>)
                         </div> }

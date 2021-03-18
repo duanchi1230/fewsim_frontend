@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Button , Card, Col, Divider, Icon, Input, notification, Row, Tabs, Tree, Popconfirm, message, Modal, Switch} from 'antd';
+import { Button , Card, Col, Divider, Input, notification, Row, Tabs, Tree, Popconfirm, message, Modal, Switch} from 'antd';
+import Icon from '@ant-design/icons'
 import * as d3 from 'd3'
 import { selectAll } from 'd3';
 import '../styles/App.css';
@@ -420,24 +421,28 @@ class Variables_Radial_Tree extends Component {
         bool = false;
         non_exist_variables.push(v)
       }})
-      if(names.includes(this.state.index_input["index-name"])===true || index_functions.includes(this.state.index_input["index-function"])===true &&this.state.index_input["index-function"]!==""){
-        this.openNotification("Name or index function already exists!", "Please redefine the function.")
-      }
-      if(Boolean(this.state.index_input["index-name"].match(/[A-Za-z]([_A-Za-z0-9]+)/g))===false){
-        this.openNotification("Name should start with letters and only include letetres, underscores and numbers!", "Please rename the index.")
-      }
-      if(bool && names.includes(this.state.index_input["index-name"])!==true && index_functions.includes(this.state.user_input.variable)!==true && Boolean(this.state.index_input["index-name"].match(/[A-Za-z]([_A-Za-z0-9]+)/g))){
-        if (this.state.index_input["index-name"] !=="" && this.state.index_input["index-function"] !==""){
-          this.state.index_input["value"]=this.calculateIndexFunction(this.state.index_input["index-function"])
-          sustainability_index.push(this.state.index_input)
+      try{
+        if(names.includes(this.state.index_input["index-name"])===true || index_functions.includes(this.state.index_input["index-function"])===true &&this.state.index_input["index-function"]!==""){
+          this.openNotification("Name or index function already exists!", "Please redefine the function.")
         }
-        this.setState({sustainability_index:sustainability_index, index_input:{"index-name":"", "index-function":"", "node":{}}})
-        this.getSuatainabilityIndex(sustainability_index,this.state.sustainability_variables)
+        if(Boolean(this.state.index_input["index-name"].match(/[A-Za-z]([_A-Za-z0-9]+)/g))===false){
+          this.openNotification("Name should start with letters and only include letetres, underscores and numbers!", "Please rename the index.")
+        }
+        if(bool && names.includes(this.state.index_input["index-name"])!==true && index_functions.includes(this.state.user_input.variable)!==true && Boolean(this.state.index_input["index-name"].match(/[A-Za-z]([_A-Za-z0-9]+)/g))){
+          if (this.state.index_input["index-name"] !=="" && this.state.index_input["index-function"] !==""){
+            this.state.index_input["value"]=this.calculateIndexFunction(this.state.index_input["index-function"])
+            sustainability_index.push(this.state.index_input)
+          }
+          this.setState({sustainability_index:sustainability_index, index_input:{"index-name":"", "index-function":"", "node":{}}})
+          this.getSuatainabilityIndex(sustainability_index,this.state.sustainability_variables)
+        }
+        if(bool===false){
+          this.openNotification("Variables "+ non_exist_variables +" not exist!", "Please select and add variable.")
+        }
       }
-      if(bool===false){
-        this.openNotification("Variables "+ non_exist_variables +" not exist!", "Please select and add variable.")
+      catch(err){
+        console.log(err)
       }
-      
       return null
     }
 
@@ -476,6 +481,7 @@ class Variables_Radial_Tree extends Component {
     }
 
     parseNodeValues(values){
+      
       console.log(values)
       let parsed_value = []
       let num_years = this.state.sustainability_variables[0]["node"]["value"].length
@@ -585,10 +591,10 @@ class Variables_Radial_Tree extends Component {
     }
 
     showLoadIndexModal(element){
-      console.log(element.target.id)
+      console.log(element)
       let index_to_show_in_modal = []
       this.state.saved_index_group.forEach(index=>{
-        if(index["name"]===element.target.id){
+        if(index["name"]===element){
           index_to_show_in_modal = JSON.parse(JSON.stringify(index))
           this.setState({
             index_to_show_in_modal: index_to_show_in_modal
@@ -712,7 +718,7 @@ class Variables_Radial_Tree extends Component {
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
-                  // overflow: 'auto',
+                  overflow: 'auto',
                   // marginLeft: 10,
                   
             }}>
@@ -790,7 +796,7 @@ class Variables_Radial_Tree extends Component {
                 {this.state.saved_index_group.map(index=>{
                   return <Row gutter={8}>
                             <Col span={21}>
-                              <Button  onClick={this.showLoadIndexModal.bind(this)} id={index["name"]}> {index["name"]} </Button>
+                              <Button  onClick={element=>this.showLoadIndexModal(index["name"])} id={index["name"]}> {index["name"]} </Button>
                               <Popconfirm id={index["name"]} placement="bottomLeft" title={"Do you want to delete this indice group?"} okButtonProps={"111"} onConfirm={this.confirmDeleteIndexGroup.bind(this)} okText="Yes" cancelText="No">
                                 <Button id={index["name"]} type="dashed" onClick={this.deleteIndexGroup.bind(this)} >x</Button>
                               </Popconfirm>

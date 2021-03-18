@@ -671,4 +671,5 @@ function mapColor(d) {
     }
 
 }
+
 export default LEAP_Visualization;

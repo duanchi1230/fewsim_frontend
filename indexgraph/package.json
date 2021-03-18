@@ -1,0 +1,44 @@
+{
+	"name": "fewsim-susindex-demo",
+	"version": "0.1.0",
+	"private": true,
+	"homepage": "https://demo.vaderlab.org/fewsim-susview/",
+	"dependencies": {
+		"@testing-library/jest-dom": "^4.2.4",
+		"@testing-library/react": "^9.3.2",
+		"@testing-library/user-event": "^7.1.2",
+		"antd": "3.26.18",
+		"echarts": "^4.8.0",
+		"echarts-for-react": "^2.0.16",
+		"lodash": "^4.17.20",
+		"numericjs": "^1.2.6",
+		"patch-package": "^6.1.2",
+		"react": "^16.13.1",
+		"react-breakpoint-fix": "^1.0.7",
+		"react-dom": "^16.13.1",
+		"react-scripts": "3.4.3"
+	},
+	"scripts": {
+		"start": "react-scripts start --no-cache",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject",
+		"patch-react-scripts": "patch-package react-scripts",
+		"postinstall": "patch-package"
+	},
+	"eslintConfig": {
+		"extends": "react-app"
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	}
+}

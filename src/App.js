@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout, Button, Row, Col, Divider, Select, Menu, Modal, Tabs, Spin, Card, Tree, Input, notification, InputNumber } from 'antd';
+import { Layout, Button, Row, Col, Divider, Select, Menu, Modal, Tabs, Spin, Card, Tree, Input, Popconfirm, notification, InputNumber, Radio } from 'antd';
 
 import MainScenarioComponent from './components/MainScenarioComponent';
 import './styles/App.css';
@@ -7,7 +7,7 @@ import Variables_Radial_Tree from './components/Variables_Radial_Tree'
 import InputParameter_WEAP from './components/InputParameter_WEAP'
 import InputParameter_LEAP from './components/InputParameter_LEAP'
 import CreatedScenarios from './components/CreatedScenarios';
-
+import Sensitivity_Graph from './components/Sensitivity_Graph'
 const {TreeNode} = Tree;
 const { Header, Content } = Layout;
 const { TabPane } = Tabs;
@@ -42,6 +42,7 @@ export default class App extends Component {
             sustainability_variables_calculated: [],
             sustainability_index_calculated: [],
             loaded_group_index: [],
+            loaded_group_index_simulated: [],
 
             leap_inputs:[],
             weap_inputs: [],
@@ -53,7 +54,19 @@ export default class App extends Component {
             leap_result_variable: [],
 
             simulation_run_status: "Running",
-            run_log: []
+            run_log: [],
+
+            sensitivity_graph:[],
+            weap_checked_variables_on_sensitivity_graph: [],
+            leap_checked_variables_on_sensitivity_graph: [],
+            mabia_checked_variables_on_sensitivity_graph: [],
+            Sensitivity_Graph_Modal: false,
+
+            Load_History_Modal: false,
+            Save_History_Modal: false,
+            Stored_Simulations: [],
+            Simulation_to_Load_Name: "",
+            Simulation_to_Save_Name: ""
         };
 
         // Initialize data loading
@@ -135,7 +148,7 @@ export default class App extends Component {
             let created_scenarios = this.state.created_scenarios
             let setState = this.setState.bind(this)
             if(this.state.simulation_run_status==="Running"){
-                var t=setInterval(function() { getRunLog(created_scenarios, setState); },1000);
+                var t=setInterval(function() { getRunLog(created_scenarios, setState); },10000);
             }
         }
         
@@ -159,8 +172,8 @@ export default class App extends Component {
             console.log("sending created scenarios")
             fetch("run/weap", {method: "GET"})
                 .then(r=>r.json())
-                .then(r=>{console.log(r); 
-                            setState({weap_flow: r['weap-flow'], leap_data:r['leap-data'], run_model_status:'finished', simulation_time_range:r['weap-flow'][0]['timeRange'], sustainability_variables_calculated: r['sustainability_variables']})
+                .then(r=>{console.log(r, r["loaded_group_index"]); 
+                            setState({weap_flow: r['weap-flow'], leap_data:r['leap-data'], run_model_status:'finished', simulation_time_range:r['weap-flow'][0]['timeRange'], sustainability_variables_calculated: r['sustainability_variables'], loaded_group_index_simulated:r["loaded_group_index"]})
                             let weap_result_variable = []
                             let leap_result_variable = []
                             
@@ -206,7 +219,14 @@ export default class App extends Component {
     componentDidMount(){
         
         fetch('/inputs/tree').then(data => data.json()).then((data)=>{console.log(data); this.setState({variables: data})});
-        
+        // fetch('/sensitivity-graph').then(si_data=> si_data.json()).then(si_data=> {console.log(si_data)})
+        fetch('/sensitivity-graph', { method: 'GET' }).then(r => r.json()).then(r => {
+          this.setState({sensitivity_graph: r})
+          console.log(r)
+        }); 
+        console.log(this.state)
+
+        fetch('/load-simulation-history').then(data => data.json()).then(data=>{console.log(data); this.setState({Stored_Simulations: data})})
     }
 
     handleAddScenarioButtonClicked = () => {
@@ -234,6 +254,7 @@ export default class App extends Component {
     };
 
     handleWEAPinputChecked = (checkedKeys, info) =>{
+        console.log(checkedKeys)
         let data = this.state.variables['children'][0]
         let weap_inputs = []
         data = this.expandData([data], [])
@@ -243,7 +264,7 @@ export default class App extends Component {
                 weap_inputs.push(d)
             }}
         )
-        this.setState({weap_inputs:weap_inputs})
+        this.setState({weap_inputs:weap_inputs, weap_checked_variables_on_sensitivity_graph:checkedKeys})
         console.log(weap_inputs)
     }
 
@@ -257,7 +278,7 @@ export default class App extends Component {
                 leap_inputs.push(d)
             }}
         )
-        this.setState({leap_inputs:leap_inputs})
+        this.setState({leap_inputs:leap_inputs, leap_checked_variables_on_sensitivity_graph:checkedKeys})
         console.log(leap_inputs)
     }
 
@@ -336,8 +357,8 @@ export default class App extends Component {
     }
 
     loadExistingScenarios(element){
-        console.log(element.target.id)
-        let name = element.target.id
+        console.log(element)
+        let name = element
         let existing_scenarios = this.state.existing_scenarios
         let created_scenarios = this.state.created_scenarios
         let created_scenarios_names = []
@@ -375,12 +396,13 @@ export default class App extends Component {
     }
 
     showScenarioSummary(element){
-        console.log(element.target.id)
-        this.setState({scenario_in_summary:element.target.id})
+        console.log(element)
+        this.setState({scenario_in_summary:element})
     }
 
     showExistingScenarioSummary(element){
-        this.setState({existing_scenarios_summary:element.target.id})
+        console.log(element)
+        this.setState({existing_scenarios_summary:element})
     }
 
     openNotification(message, description){
@@ -421,6 +443,209 @@ export default class App extends Component {
         this.setState({leap_inputs: leap_inputs})
     }
 
+    showSensitivityGraphModal(){
+        console.log("1230")
+        this.setState({
+            Sensitivity_Graph_Modal: true
+        })
+    }
+
+    closeSensitivityGraphModal(){
+        this.setState({
+            Sensitivity_Graph_Modal: false
+        })
+    }
+
+    clickSensitivityGraphNode(element){
+        console.log(element)
+
+        let checked_variables_on_sensitivity_graph = []
+        if(element["group"]==="weap-input"){
+            let data = this.state.variables['children'][0]
+            let weap_inputs = []
+            data = this.expandData([data], [])
+            
+            if(this.state.weap_checked_variables_on_sensitivity_graph.includes(element["id"])){
+                this.state.weap_checked_variables_on_sensitivity_graph.forEach(variable=>{
+                        if(variable!==element["id"]){
+                            checked_variables_on_sensitivity_graph.append(variable)
+                        }
+                    }
+                )
+                data.forEach(d=>{
+                    if(checked_variables_on_sensitivity_graph.includes(d.fullname+':'+d.name)){
+                        d['percentage_of_default'] = 100
+                        weap_inputs.push(d)
+                    }}
+                )
+                this.setState({weap_inputs: weap_inputs, weap_checked_variables_on_sensitivity_graph:checked_variables_on_sensitivity_graph})
+            }
+            else{
+                checked_variables_on_sensitivity_graph = JSON.parse(JSON.stringify(this.state.weap_checked_variables_on_sensitivity_graph))
+                checked_variables_on_sensitivity_graph.push(element["id"])
+                data.forEach(d=>{
+                    if(checked_variables_on_sensitivity_graph.includes(d.fullname+':'+d.name)){
+                        d['percentage_of_default'] = 100
+                        weap_inputs.push(d)
+                    }}
+                )
+                this.setState({weap_inputs: weap_inputs, weap_checked_variables_on_sensitivity_graph:checked_variables_on_sensitivity_graph})
+            }
+        }
+        
+ 
+        if(element["group"]==="leap-input"){
+            console.log(this.state.leap_checked_variables_on_sensitivity_graph)
+            let data = this.state.variables['children'][2]
+            let leap_inputs = []
+            data = this.expandData([data], [])
+            if(this.state.leap_checked_variables_on_sensitivity_graph.includes(element["id"])){
+                this.state.leap_checked_variables_on_sensitivity_graph.forEach(variable=>{
+                        if(variable!==element["id"]){
+                            checked_variables_on_sensitivity_graph.append(variable)
+                        }
+                    }
+                )
+                data.forEach(d=>{
+                    if(checked_variables_on_sensitivity_graph.includes(d.fullname+':'+d.name)){
+                        d['percentage_of_default'] = 100
+                        leap_inputs.push(d)
+                    }}
+                )
+                this.setState({leap_inputs: leap_inputs, leap_checked_variables_on_sensitivity_graph:checked_variables_on_sensitivity_graph})
+            }
+            else{
+                checked_variables_on_sensitivity_graph = JSON.parse(JSON.stringify(this.state.leap_checked_variables_on_sensitivity_graph))
+                checked_variables_on_sensitivity_graph.push(element["id"])
+                data.forEach(d=>{
+                    if(checked_variables_on_sensitivity_graph.includes(d.fullname+':'+d.name)){
+                        d['percentage_of_default'] = 100
+                        leap_inputs.push(d)
+                    }}
+                )
+                
+                this.setState({leap_inputs: leap_inputs, leap_checked_variables_on_sensitivity_graph:checked_variables_on_sensitivity_graph})
+            }
+        }
+    }
+
+    closeLoadHisotyModal(){
+        this.setState({
+            Load_History_Modal: false
+        })
+    }
+
+    handleLoadHistoryClick(){
+        this.setState({
+                    Load_History_Modal: true
+                })
+    }
+    
+    onChangeSimulationToLoadName(element){
+        console.log(element.target.value)
+        this.setState({
+            Simulation_to_Load_Name: element.target.value
+        })
+    }
+
+    handleLoadSimulationButtonClick(){
+        console.log(this.state.Stored_Simulations)
+        this.state.Stored_Simulations.forEach(simulation=>{
+            if(simulation['name']===this.state.Simulation_to_Load_Name){
+                console.log(simulation)
+                let state = simulation['state']
+                this.setState({
+                    createScenarioModalVisible: state.createScenarioModalVisible,
+                    activatedMethod: state.activatedMethod,
+                    activatedScenario: state.activatedScenario,
+                    isLoadingScenario: state.isLoadingScenario,
+                    run_model_status: state.run_model_status,
+                    weap_flow: state.weap_flow,
+                    leap_data: state.leap_data,
+                    variables: state.variables,
+
+                    created_scenarios: state.created_scenarios,
+                    created_scenario_name: state.created_scenario_name,
+                    scenario_in_summary: state.scenario_in_summary,
+                    selectedScenarios: state.selectedScenarios,
+                    existing_scenarios: state.existing_scenarios,
+                    existing_scenarios_summary: state.existing_scenarios_summary,
+
+                    Sustainability_Creation_Modal:state.Sustainability_Creation_Modal,
+                    sustainability_variables: state.sustainability_variables,
+                    sustainability_index: state.sustainability_index,
+                    sustainability_variables_calculated: state.sustainability_variables_calculated,
+                    sustainability_index_calculated: state.sustainability_index_calculated,
+                    loaded_group_index: state.loaded_group_index,
+                    loaded_group_index_simulated: state.loaded_group_index_simulated,
+
+                    leap_inputs: state.leap_inputs,
+                    weap_inputs: state.weap_inputs,
+                    mabia_inputs: state.mabia_inputs,
+
+                    simulation_time_range: state.simulation_time_range,
+
+                    weap_result_variable: state.weap_result_variable,
+                    leap_result_variable: state.leap_result_variable,
+
+                    simulation_run_status: state.simulation_run_status,
+                    run_log: state.run_log,
+
+                    sensitivity_graph: state.sensitivity_graph,
+                    weap_checked_variables_on_sensitivity_graph: state.weap_checked_variables_on_sensitivity_graph,
+                    leap_checked_variables_on_sensitivity_graph: state.leap_checked_variables_on_sensitivity_graph,
+                    mabia_checked_variables_on_sensitivity_graph: state.mabia_checked_variables_on_sensitivity_graph,
+                    Sensitivity_Graph_Modal: state.Sensitivity_Graph_Modal,
+
+                    Load_History_Modal: state.Load_History_Modal,
+                    Save_History_Modal: state.Save_History_Modal,
+                    // Stored_Simulations: [],
+                    Simulation_to_Load_Name: state.Simulation_to_Load_Name,
+                    Simulation_to_Save_Name: state.Simulation_to_Save_Name
+                })
+            }
+        })
+    }
+
+    closeSaveHisotyModal(){
+        this.setState({
+            Save_History_Modal: false
+        })
+    }
+
+    handleSaveHistoryClick(){
+        this.setState({
+            Save_History_Modal: true
+        })
+    }
+
+    confirmSaveSimulationResult(){
+        let stored_simulations = JSON.parse(JSON.stringify(this.state.Stored_Simulations))
+        console.log(stored_simulations)
+        let stored_simulations_names = []
+        let fewsim_state = JSON.parse(JSON.stringify(this.state))
+        stored_simulations.forEach(simulation=>{
+            stored_simulations_names.push(simulation["name"])
+        })
+        fewsim_state.Stored_Simulations = []
+        console.log(fewsim_state)
+        if(stored_simulations_names.includes(this.state.Simulation_to_Save_Name)){
+            this.openNotification('Simulation name already exists!', 'Please rename the simulation!')
+        }
+        else{
+            stored_simulations.push(JSON.parse(JSON.stringify({"name": this.state.Simulation_to_Save_Name, "state":fewsim_state})))
+            fetch('/load-simulation-history', {method: 'POST', body: JSON.stringify(stored_simulations)}).then(data => data.json()).then(data=>{console.log(data)})
+        }
+        
+    }
+
+    inputSaveSimulationNameChanged(user_input){
+        console.log(user_input.target.value)
+        this.setState({
+            Simulation_to_Save_Name: user_input.target.value
+        })
+    }
+
     render() {
 
         const {
@@ -428,6 +653,13 @@ export default class App extends Component {
             activatedScenario,
             activatedMethod
         } = this.state;
+
+        const radioStyle = {
+            display: 'block',
+            height: '30px',
+            lineHeight: '30px',
+          };
+
         let scenario_in_summary = this.state.scenario_in_summary
         if (proj === undefined) {
             return <div
@@ -458,10 +690,11 @@ export default class App extends Component {
                         gutter={16}
                         style={{ minHeight: 380 }}
                     >
-                        <Col span={36}>
+                        <Col span={24}>
                             <font size="5">Scenarios List</font>
                             <Tabs type="card">
                                 <TabPane tab="Input Variable Selection" key="0" >
+                                    <Row>
                                     <Col span={6}>
                                         <Card style={{
                                             height:380,
@@ -469,10 +702,11 @@ export default class App extends Component {
                                             marginTop: 0,
                                             overflow: 'auto',
                                         }}>
-                                                FEW variables
+                                                FEW variables 
                                                 <Tree
                                                 checkable={true}
                                                 defaultExpandedKeys={['model-input']}
+                                                checkedKeys={this.state.weap_checked_variables_on_sensitivity_graph}
                                                 onCheck={this.handleWEAPinputChecked.bind(this)}
                                                 // onLoad={}
                                                 disabled={false}
@@ -484,6 +718,7 @@ export default class App extends Component {
                                                 <Tree
                                                 checkable={true}
                                                 defaultExpandedKeys={['model-input']}
+                                                checkedKeys={this.state.leap_checked_variables_on_sensitivity_graph}
                                                 onCheck={this.handleLEAPinputChecked.bind(this)}
                                                 // onLoad={}
                                                 disabled={false}
@@ -492,16 +727,19 @@ export default class App extends Component {
                                                         {this.plotVariableTree([this.state.variables['children'][2]])}
                                                     </TreeNode>
                                                 </Tree>
-                                        </Card>
+                                        </Card> 
                                     </Col>
-                                    <Col span={17}>
+                                    <Col span={18}>
                                         <Card style={{
                                                 height:380,
                                                 flex: 0,
                                                 marginTop: 0,
                                                 overflow: 'auto',
                                             }}>
-                                            <Input id="name" defaultValue="" value={this.state.created_scenario_name} onChange={this.inputScenarioName.bind(this)} addonBefore="name" />
+                                            <Row>
+                                                <Col span={21}> <Input id="name" defaultValue="" value={this.state.created_scenario_name} onChange={this.inputScenarioName.bind(this)} addonBefore="name" /></Col>
+                                                <Col span={3}><Button type="primary" onClick={this.showSensitivityGraphModal.bind(this)}>Sensitivity Graph</Button> </Col>
+                                            </Row>
                                             <Tabs type="card" tabPosition="left">
                                                 <TabPane tab="WEAP" key="1">
                                                     <InputParameter_WEAP 
@@ -521,11 +759,14 @@ export default class App extends Component {
                                             </Tabs>
                                         </Card>
                                     </Col>
+                                    </Row>
                                     <Button type="primary" onClick={this.createScenarios}>Create Scenario</Button> 
                                 </TabPane>
                                 <TabPane tab="Scenarios Summary" key="1">
+                                
                                  <Tabs type="card" tabPosition="left">
                                     <TabPane tab="Run" key="1">
+                                        <Row>
                                         <Col span={6}>
                                             <Card style={{
                                                 height:380,
@@ -535,18 +776,22 @@ export default class App extends Component {
                                             }}>
                                                 {/* <Row gutter={8}>Scenarios to Run!</Row> */}
                                                 <Row gutter={8}>Created Scenarios </Row>
-                                                <ButtonGroup>
+                                                
+                                                {/* <ButtonGroup> */}
                                                     {this.state.created_scenarios.map(scenario=>{
                                                         if(Boolean(scenario["type"])===false){
-                                                            return <Row gutter={8} key={scenario.name}>
+
+                                                            return  <Row gutter={8} key={scenario.name}>
                                                                         <Col span={21}>
-                                                                            <div><Button id={scenario.name} onClick={this.showScenarioSummary.bind(this)} block>{scenario.name}</Button> </div>
+                                                                            <div><Button id={scenario.name} onClick={element=>this.showScenarioSummary(scenario.name)} block>{scenario.name}</Button> </div>
                                                                         </Col>
-                                                                        <Col span={1}>
+                                                                        <Col span={3}>
                                                                             <div onClick={this.deleteScenario.bind(this)}> <div id={scenario.name}>x</div> </div>
                                                                         </Col>
-                                                                    </Row> }})}    
-                                                </ButtonGroup>
+                                                                    </Row>
+                                                                     }})}    
+                                                {/* </ButtonGroup> */}
+                                                
 
                                                 <Row gutter={8}>Existing Scenarios</Row>
                                                 <ButtonGroup>
@@ -554,9 +799,9 @@ export default class App extends Component {
                                                         if(Boolean(scenario["type"])!==false){
                                                             return <Row gutter={8} key={scenario.name}>
                                                                         <Col span={21}>
-                                                                            <div><Button id={scenario.name} onClick={this.showScenarioSummary.bind(this)} block>{scenario.name}</Button> </div>
+                                                                            <div><Button id={scenario.name} onClick={element=>this.showScenarioSummary(scenario.name)} block>{scenario.name}</Button> </div>
                                                                         </Col>
-                                                                        <Col span={1}>
+                                                                        <Col span={3}>
                                                                             <div onClick={this.deleteScenario.bind(this)}> <div id={scenario.name}>x</div> </div>
                                                                         </Col>
                                                                     </Row> }})}    
@@ -564,7 +809,7 @@ export default class App extends Component {
                                                 {/* <Button type="primary">Load Existing</Button> */}
                                             </Card>
                                         </Col>
-                                        <Col span={17}>
+                                        <Col span={18}>
                                             <Card style={{
                                                 height:380,
                                                 flex: 2,
@@ -617,8 +862,10 @@ export default class App extends Component {
                                                 }
                                             </Card>
                                         </Col>
+                                        </Row>
                                     </TabPane>
                                     <TabPane tab="Load" key="2" >
+                                        <Row>
                                         <Col span={6}>
                                             <Card style={{
                                                 height:380,
@@ -628,7 +875,17 @@ export default class App extends Component {
                                             }}>
                                                 <Row gutter={8}>Existing Scenarios</Row>
                                                 <ButtonGroup>
-                                                    {this.state.existing_scenarios.map(scenario=>{return <Row gutter={8} key={scenario.name}><Col span={21}><div><Button id={scenario.name} onClick={this.showExistingScenarioSummary.bind(this)} block>{scenario.name}</Button> </div></Col><Col span={1}><div onClick={this.deleteScenario.bind(this)}><div id={scenario.name}>x</div></div></Col></Row>})}
+                                                    {this.state.existing_scenarios.map(scenario=>{return <Row gutter={8} key={scenario.name}>
+                                                                                                            <Col span={21}>
+                                                                                                                <div>
+                                                                                                                    <Button id={scenario.name} onClick={element=>this.showExistingScenarioSummary(scenario.name)} block>{scenario.name}</Button> 
+                                                                                                                </div>
+                                                                                                            </Col>
+                                                                                                            <Col span={3}>
+                                                                                                                <div onClick={this.deleteScenario.bind(this)}>
+                                                                                                                    <div id={scenario.name}>x</div>
+                                                                                                                </div></Col>
+                                                                                                            </Row>})}
                                                 </ButtonGroup>
                                                 {/* <Button type="primary">Load Existing</Button> */}
                                             </Card>
@@ -649,13 +906,13 @@ export default class App extends Component {
                                                     if(existing_scenarios_summary==='Base'){
                                                         return <div key={scenario.name}>      
                                                                     This is Base scenario with every variable in default!
-                                                                    <Button id={scenario.name} type="dash" shape="round" onClick={this.loadExistingScenarios.bind(this)}>Load to Run</Button>
+                                                                    <Button id={scenario.name} type="dash" shape="round" onClick={element=>this.loadExistingScenarios(scenario.name)}>Load to Run</Button>
                                                                 </div>
                                                     }
                                                     if(existing_scenarios_summary===scenario.name && existing_scenarios_summary !== "Base"){
                                                         return <div key={scenario.name}>
                                                                 
-                                                                {scenario.name} <Button id={scenario.name} type="dash" shape="round" onClick={this.loadExistingScenarios.bind(this)}>Load to Run</Button>
+                                                                {scenario.name} <Button id={scenario.name} type="dash" shape="round" onClick={element=>this.loadExistingScenarios(scenario.name)}>Load to Run</Button>
                                                                 <Row gutter={8}>WEAP</Row>
                                                                     {scenario.weap.map(variable=>{
                                                                         return <div key={variable.fullname+':'+variable.name}>
@@ -693,23 +950,35 @@ export default class App extends Component {
                                                 }
                                             </Card>
                                         </Col>
+                                        </Row>
                                     </TabPane>
 
                                 </Tabs>
                                 
                                 </TabPane>
                             </Tabs>
-                            
-                            
-
-
-                            {/* <Button type="primary" onClick={this.createScenarios} style={
-                                {marginLeft: '85px'}
-                            }>Move to Batch</Button> */}
                         </Col>
                         
                     </Row>
+                    
                 </Modal>
+
+                <Modal 
+                    width={800}
+                    visible={this.state.Sensitivity_Graph_Modal}
+                    onCancel={this.closeSensitivityGraphModal.bind(this)}
+                    footer={null}
+                >
+                    <Sensitivity_Graph 
+                        sensitivity_graph={this.state.sensitivity_graph} 
+                        weap_checked_variables_on_sensitivity_graph={this.state.weap_checked_variables_on_sensitivity_graph}
+                        leap_checked_variables_on_sensitivity_graph={this.state.leap_checked_variables_on_sensitivity_graph}
+                        clickSensitivityGraphNode={this.clickSensitivityGraphNode.bind(this)}
+                    >
+
+                    </Sensitivity_Graph>
+                </Modal>
+
                 <Modal 
                     width={1550}
                     visible={this.state.Sustainability_Creation_Modal}
@@ -723,6 +992,46 @@ export default class App extends Component {
                     >
                     </Variables_Radial_Tree>
                 </Modal>
+
+                <Modal 
+                    width={650}
+                    visible={this.state.Load_History_Modal}
+                    onCancel={this.closeLoadHisotyModal.bind(this)}
+                    footer={null}
+                >   
+                    <Card style={{
+                                height:380,
+                                flex: 2,
+                                marginTop: 0,
+                                overflow: 'auto',
+                            }}
+                            title="Existing Simulations"
+                    >
+                        <Radio.Group onChange={this.onChangeSimulationToLoadName.bind(this)} value={this.state.Simulation_to_Load_Name}>
+                        {this.state.Stored_Simulations.map(simulation=>{
+                            return <Radio style={radioStyle} value={simulation['name']}>{simulation['name']}</Radio>
+                        })}
+                    </Radio.Group>
+                    </Card>
+                    <Popconfirm placement="bottomLeft" title={"Do you want to load the simulation?"} onConfirm={this.handleLoadSimulationButtonClick.bind(this)} okText="Yes" cancelText="No">
+                      <Button type="primary" >Load Simulation</Button>
+                    </Popconfirm>
+                    {/* <Button type="primary" onClick={this.handleLoadSimulationButtonClick.bind(this)}>Load Simulation</Button> */}
+                    
+                </Modal>
+
+                <Modal 
+                    width={650}
+                    visible={this.state.Save_History_Modal}
+                    onCancel={this.closeSaveHisotyModal.bind(this)}
+                    footer={null}
+                >
+                     <Input id="name" defaultValue="" value={this.state.Simulation_to_Save_Name} onChange={this.inputSaveSimulationNameChanged.bind(this)} addonBefore="name" />
+                     <Popconfirm placement="bottomLeft" title={"Do you want to save the simulation?"} onConfirm={this.confirmSaveSimulationResult.bind(this)} okText="Yes" cancelText="No">
+                      <Button>Save Simulation</Button>
+                    </Popconfirm>
+                </Modal>
+
                 <Layout
                     style={{ height: '100%' }}
                 >
@@ -818,6 +1127,13 @@ export default class App extends Component {
                             >
                                 <Menu.Item key="helpmenu">Help</Menu.Item>
                                 <Menu.Item key="aboutmenu">About</Menu.Item>
+                                {this.state.run_model_status==="null" && 
+                                    <Menu.Item key="load" onClick={this.handleLoadHistoryClick.bind(this)}>Load History</Menu.Item>
+                                }
+                                {this.state.run_model_status==="finished" && 
+                                    <Menu.Item key="save" onClick={this.handleSaveHistoryClick.bind(this)}>Save</Menu.Item>
+                                }
+
                             </Menu>
                         </div>
                     </Header>
@@ -847,10 +1163,13 @@ export default class App extends Component {
                             weap_result_variable={this.state.weap_result_variable}
                             leap_result_variable={this.state.leap_result_variable}
                             sustainability_variables_calculated={this.state.sustainability_variables_calculated}
+                            loaded_group_index_simulated={this.state.loaded_group_index_simulated}
+                            sensitivity_graph={this.state.sensitivity_graph} 
                         />                        
                     </Content>
                 </Layout>
             </div>
         );
     }
+    
 }
