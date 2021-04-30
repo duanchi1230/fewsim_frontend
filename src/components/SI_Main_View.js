@@ -436,6 +436,7 @@ class SI_Main_View extends Component {
             }
         })
 
+        console.log(this.state.SI_data_loaded)
         this.state.SI_data_loaded.forEach(data_loaded=>{
             if(this.state.index_to_show.includes(data_loaded["name"])){
                 
@@ -569,8 +570,9 @@ class SI_Main_View extends Component {
                     }}
                     style={{
                         width: '100%',
-                        height: '100%',
+                        height: 900,
                         overflow: 'auto',
+                        
                     }}
                     extra={
                         <Radio.Group

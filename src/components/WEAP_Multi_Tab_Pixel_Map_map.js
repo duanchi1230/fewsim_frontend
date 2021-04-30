@@ -129,9 +129,9 @@ class WEAP_Multi_Tab_Pixel_Map_map extends Component {
                         //             <div style={{display:"inline-block"}}>WEAP Pixel Map </div> (<div style={{color:"#2b8cbe", display:"inline-block"}}>{scenario_to_show}</div>)
                         //         </div> }
                         style={{
-                        height: 750,
+                        height: 700,
                         flex: 10,
-                        marginTop: 10,
+                        marginTop: 0,
                         overflow: 'auto',
                         }}>
                             <h1>Scenario: {scenario_to_show}</h1>Water Supplied by {this.props.pixel_map_supply_source}

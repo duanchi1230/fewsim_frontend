@@ -119,7 +119,7 @@ class WEAP_Multi_Tab_Pixel_Map extends Component {
         let w = 5
         let scenarios_filtered = scenarios.filter(s=> s!==this.state.flow_table_scenarios)
         console.log(scenarios_filtered)
-        // define the column fomrt for the table
+        // define the column format for the table
         const columns = [
             {
               title: <div><span>Supplied by: </span>
@@ -138,10 +138,11 @@ class WEAP_Multi_Tab_Pixel_Map extends Component {
               title: <List  grid={{gutter: 16, 
                             column: 2}}
                             dataSource={scenarios}
-                            renderItem={item => {console.log(item)
+                            renderItem={item => {
                             return <List.Item><span>{item}: </span><svg width={10} height={height-15}> <g><circle cx={5} cy={10} r={5} class='flow-table-scenarios' id={item} style={{fill: COLOR_LIST[scenarios.indexOf(item)]}}> </circle> </g></svg></List.Item>}}
                         >
                     </List>,
+                    // <div>Scenario Responses</div>,
                            
             //   <Row><div>Scenarios: <svg width={width-10} height={height-15}> <g><circle cx={5} cy={10} r={5}> <span class="tooltiptext">{"scenario1"}</span> </circle> </g></svg></div> </Row>,
               dataIndex: 'distance_to_base',
@@ -191,9 +192,9 @@ class WEAP_Multi_Tab_Pixel_Map extends Component {
                         //             <div style={{display:"inline-block"}}>WEAP Pixel Map </div> (<div style={{color:"#2b8cbe", display:"inline-block"}}>{scenario_to_show}</div>)
                         //         </div> }
                         style={{
-                        height: 950,
+                        height: 900,
                         flex: 10,
-                        marginTop: 10,
+                        marginTop: 0,
                         overflow: 'auto',
                         }}>
 

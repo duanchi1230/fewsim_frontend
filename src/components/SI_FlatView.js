@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Row, Dropdown, Menu, Checkbox, Divider, Switch, Select, List, Card} from 'antd';
+import {Button, Col, Row, Dropdown, Menu, Checkbox, Divider, Switch, Select, List, Card} from 'antd';
 import ReactEcharts from 'echarts-for-react';
 import {Icon, LinkOutlined } from '@ant-design/icons'
 import 'antd/dist/antd.css';
@@ -7,7 +7,7 @@ import 'antd/dist/antd.css';
 //TODO: need adjustment
 // const VIEW_FLAT_VIEW_HEIGHT = 685;
 const VIEW_FLAT_VIEW_HEIGHT = '100%';
-const VIEW_CHART_HEIGHT = 180;
+const VIEW_CHART_HEIGHT = 165;
 // const VIEW_CHART_HEIGHT = '100%';
 const ECHARTS_TITLE_TEXT_STYLE = {fontSize: 14};
 const Title_Font_Size = ECHARTS_TITLE_TEXT_STYLE.fontSize
@@ -152,6 +152,10 @@ export default class FlatView extends Component {
             text_header = "Scenario (Column)"
         }
 
+        const enabledScenarios = data.scenarioNames.filter(
+            d => this.state.disabledScenarios.indexOf(d) === -1
+        );
+
         return (
             <div>
             <div style={{transform: "rotate(90deg)"}}>
@@ -218,14 +222,56 @@ export default class FlatView extends Component {
                         <Button>Select Scenario</Button>
                     </Dropdown> */}
                 </Row>
-                <Divider>{text_header}</Divider>
+                
+                <Divider>
+                    {text_header}        
+                </Divider>
+                
+                {
+                    (this.state.aggregateScenarios || this.state.aggregateIndices)
+                    ? <Row>{text_header}</Row>
+                        : <Row gutter={5}>
+                        <Col span={1}>
+                            
+                        </Col>
+    
+                        <Col span={23}>
+                        <List
+                            // grid={{gutter: 8, column: enabledScenarios.length}}
+                            grid={{gutter: 16, 
+                                    column: enabledScenarios.length}}
+                            dataSource={enabledScenarios}
+                            renderItem={item => {
+                                console.log(item)
+                                return <List.Item>
+                                     
+                                        <div class = "sustainability-index-flat-row-name" id={item}
+                                            style={{
+                                                // width: 300,
+                                                // "text-orientation": "mixed",
+                                                // "writing-mode": "vertical-rl",
+                                                // "transform": "rotate(180deg)", 
+                                                "font-weight": "bold",
+                                                height: 15,
+                                                // color: chart_title_color[this.mapTitleNameColor(item)]
+                                        }}>
+                                            {item}
+                                        </div>
+                                    </List.Item>
+                            }}
+                        />
+                        
+                        </Col>
+                    </Row>
+                }
+
                 <Row
-                    style={{
-                        height: 1080,
-                        // overflowY: 'scroll',
-                        // overflowX: 'hidden',
-                        overflow: 'auto',
-                    }}
+                style={{
+                    // overflowY: 'scroll',
+                    // overflowX: 'hidden',
+                    overflow: 'auto',
+                    height: 900,
+                }}
                 >
                     {
                         (this.state.aggregateScenarios || this.state.aggregateIndices)
@@ -236,16 +282,20 @@ export default class FlatView extends Component {
                                 aggregateScenarios={this.state.aggregateScenarios}
                                 aggregateIndices={this.state.aggregateIndices}
                             />
-                            : <FlatChartGrid
-                                data={data}
-                                setScenarioToShow={this.props.setScenarioToShow}
-                                compareMode={this.state.compareMode}
-                                disabledScenarios={this.state.disabledScenarios}
-                                disabledSusIndices={this.state.disabledSusIndices}
-                                handleCompareButtonClick={this.handleCompareButtonClick}
-                            />
+                            : <Col span={24}>
+                                    <FlatChartGrid
+                                        data={data}
+                                        setScenarioToShow={this.props.setScenarioToShow}
+                                        compareMode={this.state.compareMode}
+                                        disabledScenarios={this.state.disabledScenarios}
+                                        disabledSusIndices={this.state.disabledSusIndices}
+                                        handleCompareButtonClick={this.handleCompareButtonClick}
+                                    />
+                                </Col>
+    
                     }
                 </Row> 
+                
             </div>
             </div>
         );
@@ -342,15 +392,16 @@ class FlatChartGrid extends Component {
             d => disabledSusIndices.indexOf(d) === -1
         );
 
-
+        console.log(data)
         let color_type = "mpm"
         let weap_keys = ["Groundwater", "CAP", "Water"]
         let leap_keys = ["Renewable", "Electricity"]
         let mpm_keys = ["Food"]
         const chart_color = {'weap': [43, 140, 190], 'leap': [253, 174, 97], 'mpm':[179, 222, 105]}
+        
         let weap_value_range = []
         let leap_value_range = []
-        let mpm_value_range = []
+        let mpm_value_range = {}
 
         data.chartBlocks.forEach(blocks=>{
             
@@ -373,11 +424,18 @@ class FlatChartGrid extends Component {
             })
 
             if(blocks["type"] === "mpm"){
-                
-                mpm_value_range.push(blocks.series[blocks.series.length-1])
+                mpm_value_range[blocks["susIndexName"]] = []
             }
-
         })
+
+        console.log(mpm_value_range)
+        data.chartBlocks.forEach(blocks=>{
+            if(blocks["type"] === "mpm"){
+                mpm_value_range[blocks["susIndexName"]].push(Math.max(...blocks.series))
+            }
+        })
+
+
 
         console.log(data)
 
@@ -387,106 +445,158 @@ class FlatChartGrid extends Component {
                 && enabledSusIndices.indexOf(block.susIndexName) >= 0
         );
 
-        console.log(data)
+        console.log(enabledChartBlocks)
 
         let index_value_range = {
             "weap": [Math.min(...weap_value_range), Math.max(...weap_value_range)], 
             "leap": [Math.min(...leap_value_range), Math.max(...leap_value_range)],
-            "mpm": [Math.min(...mpm_value_range), Math.max(...mpm_value_range)]
+            "mpm": mpm_value_range
             }
+        const range_max = {'weap': 1, 'leap': 1, 'mpm': mpm_value_range}
         console.log(index_value_range, weap_value_range, leap_value_range, mpm_value_range)
         return (
-            <div
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    overflow: 'auto',
-                    // backgroundColor: 'blue'
-                }}
-            >
-                {/* <Divider type="vertical">Indices</Divider> */}
-                <List
-                    // grid={{gutter: 8, column: enabledScenarios.length}}
-                    grid={{gutter: 16, 
-                            column: enabledScenarios.length}}
-                    dataSource={enabledChartBlocks}
-                    renderItem={item => {
-                        console.log(item)
-                        return <List.Item>
-                            <Card
-                                // title={`${item.scenarioName}, ${item.susIndexName}`}
-                                // size="small"
-                                bodyStyle={{
-                                    padding: 8,
-                                    height: '100%'
-                                }}
-                                
-                                
-                            >   
-                                <div class = "sustainability-index-flat" id={item.scenarioName}
-                                    style={{
-                                        // width: 300,
-                                        height: VIEW_CHART_HEIGHT+0,
-                                }}>
-                                <ReactEcharts
-                                    
-                                    option={{
-                                        title: {
-                                            text: `${item.scenarioName}, ${item.susIndexName}"="${item.indexFunction}`,
-                                            textStyle: {color: chart_title_color[this.mapTitleNameColor(item.susIndexName)], fontSize: Title_Font_Size, 
-                                                textBorderColor: "grey", textBorderWidth: 0},
-                                            // textStyle: {fontSize: Title_Font_Size},
-                                            top: 10
-                                        },
-                                        xAxis: {
-                                            type: 'category',
-                                            data: data.timeRange
-                                        },
-                                        yAxis: {
-                                            type: 'value'
-                                        },
-                                        grid: {
-                                            left: '3%',
-                                            right: '4%',
-                                            bottom: '3%',
-                                            top: '25%',
-                                            containLabel: true
-                                        },
-                                        series: [{
-                                            name: item.susIndexName,
-                                            type: 'line',
-                                            data: item.series
-                                        }]
-                                    }}
-                                    style={{
-                                        height: '100%',
-                                        width: '100%',
-                                        "backgroundColor": this.mapColor(item.series[item.series.length-1], index_value_range[item.type][0], index_value_range[item.type][1], chart_color[item.type]),
-                                        "opacity": "80%"
-                                    }}
-                                />
-                                </div>
-                                <div
-                                    style={{
-                                        position: 'absolute',
-                                        right: 20,
-                                        top: 50,
-                                        
-                                    }}
-                                >
-                                    <Button
-                                        size="small"
-                                        shape="circle"
-                                        icon={<LinkOutlined/>}
-                                        onClick={() => this.props.setScenarioToShow(item.scenarioName)}
-                                        style={{}}
-                                    />
-                                </div>
-                            </Card>
-                        </List.Item>
+                <Row
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        overflow: 'auto',
+                        // backgroundColor: 'blue'
                     }}
-                />
-            </div>
+                    gutter={5}
+                >
+                    <Col span={1}>
+                        {/* {enabledSusIndices.map(index=>{
+                            return <Row style={{
+                                            // width: 300,
+                                            height: VIEW_CHART_HEIGHT+0,
+                                    }}>
+                                        {index}
+                                    </Row>
+                        })} */}
+                        <List
+                            // grid={{gutter: 8, column: enabledScenarios.length}}
+                            grid={{gutter: 16, 
+                                    column: 1}}
+                            dataSource={enabledSusIndices}
+                            renderItem={item => {
+                                console.log(item)
+                                return <List.Item>
+                                    <Card
+                                        // title={`${item.scenarioName}, ${item.susIndexName}`}
+                                        // size="small"
+                                        bodyStyle={{
+                                            padding: 8,
+                                            height: '100%'
+                                        }}
+                                    >   
+                                        <div class = "sustainability-index-flat-row-name" id={item}
+                                            style={{
+                                                // width: 300,
+                                                "text-orientation": "mixed",
+                                                "writing-mode": "vertical-rl",
+                                                "transform": "rotate(180deg)", 
+                                                "font-weight": "bold",
+                                                height: VIEW_CHART_HEIGHT+0,
+                                                color: chart_title_color[this.mapTitleNameColor(item)]
+                                        }}>
+                                            {item}
+                                        </div>
+                                    
+                                    </Card>
+                                </List.Item>
+                            }}
+                        />
+                    </Col>
+
+                    <Col span={23}>
+                        <List
+                            // grid={{gutter: 8, column: enabledScenarios.length}}
+                            grid={{gutter: 16, 
+                                    column: enabledScenarios.length}}
+                            
+                            dataSource={enabledChartBlocks}
+                            renderItem={item => {
+                                let max_value = 1
+                                if(item.type=="mpm"){
+                                    max_value = Math.ceil(Math.max(...range_max[item.type][item.susIndexName]))
+                                }
+                                return <List.Item>
+                                    <Card
+                                        // title={`${item.scenarioName}, ${item.susIndexName}`}
+                                        // size="small"
+                                        bodyStyle={{
+                                            padding: 8,
+                                            height: '100%'
+                                        }} 
+                                    >   
+                                        <div class = "sustainability-index-flat" id={item.scenarioName}
+                                            style={{
+                                                // width: 300,
+                                                height: VIEW_CHART_HEIGHT+0,
+                                        }}>
+                                        <ReactEcharts
+                                            
+                                            option={{
+                                                // title: {
+                                                //     text: `${item.scenarioName}, ${item.susIndexName}"="${item.indexFunction}`,
+                                                //     textStyle: {color: chart_title_color[this.mapTitleNameColor(item.susIndexName)], fontSize: Title_Font_Size, 
+                                                //         textBorderColor: "grey", textBorderWidth: 0},
+                                                //     // textStyle: {fontSize: Title_Font_Size},
+                                                //     top: 10
+                                                // },
+                                                xAxis: {
+                                                    type: 'category',
+                                                    data: data.timeRange
+                                                },
+                                                yAxis: {
+                                                    type: 'value',
+                                                    min:0,
+                                                    max: max_value
+                                                },
+                                                grid: {
+                                                    left: '3%',
+                                                    right: '4%',
+                                                    bottom: '3%',
+                                                    top: '10%',
+                                                    containLabel: true
+                                                },
+                                                series: [{
+                                                    name: item.susIndexName,
+                                                    type: 'line',
+                                                    data: item.series
+                                                }]
+                                            }}
+                                            style={{
+                                                height: '100%',
+                                                width: '100%',
+                                                "backgroundColor": this.mapColor(item.series[item.series.length-1], index_value_range[item.type][0], index_value_range[item.type][1], chart_color[item.type]),
+                                                "opacity": "80%"
+                                            }}
+                                        />
+                                        </div>
+                                        <div
+                                            style={{
+                                                position: 'absolute',
+                                                right: 20,
+                                                top: 50,
+                                                
+                                            }}
+                                        >
+                                            <Button
+                                                size="small"
+                                                shape="circle"
+                                                icon={<LinkOutlined/>}
+                                                onClick={() => this.props.setScenarioToShow(item.scenarioName)}
+                                                style={{}}
+                                            />
+                                        </div>
+                                    </Card>
+                                </List.Item>
+                            }}
+                        />
+                    </Col>
+                </Row>
+            
         )
     }
 }
@@ -628,7 +738,9 @@ class AggregatedChartGrid extends Component {
                                             data: data.timeRange
                                         },
                                         yAxis: {
-                                            type: 'value'
+                                            type: 'value',
+                                            min:0,
+                                            max:1
                                         },
                                         grid: {
                                             left: '3%',

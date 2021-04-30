@@ -130,7 +130,7 @@ class Variables_Radial_Tree extends Component {
       // console.log(this.state.leaf_to_show)
       const width = 2850;
       const radius = width/2;
-      let color = {"weap":"#2b8cbe", "leap":"#fe9929", "mabia":"#a6d96a", "FEW": "grey"};
+      let color = {"weap":"#2b8cbe", "leap":"#fe9929", "mabia":"#a6d96a", "FEW": "grey", "mpm":"#a6d96a"};
       const tree = d3.tree()
                 .size([2 * Math.PI, radius])
                 .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth);
@@ -565,13 +565,14 @@ class Variables_Radial_Tree extends Component {
 
     loadIndexGroup(status, element){
       let index_group = this.state.saved_index_group
+      console.log(status, element)
       index_group.forEach(index=>{
-        if(index["name"]===element.target.id){
+        if(index["name"]===element){
           index["loaded"] = status
         }
        
       })
-      console.log(status, element.target.id, index_group)
+      console.log(status, element, index_group)
       this.setState({saved_index_group: index_group})
       this.props.getLoadedSuatainabilityIndex(index_group)
     }
@@ -588,6 +589,9 @@ class Variables_Radial_Tree extends Component {
         saved_index_group: saved_index_group
       })
       this.props.getLoadedSuatainabilityIndex(saved_index_group)
+
+      // fetch('/get-sustainability-index', { method: 'POST', body: JSON.stringify(saved_index_group) }).then(r=>r.json()).then(d=>console.log(d))
+      //     this.openNotification("The index group is deleted successfully!", this.state.index_to_delete+" deleted.")
     }
 
     showLoadIndexModal(element){
@@ -656,11 +660,13 @@ class Variables_Radial_Tree extends Component {
                 >
                 Variables:
                 {index_to_show_in_modal["variable"].map(v=>{return <Row gutter={8}>
-                                                                              <div class="tooltip">
-                                                                                <Button style={{ height: '100%',overflow: 'hidden'}} id={v["variable"]}>{v["name"]+"="+v["variable"].substring(0, 75)}</Button> 
-                                                                                <span class="tooltiptext">{v["variable"]}</span>
-                                                                              </div>
-                                                                          </Row>})}
+                                                                       
+                                                                          <div class="tooltip">
+                                                                              <Button style={{ height: '100%',overflow: 'hidden'}} id={v["variable"]}>{v["name"]+"="+v["variable"].substring(0, 75)}</Button> 
+                                                                              <span class="tooltiptext">{v["variable"]}</span>
+                                                                            </div>
+                                                                                                                                                    
+                                                                      </Row>})}
                 Index:
                 {index_to_show_in_modal["index"].map(d=>{return <div>
                                                                   <Row gutter={8}>
@@ -727,7 +733,7 @@ class Variables_Radial_Tree extends Component {
                 <Card title="Sustainability Variables">
                   <InputGroup size="large">
                     {/* {this.state.sustainability_variables.map(d=>{return <div onClick={this.variableList.bind(this.innerHTML)}>{d.name}={d.variable}</div>})} */}
-                    <ButtonGroup>
+                    
                       {this.state.sustainability_variables.map(v=>{return <Row gutter={8}>
                                                                             <Col span={23}>
                                                                               <div class="tooltip">
@@ -741,7 +747,7 @@ class Variables_Radial_Tree extends Component {
                                                                               </div>
                                                                             </Col>
                                                                           </Row>})}
-                    </ButtonGroup>
+                    
                     <Row gutter={8}>
                       <Col span={8}>
                         <Input id="name" defaultValue="" value={this.state.user_input.name} onChange={this.handleChange.bind(this)} addonBefore="name" />
@@ -773,8 +779,7 @@ class Variables_Radial_Tree extends Component {
                                                                         </div>
                                                                       </Col>
                                                                   </Row>    
-                                                                  
-                                                                  
+
                                                                 </div>})}
                   <Row gutter={8}>
                       <Col span={8}>
@@ -794,6 +799,7 @@ class Variables_Radial_Tree extends Component {
               <TabPane tab='Load Existing' key='1'>
               <Card title="Saved Index">
                 {this.state.saved_index_group.map(index=>{
+                  console.log(index["name"])
                   return <Row gutter={8}>
                             <Col span={21}>
                               <Button  onClick={element=>this.showLoadIndexModal(index["name"])} id={index["name"]}> {index["name"]} </Button>
@@ -802,7 +808,7 @@ class Variables_Radial_Tree extends Component {
                               </Popconfirm>
                             </Col>
                             <Col span={3} >
-                              <Switch defaultChecked={index["loaded"]} onChange={this.loadIndexGroup.bind(this)} id={index["name"]}/>
+                              <Switch defaultChecked={index["loaded"]} onChange={element=>this.loadIndexGroup(element, index["name"])} id={index["name"]}/>
                             </Col>
                             
                           </Row> 

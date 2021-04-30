@@ -172,9 +172,9 @@ class LEAP_PixelMapView extends Component {
                                     <div style={{display:"inline-block"}}>LEAP Pixel Map </div> (<div style={{color:"#fdae61", display:"inline-block"}}>{scenario_to_show}</div>)
                                 </div> }
                     style={{
-                    height:1010,
+                    height:900,
                     flex: 0,
-                    marginTop: 10,
+                    marginTop: 0,
                     overflow: 'auto',
                     }}>
                     <LEAP_Visualization 

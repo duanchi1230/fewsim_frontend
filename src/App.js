@@ -27,7 +27,11 @@ export default class App extends Component {
             run_model_status: 'null',
             weap_flow: [],
             leap_data: [],
+            food_data: [],
             variables: [],
+            
+            climate_scenarios: [],
+            checked_climate_scenarios:[],
 
             created_scenarios: [],
             created_scenario_name: '',
@@ -119,7 +123,7 @@ export default class App extends Component {
             this.openNotification('No scenario exists!', 'Please create and load scenarios to run!')
         }
         else{
-            
+            console.log(this.state.created_scenarios, this.state.sustainability_variables, this.state.loaded_group_index)
             let xhr = new XMLHttpRequest();
             xhr.timeout = 10000;
             xhr.open('POST', 'run/weap')
@@ -173,7 +177,9 @@ export default class App extends Component {
             fetch("run/weap", {method: "GET"})
                 .then(r=>r.json())
                 .then(r=>{console.log(r, r["loaded_group_index"]); 
-                            setState({weap_flow: r['weap-flow'], leap_data:r['leap-data'], run_model_status:'finished', simulation_time_range:r['weap-flow'][0]['timeRange'], sustainability_variables_calculated: r['sustainability_variables'], loaded_group_index_simulated:r["loaded_group_index"]})
+                            setState({weap_flow: r['weap-flow'], leap_data:r['leap-data'], run_model_status:'finished', 
+                                        food_data:r["food-data"], simulation_time_range:r['weap-flow'][0]['timeRange'], sustainability_variables_calculated: r['sustainability_variables'], 
+                                        loaded_group_index_simulated:r["loaded_group_index"]})
                             let weap_result_variable = []
                             let leap_result_variable = []
                             
@@ -218,7 +224,7 @@ export default class App extends Component {
     
     componentDidMount(){
         
-        fetch('/inputs/tree').then(data => data.json()).then((data)=>{console.log(data); this.setState({variables: data})});
+        fetch('/inputs/tree').then(data => data.json()).then((data)=>{console.log(data); this.setState({variables: data["data"], climate_scenarios: data["climate_scenarios"]})});
         // fetch('/sensitivity-graph').then(si_data=> si_data.json()).then(si_data=> {console.log(si_data)})
         fetch('/sensitivity-graph', { method: 'GET' }).then(r => r.json()).then(r => {
           this.setState({sensitivity_graph: r})
@@ -337,12 +343,13 @@ export default class App extends Component {
         let weap = JSON.parse(JSON.stringify(this.state.weap_inputs))
         let leap = JSON.parse(JSON.stringify(this.state.leap_inputs))
         let mabia = JSON.parse(JSON.stringify(this.state.mabia_inputs))
+        let climate = JSON.parse(JSON.stringify(this.state.checked_climate_scenarios))
         let name = JSON.parse(JSON.stringify(this.state.created_scenario_name))
         created_scenarios.forEach(scenario=>{
             created_scenarios_names.push(scenario.name)
         })
         if(created_scenarios_names.includes(this.state.created_scenario_name) != true){
-            created_scenarios.push({'name': name, 'weap':weap, 'leap': leap, 'mabia':mabia})
+            created_scenarios.push({'name': name, 'weap':weap, 'leap': leap, 'mabia':mabia, "climate": climate})
             console.log(created_scenarios)
             this.setState({created_scenarios:created_scenarios, created_scenario_name: ''})
         }
@@ -352,8 +359,8 @@ export default class App extends Component {
         
     }
 
-    deleteScenario(){
-
+    deleteScenario(scenario_to_delete){
+        console.log(scenario_to_delete)
     }
 
     loadExistingScenarios(element){
@@ -376,7 +383,7 @@ export default class App extends Component {
         })
 
 
-        if(created_scenarios_names.includes(name) !=+ true){
+        if(created_scenarios_names.includes(name) !== true){
             if(scenarios_to_load['name']==='Base'){
                 created_scenarios.unshift(scenarios_to_load)
             }
@@ -391,9 +398,7 @@ export default class App extends Component {
         }
     }
 
-    deleteExistingScenario(){
-
-    }
+    
 
     showScenarioSummary(element){
         console.log(element)
@@ -562,7 +567,11 @@ export default class App extends Component {
                     run_model_status: state.run_model_status,
                     weap_flow: state.weap_flow,
                     leap_data: state.leap_data,
+                    food_data: state.food_data,
                     variables: state.variables,
+
+                    climate_scenarios: state.climate_scenarios,
+                    checked_climate_scenarios: state.checked_climate_scenarios,
 
                     created_scenarios: state.created_scenarios,
                     created_scenario_name: state.created_scenario_name,
@@ -640,10 +649,72 @@ export default class App extends Component {
     }
 
     inputSaveSimulationNameChanged(user_input){
-        console.log(user_input.target.value)
+
         this.setState({
             Simulation_to_Save_Name: user_input.target.value
         })
+    }
+
+    confirmSaveScenario(scenario_to_save){
+        let created_scenarios = JSON.parse(JSON.stringify(this.state.created_scenarios))
+        let existing_scenarios = JSON.parse(JSON.stringify(this.state.existing_scenarios))
+        let existing_scenarios_names = []
+        console.log(scenario_to_save)
+        console.log(this.state.created_scenarios)
+        console.log(this.state.existing_scenarios)
+        existing_scenarios.forEach(scenario=>{
+            existing_scenarios_names.push(scenario.name)
+        })
+        if(existing_scenarios_names.includes(scenario_to_save) !== true){
+            created_scenarios.forEach(scenario=>{
+                if(scenario.name===scenario_to_save){
+                    existing_scenarios.push(scenario)
+                }
+            })
+            console.log(existing_scenarios)
+            this.setState({
+                existing_scenarios: existing_scenarios
+            })
+            fetch('/load-scenarios', { method: 'POST', body: JSON.stringify({"scenarios": existing_scenarios})}).then(d => d.json()).then((d)=>{console.log(d)});
+        }
+        
+        if(existing_scenarios_names.includes(scenario_to_save) === true){
+            this.openNotification('Scenario already exists!', 'Please save another scenario!')
+        }
+        
+    }
+
+    deleteExistingScenario(existing_scenario_to_delete){
+        console.log(existing_scenario_to_delete)
+        let existing_scenarios = JSON.parse(JSON.stringify(this.state.existing_scenarios))
+        let existing_scenarios_names = []
+        let updated_existing_scenario = []
+        existing_scenarios.forEach(scenario=>{
+            existing_scenarios_names.push(scenario.name)
+        })
+        if(existing_scenarios_names.includes(existing_scenario_to_delete) !== true){
+            this.openNotification('Scenario already deleted!', 'Done!')
+        }
+        if(existing_scenarios_names.includes(existing_scenario_to_delete) === true){
+            updated_existing_scenario = existing_scenarios.filter(scenario => scenario.name!==existing_scenario_to_delete)
+            console.log(updated_existing_scenario)
+            this.setState({
+                existing_scenarios: updated_existing_scenario
+            })
+            fetch('/load-scenarios', { method: 'POST', body: JSON.stringify({"scenarios": updated_existing_scenario})}).then(d => d.json()).then((d)=>{console.log(d)});
+        }
+    }
+
+    handleClimateScenarioChecked(checkedKeys, info){
+        console.log(checkedKeys)
+        let current_key_checked = []
+        let previous_keys_checked = this.state.checked_climate_scenarios
+        checkedKeys.forEach(key=>{
+            if(previous_keys_checked.includes(key)===false){
+                current_key_checked.push(key)
+            }
+        })
+        this.setState({checked_climate_scenarios:current_key_checked})
     }
 
     render() {
@@ -727,6 +798,24 @@ export default class App extends Component {
                                                         {this.plotVariableTree([this.state.variables['children'][2]])}
                                                     </TreeNode>
                                                 </Tree>
+                                                <Tree
+                                                checkable={true}
+                                                defaultExpandedKeys={['climate-input']}
+                                                checkedKeys={this.state.checked_climate_scenarios}
+                                                onCheck={this.handleClimateScenarioChecked.bind(this)}
+                                                // onLoad={}
+                                                disabled={false}
+                                                >
+                                                    <TreeNode title="climate" key="climate" checkable={false}>
+                                                        {this.state.climate_scenarios.map(scenario=>{
+                                                            
+                                                            return <TreeNode
+                                                            title={scenario["name"]+"-"+scenario["type"]}
+                                                            key={scenario["name"]+"_"+scenario["type"]}
+                                                            />
+                                                        })}
+                                                    </TreeNode>
+                                                </Tree>
                                         </Card> 
                                     </Col>
                                     <Col span={18}>
@@ -753,8 +842,9 @@ export default class App extends Component {
                                                     leap_inputs={this.state.leap_inputs}
                                                     />
                                                 </TabPane>
-                                                <TabPane tab="WEAP-MABIA" key="3">
-                                                    WEAP-MABIA Input will be incorporated!
+                                                <TabPane tab="climate" key="3">
+                                                    {this.state.checked_climate_scenarios.map(scenario=>{return <b1><h2>{scenario}</h2> Climate Scenario is selected!</b1>}
+                                                        )}
                                                 </TabPane>
                                             </Tabs>
                                         </Card>
@@ -783,10 +873,12 @@ export default class App extends Component {
 
                                                             return  <Row gutter={8} key={scenario.name}>
                                                                         <Col span={21}>
+                                                                       
                                                                             <div><Button id={scenario.name} onClick={element=>this.showScenarioSummary(scenario.name)} block>{scenario.name}</Button> </div>
+                                                                        
                                                                         </Col>
                                                                         <Col span={3}>
-                                                                            <div onClick={this.deleteScenario.bind(this)}> <div id={scenario.name}>x</div> </div>
+                                                                            <div onClick={element=> this.deleteScenario(scenario.name)}> <div id={scenario.name}>x</div> </div>
                                                                         </Col>
                                                                     </Row>
                                                                      }})}    
@@ -794,7 +886,7 @@ export default class App extends Component {
                                                 
 
                                                 <Row gutter={8}>Existing Scenarios</Row>
-                                                <ButtonGroup>
+                                                
                                                     {this.state.created_scenarios.map(scenario=>{
                                                         if(Boolean(scenario["type"])!==false){
                                                             return <Row gutter={8} key={scenario.name}>
@@ -802,11 +894,10 @@ export default class App extends Component {
                                                                             <div><Button id={scenario.name} onClick={element=>this.showScenarioSummary(scenario.name)} block>{scenario.name}</Button> </div>
                                                                         </Col>
                                                                         <Col span={3}>
-                                                                            <div onClick={this.deleteScenario.bind(this)}> <div id={scenario.name}>x</div> </div>
+                                                                            <div onClick={element=> this.deleteScenario(scenario.name)}> <div id={scenario.name}>x</div> </div>
                                                                         </Col>
                                                                     </Row> }})}    
-                                                </ButtonGroup>
-                                                {/* <Button type="primary">Load Existing</Button> */}
+                                                
                                             </Card>
                                         </Col>
                                         <Col span={18}>
@@ -819,12 +910,16 @@ export default class App extends Component {
                                                 Scenario Summary (RUN):
                                                 {this.state.created_scenarios.map(scenario=>{
                                                     let scenario_in_summary = this.state.scenario_in_summary
+                                                    
                                                     if(scenario_in_summary==='' && scenario.name===this.state.created_scenarios[0].name){
                                                         return <div key={scenario.name}>Please select the scenario to vew!</div>
                                                     }
                                                     if(scenario_in_summary===scenario.name){
                                                         return <div key={scenario.name}>
                                                                 {scenario.name}
+                                                                <Popconfirm placement="bottomLeft" title={"Do you want to save the indices?"} onConfirm={element=>this.confirmSaveScenario(scenario.name)} okText="Yes" cancelText="No">
+                                                                    <div><Button >Save</Button> </div>
+                                                                </Popconfirm>
                                                                 <Row gutter={8}>WEAP</Row>
                                                                     {scenario.weap.map(variable=>{
                                                                         return <div key={variable.fullname+':'+variable.name}>
@@ -856,6 +951,11 @@ export default class App extends Component {
                                                                                 </div>
                                                                     })}
                                                                 <Row gutter={8}>WEAP-MABIA</Row>
+
+                                                                <Row gutter={8}>Climate</Row>
+                                                                {scenario.climate.map(variable=>{
+                                                                    return variable
+                                                                })}
                                                                 </div>
                                                         
                                                     }}) 
@@ -864,7 +964,7 @@ export default class App extends Component {
                                         </Col>
                                         </Row>
                                     </TabPane>
-                                    <TabPane tab="Load" key="2" >
+                                    <TabPane tab="Load" key="2">
                                         <Row>
                                         <Col span={6}>
                                             <Card style={{
@@ -874,7 +974,6 @@ export default class App extends Component {
                                                 overflow: 'auto',
                                             }}>
                                                 <Row gutter={8}>Existing Scenarios</Row>
-                                                <ButtonGroup>
                                                     {this.state.existing_scenarios.map(scenario=>{return <Row gutter={8} key={scenario.name}>
                                                                                                             <Col span={21}>
                                                                                                                 <div>
@@ -882,12 +981,13 @@ export default class App extends Component {
                                                                                                                 </div>
                                                                                                             </Col>
                                                                                                             <Col span={3}>
-                                                                                                                <div onClick={this.deleteScenario.bind(this)}>
-                                                                                                                    <div id={scenario.name}>x</div>
-                                                                                                                </div></Col>
+                                                                                                                
+                                                                                                                <Popconfirm placement="bottomLeft" title={"Do you want to delete this existing scenario?"} onConfirm={element=>this.deleteExistingScenario(scenario.name)} okText="Yes" cancelText="No">
+                                                                                                                    <div><Button >x</Button> </div>
+                                                                                                                </Popconfirm>
+                                                                                                                    
+                                                                                                            </Col>
                                                                                                             </Row>})}
-                                                </ButtonGroup>
-                                                {/* <Button type="primary">Load Existing</Button> */}
                                             </Card>
                                         </Col>
                                         <Col span={17}>
@@ -900,10 +1000,10 @@ export default class App extends Component {
                                                 Exisiting Scenario Summary: 
                                                 {this.state.existing_scenarios.map(scenario=>{
                                                     let existing_scenarios_summary = this.state.existing_scenarios_summary
-                                                    if(existing_scenarios_summary===''){
+                                                    if(existing_scenarios_summary==='' && scenario.name ===this.state.existing_scenarios[0].name){
                                                         return <div key={scenario.name}>Please select the scenario to view!</div>
                                                     }
-                                                    if(existing_scenarios_summary==='Base'){
+                                                    if(existing_scenarios_summary==='Base' && scenario.name===existing_scenarios_summary){
                                                         return <div key={scenario.name}>      
                                                                     This is Base scenario with every variable in default!
                                                                     <Button id={scenario.name} type="dash" shape="round" onClick={element=>this.loadExistingScenarios(scenario.name)}>Load to Run</Button>

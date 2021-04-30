@@ -18,8 +18,10 @@ import LEAP_Variables_Ranking from './LEAP_Variables_Ranking'
 import SI_Main_View from './SI_Main_View'
 import WEAP_Multi_Tab_Pixel_Map from './WEAP_Multi_Tab_Pixel_Map'
 import WEAP_Multi_Tab_Pixel_Map_map from './WEAP_Multi_Tab_Pixel_Map_map'
-import WEAP_Radar_Chart from './WEAP_Radar_Chart'
-
+import Food_Visualization from './Food_Visualization'
+import WEAP_Demand_PirChart from './WEAP_Demand_PirChart'
+import Food_Visualization_CropArea from './Food_Visualization_CropArea'
+import Food_Visualization_PieChart from './Food_Visualization_PieChart';
 
 const { TabPane } = Tabs;
 export default class MainScenarioComponent extends Component {
@@ -162,7 +164,7 @@ export default class MainScenarioComponent extends Component {
                         
                             <Row
                             gutter={0}
-                            style={{ height: 850,
+                            style={{ height: 950,
                                     // overflow: 'auto', 
                                     flex:10}}
                             >
@@ -206,7 +208,7 @@ export default class MainScenarioComponent extends Component {
                             marginLeft: 0,
                         }}
                     >     
-                        <Tabs 
+                        {/* <Tabs 
                             type='card'
                             style={{
                                 height: '100%',
@@ -217,7 +219,7 @@ export default class MainScenarioComponent extends Component {
                                 
                         }}>
     
-                            <TabPane tab='WEAP View' key='0'>
+                            <TabPane tab='FEW Variables' key='0'> */}
                                 <Row
                                     gutter={[10, 10]}
                                     style={{ marginTop: 0, overflow: 'auto',}}
@@ -253,20 +255,20 @@ export default class MainScenarioComponent extends Component {
                                 
                                 <Row
                                 gutter={0}
-                                style={{ height: '100%', overflow: 'auto', }}
+                                style={{ height: 950, overflow: 'auto', marginTop: 10,}}
                                 >
-                                   <Col span={24}>
+                                   <Col span={24} style={{ height: '100%', overflow: 'auto', marginTop: 0,}}>
                                    <Tabs 
                                         type='card'
                                         style={{
                                             height: '100%',
                                             display: 'flex',
-                                            flexDirection: 'column',
+                                            // flexDirection: 'column',
                                             // overflow: 'auto',
                                             // marginLeft: 10,
                                             
                                     }}>
-                                        <TabPane tab='Multi-Tab Pixel-Map' key='1'>
+                                        <TabPane tab='Water' key='1'>
                                             <Row
                                             gutter={[10, 10]}
                                             style={{ marginTop: 0, overflow: 'auto',}}
@@ -284,11 +286,17 @@ export default class MainScenarioComponent extends Component {
                                                         style={{ height: 200, overflow: 'auto', }}
                                                     >
                                                         <Col span={24}>
-                                                            <WEAP_Radar_Chart></WEAP_Radar_Chart>
+                                                            <WEAP_Demand_PirChart
+                                                                weap_flow = {this.props.weap_flow}
+                                                                scenario_to_show={this.state.scenario_to_show}
+                                                                scenario_to_show={this.state.scenario_to_show}
+                                                            >
+
+                                                            </WEAP_Demand_PirChart>
                                                         </Col>
                                                     </Row>
                                                     <Row gutter={0}
-                                                        style={{ height: 800, overflow: 'auto', }}>
+                                                        style={{ height: 850, overflow: 'auto'}}>
                                                         <Col span={24}>
                                                             <WEAP_Multi_Tab_Pixel_Map_map
                                                                 weap_flow={this.props.weap_flow}
@@ -305,28 +313,68 @@ export default class MainScenarioComponent extends Component {
                                             </Row>
                                         </TabPane>
 
-                                        <TabPane tab='Pixe-Map' key='2'>
+                                        <TabPane tab='Energy' key='2'>
                                         
-                                            <WEAP_PixelMapView
-                                                    checkedOutput={this.state.checkedOutput} 
-                                                    weap_flow={this.props.weap_flow}
-                                                    scenario_to_show={this.state.scenario_to_show}
-                                                    handleWEAPResultVariableClick={this.props.handleWEAPResultVariableClick}
-                                            />
-                                            
-                                        
-                                            
-
+                                           
+                                            <LEAP_PixelMapView 
+                                                leap_data={this.props.leap_data} 
+                                                handleLEAPResultVariableClick={this.props.handleLEAPResultVariableClick}
+                                                scenario_to_show={this.state.scenario_to_show}
+                                                setLeapDataType={this.setLeapDataType.bind(this)}>
+                                            </LEAP_PixelMapView>
                                         </TabPane>
 
+                                        <TabPane tab='Food' key='3'>
+                                            <Row gutter={[10, 10]}
+                                                style={{ marginTop: 0, overflow: 'auto',}}
+                                            >
+                                                <Col span={8}>
+                                                    <Food_Visualization_CropArea>
+                                                        
+                                                    </Food_Visualization_CropArea>
+                                                </Col>
+                                                <Col span={16}>
+                                                    <Row 
+                                                        gutter={0}
+                                                        style={{ height: 200, overflow: 'auto', }}
+                                                    >
+                                                        <Col span={24}>
+                                                            <Food_Visualization_PieChart></Food_Visualization_PieChart>
+                                                        </Col>
+                                                    </Row>
+                                                    <Row gutter={0}
+                                                        style={{ height: 850, overflow: 'auto', marginTop: 10}}>
+                                                        <Col span={24}>
+                                                            <Food_Visualization>
+                                                        
+                                                            </Food_Visualization>
+                                                        </Col>
+                                                    </Row>
+                                                    
+                                                </Col>
+                                            </Row>
+                                            
+                                        </TabPane>
+
+                                        <TabPane tab='Indices' key='4'>
+                                            <SI_Main_View
+                                                sustainability_variables_calculated={this.props.sustainability_variables_calculated}
+                                                sustainability_index={this.props.sustainability_index}
+                                                weap_flow={this.props.weap_flow}
+                                                setScenarioToShow={this.setScenarioToShow.bind(this)}
+                                                // Loaded existing index:
+                                                loaded_group_index_simulated={this.props.loaded_group_index_simulated}
+                                            ></SI_Main_View>
+                                        </TabPane>
+                                        
                                     </Tabs>
                                         
                                   </Col>
                                         
                                 </Row>      
-                            </TabPane>
+                            {/* </TabPane> */}
 
-                            <TabPane tab='LEAP View' key='1'>
+                            {/* <TabPane tab='LEAP View' key='1'>
                                 <Row
                                 gutter={[8, 8]}
                                 style={{ marginTop: 1 }}
@@ -371,8 +419,8 @@ export default class MainScenarioComponent extends Component {
                                         </LEAP_PixelMapView>
                                     </Col>
                                 </Row>
-                            </TabPane>
-                            <TabPane tab='FEW Index View' key='2'>
+                            </TabPane> */}
+                            {/* <TabPane tab='FEW Index' key='1'>
                             <Row
                                 gutter={0}
                                 style={{ height: '100%', overflow: 'auto', }}
@@ -388,7 +436,7 @@ export default class MainScenarioComponent extends Component {
                             </Row>   
                                 
                                 
-                            </TabPane>
+                            </TabPane> */}
                             {/* <TabPane tab='Sustainability Index' key='2' >
                                 
                                 <Card 
@@ -401,7 +449,7 @@ export default class MainScenarioComponent extends Component {
                                     <Sustainability_Index sustainability_variables={this.props.sustainability_variables} sustainability_index={this.props.sustainability_index}/>
                                 </Card>        
                             </TabPane> */}
-                        </Tabs>
+                        {/* </Tabs> */}
                     </Col>  
                     
                     {/*<Col*/}

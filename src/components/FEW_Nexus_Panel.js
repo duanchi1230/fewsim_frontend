@@ -159,7 +159,7 @@ class FEW_Nexus_Panel extends Component {
             .attr('text-anchor', 'middle')
             .attr('alignment-baseline', 'middle')
             .attr('font-weight', 'bold')
-            .text('MPM')
+            .text('FMLM')
             
         svg.append('defs')
             .append('marker')
@@ -363,11 +363,11 @@ class FEW_Nexus_Panel extends Component {
                     style={{
                     height:270,
                     flex: 10,
-                    marginTop: 55.6,
+                    marginTop: 0,
                     overflow: 'auto',
                 }}>
                     {/* This could display some text content or summary visualizarion content */}
-                    Model: Food--&gt MPM, Water--&gt WEAP, Energy--&gt LEAP
+                    Model: Food(FMLM), Water(WEAP), Energy(LEAP)
                     <div id="concept-diagram"></div>
                 </Card>
             </div>

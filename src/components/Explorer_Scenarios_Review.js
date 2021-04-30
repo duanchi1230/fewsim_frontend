@@ -111,7 +111,7 @@ class WEAP_Scenarios_Review extends Component {
                         </Select>
                         }
                 style={{
-                height: 850,
+                height: 950,
                 flex: 10,
                 marginTop: 10,
                 overflow: 'auto',
@@ -143,6 +143,14 @@ class WEAP_Scenarios_Review extends Component {
                                             title={<div>{'WEAP-MABIA Inputs'}</div>}
                                         />
                                             Default
+                                    </List.Item>
+                                    <List.Item>
+                                        <List.Item.Meta
+                                            title={<div>{'Climate Inputs'}</div>}
+                                        />
+                                            {scenario.climate.map(variable=>{
+                                                return variable
+                                            })}
                                     </List.Item>
                                 </List>
                                 </div>    
@@ -182,6 +190,14 @@ class WEAP_Scenarios_Review extends Component {
                                                             formatter={value => `${value}%`}
                                                             parser={value => value.replace('%', '')}
                                                         /> Default
+                                                    </div>
+                                        })}
+                                    <Row gutter={8}>    
+                                        {'Climate Inputs'}
+                                    </Row>
+                                        {scenario.climate.map(variable=>{
+                                            return <div key={"climate-"+variable}>
+                                                        {variable} 
                                                     </div>
                                         })}
                                     {/* <Row gutter={8}>   

@@ -74,7 +74,7 @@ class SI_Graph extends Component {
       let color_type = "mpm-output"
       let weap_keys = ["Groundwater", "CAP", "Water"]
       let leap_keys = ["Renewable", "Electricity"]
-      console.log(name, splited_name)
+      
       weap_keys.forEach(w_key=>{
           if(splited_name.includes(w_key) ){
               color_type = "weap-output"
