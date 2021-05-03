@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import {Row, Col, Divider, Empty, Card, Button, Tabs, InputNumber, List, Select} from 'antd';
 import Sustainability_Graph from '../components/Sustainability_Graph'
 
+// this module is for the Scenario Explorer Panel
+
 const { Option } = Select;
 
 class WEAP_Scenarios_Review extends Component {

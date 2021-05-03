@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Slider, InputNumber, Row, Col } from 'antd';
 
+// This module lists all selected LEAP variables in the Scenario Creation Panel
 class InputParameter_LEAP extends React.Component {
   constructor(props) {
     super(props);

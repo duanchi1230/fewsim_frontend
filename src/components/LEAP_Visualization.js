@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 import Variables_Radial_Tree from './Variables_Radial_Tree';
 import { node } from 'prop-types';
 
-
+//  This module is for the LEAP Pixel-Map Panel
 class LEAP_Visualization extends Component {
     constructor(props) {
         super(props);
@@ -640,7 +640,7 @@ function calCoordinate(flow, origin, start_year, end_year) {
 }
 
 function mapColor(d) {
-
+    
     let base_color = [[141,211,199], [255,255,179], [190,186,218], [251,128,114], [128,177,211],[253,180,98], [179,222,105], [252,205,229], [217,217,217], [188,128,189], [141,211,199], [255,255,179], [190,186,218], [251,128,114], [128,177,211],[253,180,98], [179,222,105], [252,205,229], [217,217,217], [188,128,189]]
     
     let color = base_color[5]

@@ -8,6 +8,10 @@ import InputParameter_WEAP from './components/InputParameter_WEAP'
 import InputParameter_LEAP from './components/InputParameter_LEAP'
 import CreatedScenarios from './components/CreatedScenarios';
 import Sensitivity_Graph from './components/Sensitivity_Graph'
+
+// This module is the ENTRY point for all frontend visualization modules
+
+
 const {TreeNode} = Tree;
 const { Header, Content } = Layout;
 const { TabPane } = Tabs;
@@ -119,10 +123,13 @@ export default class App extends Component {
     };
 
     runModel () {
+        // excute when Run Scenario button is clicked
         if(this.state.created_scenarios.length===0){
             this.openNotification('No scenario exists!', 'Please create and load scenarios to run!')
         }
         else{
+            // send the created scenarios to backend to run
+            // check every 10 s to see if simulation runing has completed or not, if completed it will fetch the simulation result
             console.log(this.state.created_scenarios, this.state.sustainability_variables, this.state.loaded_group_index)
             let xhr = new XMLHttpRequest();
             xhr.timeout = 10000;
@@ -159,7 +166,7 @@ export default class App extends Component {
         
         
         function getRunLog(created_scenarios, setState){
-            
+            // fetch the run log in the backend
             fetch('log').then(r=>r.json()).then(r=>{
                 console.log(r, r[r.length-1]); 
                 setState({run_log: r})
@@ -173,6 +180,7 @@ export default class App extends Component {
         }
 
         function getData(created_scenarios, setState){
+            // fetch the simulation when simulation is completed
             console.log("sending created scenarios")
             fetch("run/weap", {method: "GET"})
                 .then(r=>r.json())
@@ -302,6 +310,7 @@ export default class App extends Component {
     }
 
     plotVariableTree(data){
+    //  plot the input variabels tree in the Scenario Creation Panel
     // data.map(d=>console.log(d))
     return  data.map(v => {
                     if (Object.keys(v).includes('children')){
@@ -337,6 +346,7 @@ export default class App extends Component {
     }
 
     createScenarios = () => {
+        // handle the event of scenarios creation button clicked
         console.log(this.state.weap_inputs, this.state.leap_inputs)
         let created_scenarios = this.state.created_scenarios
         let created_scenarios_names = []
@@ -364,6 +374,7 @@ export default class App extends Component {
     }
 
     loadExistingScenarios(element){
+        // load the existing sustaqinability indices in the Sustainability Index Creation Panel when button clicked
         console.log(element)
         let name = element
         let existing_scenarios = this.state.existing_scenarios
@@ -554,6 +565,7 @@ export default class App extends Component {
     }
 
     handleLoadSimulationButtonClick(){
+        //  handle load scenarion history
         console.log(this.state.Stored_Simulations)
         this.state.Stored_Simulations.forEach(simulation=>{
             if(simulation['name']===this.state.Simulation_to_Load_Name){

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {Row, Col, Divider, Empty, Card, Button, Tabs} from 'antd';
 
+// Food Visualization currently under development
 class Food_Visualization_PieChart extends Component {
     constructor(props) {
         super(props);

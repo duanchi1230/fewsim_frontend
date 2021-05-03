@@ -7,6 +7,7 @@ import LEAP_Visualization from "./LEAP_Visualization";
 import {Form, InputNumber, Button, Row, Col, Modal, Radio, Input, Card} from 'antd'
 import Icon from '@ant-design/icons'
 
+//  This module is the container of the LEAP Pixel-Map Panel
 class LEAP_PixelMapView extends Component {
     constructor(props) {
         super(props);

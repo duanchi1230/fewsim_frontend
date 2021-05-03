@@ -5,6 +5,9 @@ import Chart from 'chart.js';
 import ReactEcharts from 'echarts-for-react';
 import { transpileModule } from 'typescript';
 import {LinkOutlined, FilterOutlined} from '@ant-design/icons'
+
+//  This module is for the WEAP Visualization Pie Chart
+
 const { Option , OptGroup} = Select;
 
 const VIEW_CHART_HEIGHT = 180;

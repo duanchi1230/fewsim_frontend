@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import {Row, Col, Divider, Empty, Card, Button, Tabs, Modal} from 'antd';
 import {findDOMNode} from 'react-dom';
 import * as d3 from 'd3';
+
+// This module is for the FEW Nexus Summary Panel
 const { TabPane } = Tabs;
 
 class FEW_Nexus_Panel extends Component {
@@ -57,6 +59,7 @@ class FEW_Nexus_Panel extends Component {
     }
 
     drawDiagram(){
+        //  draw the FEW Nexus summary diagram
         let width = 450
         let height = 150
         const svg = d3.select('#concept-diagram')

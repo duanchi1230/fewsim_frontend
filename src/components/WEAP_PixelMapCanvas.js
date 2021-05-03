@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {findDOMNode} from 'react-dom';
 import * as d3 from 'd3';
 // import calPixelMatrix from './calPixelMatrix'
-
+// This module is OBSOLETE currently (and was for the WEAP pixel map)
 export default class WEAP_PixelMapCanvas extends Component {
 
     constructor(props) {

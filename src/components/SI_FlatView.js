@@ -4,6 +4,7 @@ import ReactEcharts from 'echarts-for-react';
 import {Icon, LinkOutlined } from '@ant-design/icons'
 import 'antd/dist/antd.css';
 
+// This Module is for sustaianbility index visualization: Flat View and Compare Scenario View
 //TODO: need adjustment
 // const VIEW_FLAT_VIEW_HEIGHT = 685;
 const VIEW_FLAT_VIEW_HEIGHT = '100%';
@@ -29,7 +30,7 @@ export default class FlatView extends Component {
     }
 
     handleScenarioChange = (event, name) => {
-
+        // handle the mouse event of filtering scenarios
         let newDisabledScenario = [...this.state.disabledScenarios];
 
         if (!event.target.checked) {
@@ -45,6 +46,7 @@ export default class FlatView extends Component {
     };
 
     handleSusIndexChange = (event, name) => {
+        //  handle the mouse event of filtering indices
         let newDisabledSusIndices = [...this.state.disabledSusIndices];
 
         if (!event.target.checked) {
@@ -61,19 +63,24 @@ export default class FlatView extends Component {
     };
 
     handleAggregateScenarios = (aggregateScenarios) => {
+        // handle the mouse event of enabling or disabling the aggregate scenario function
         this.setState({aggregateScenarios});
     };
 
     handleAggregateSusIndex = (aggregateIndices) => {
+        // handle the mouse event of enabling or disabling the aggregate index function
         this.setState({aggregateIndices});
     };
 
     handleCompareMode = (compareMode) => {
+        //  hanle compare mode enabling
+        
         console.log(compareMode)
         this.setState({compareMode});
     };
 
     handleCompareButtonClick = (chartBlock) => {
+        //  handle compre mode enabling or disabling
         this.props.handleCompareButtonClick(chartBlock);
     };
 
@@ -135,6 +142,7 @@ export default class FlatView extends Component {
                 </Select>
             }
             </div>;
+        //  add text header based on the view mode
         if(this.state.compareMode){
             data = JSON.parse(JSON.stringify(percentage_data))
         }
@@ -274,6 +282,7 @@ export default class FlatView extends Component {
                 }}
                 >
                     {
+                        // mount the visualization modules basen on status of aggregating scenarios or indices
                         (this.state.aggregateScenarios || this.state.aggregateIndices)
                             ? <AggregatedChartGrid
                                 data={data}
@@ -303,16 +312,19 @@ export default class FlatView extends Component {
 }
 
 
+//  The following for the sensitivity index visualization flat view 
 class FlatChartGrid extends Component {
     constructor() {
         super();
     }
 
     handleCompareButtonClick = (chartBlock) => {
+        //  handle compare mode enabling mouse event
         this.props.handleCompareButtonClick(chartBlock);
     };
 
     mapTitleNameColor(name){
+        // map the chart title color
         let splited_name = name.split(' ')
         let color_type = "mpm"
         let weap_keys = ["Groundwater", "CAP", "Water"]
@@ -331,7 +343,11 @@ class FlatChartGrid extends Component {
         return color_type
     }
 
+    
     mapColor(value, min_value, max_value, color){
+
+        // map the encoded color in compare mode
+
         // console.log(value, min_value, max_value, color)
         // let map_color = "rgb("
         // color.forEach(c=>{
@@ -393,6 +409,7 @@ class FlatChartGrid extends Component {
         );
 
         console.log(data)
+        // the following keys identifies whether an index is weap, leap or mpm
         let color_type = "mpm"
         let weap_keys = ["Groundwater", "CAP", "Water"]
         let leap_keys = ["Renewable", "Electricity"]
@@ -402,7 +419,8 @@ class FlatChartGrid extends Component {
         let weap_value_range = []
         let leap_value_range = []
         let mpm_value_range = {}
-
+        
+        //  add types to the chart blocks
         data.chartBlocks.forEach(blocks=>{
             
             blocks["type"] = "mpm"
@@ -601,6 +619,7 @@ class FlatChartGrid extends Component {
     }
 }
 
+//  The following compoenent is for aggregated 
 class AggregatedChartGrid extends Component {
     constructor() {
         super();
@@ -762,4 +781,5 @@ class AggregatedChartGrid extends Component {
             </div>
         );
     }
+    
 }

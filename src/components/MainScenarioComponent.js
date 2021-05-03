@@ -23,6 +23,8 @@ import WEAP_Demand_PirChart from './WEAP_Demand_PirChart'
 import Food_Visualization_CropArea from './Food_Visualization_CropArea'
 import Food_Visualization_PieChart from './Food_Visualization_PieChart';
 
+// This module defines the layouts of the FEWSim Visualization interface
+
 const { TabPane } = Tabs;
 export default class MainScenarioComponent extends Component {
 
@@ -48,6 +50,7 @@ export default class MainScenarioComponent extends Component {
     }
 
     runModel=(v)=>{
+        // OBSOLETE function no longer used
         this.setState({
             isButtonDisabled: true,
             runButton: 'Running...',
@@ -63,6 +66,7 @@ export default class MainScenarioComponent extends Component {
     }
 
     setScenarioToShow(scenario_name){
+        // handle the mouse event selecting scenarios in the Scenario Explorer
         console.log(scenario_name)
         this.setState({
             scenario_to_show:scenario_name
@@ -70,17 +74,20 @@ export default class MainScenarioComponent extends Component {
     }
 
     handleNodeChecked = (checkedKeys, info) => {     
+        // OBSOLETE function no longer used
         this.setState(
             {checkedOutput:checkedKeys}
         )
     };
     testButtonClicked = () => {
+        // OBSOLETE function no longer used (was used for testing)
         const scenarios = this.props.scenarios
         
         fetch('/proj/test/weap/scenario', { method: 'GET' }).then(r=>r.json()).then(d=>console.log(d))
     }
 
     getSuatainabilityIndex(sustainability_index, sustainability_variables){
+        // OBSOLETE function no longer used
         this.setState({sustainability_index: sustainability_index,
             sustainability_variables:sustainability_variables})
         console.log(sustainability_variables, sustainability_index)
@@ -96,11 +103,13 @@ export default class MainScenarioComponent extends Component {
         console.log(this.props.loaded_group_index_simulated)
     }
     setLeapDataType(type, variable){
+        //  handle the LEAP variabel selection mouse event
         console.log(type, variable)
         this.setState({type_ranking: type, variable_ranking: variable})
     }
 
     setSupplyPixelMap(name){
+        // handle the supply source selection mouse event in the Scenario Compare Module
         console.log(name)
         this.setState({
             pixel_map_supply_source: name

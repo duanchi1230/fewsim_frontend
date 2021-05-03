@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Slider, InputNumber, Row, Col } from 'antd';
 import { object } from 'prop-types';
 
+// This module lists all selected WEAP variables in the Scenario Creation Panel
+
 class InputParameter_WEAP extends React.Component {
   constructor(props) {
     super(props);

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import {findDOMNode} from 'react-dom';
 import * as d3 from 'd3';
 
+// This module is for the WEAP Line Graph Panel
+
 class WEAP_Result_Graph extends Component {
     constructor(props) {
         super(props);

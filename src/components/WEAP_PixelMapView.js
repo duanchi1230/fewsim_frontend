@@ -5,7 +5,7 @@ import Icon from '@ant-design/icons'
 import WEAP_PixelMapCanvas from './WEAP_PixelMapCanvas';
 import VarTreeList from './VarTreeList';
 
-
+// This module is OBSOLETE currently (and was for the WEAP pixel map)
 export default class WEAP_PixelMapView extends Component {
 
     constructor(props) {

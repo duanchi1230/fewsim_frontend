@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {Row, Col, Divider, Empty, Card, Button, Tabs, Table, Icon} from 'antd';
 
-
+// This module is for the WEAP Variables Response Panel
 class WEAP_Variables_Ranking extends Component {
     constructor(props) {
         super(props);

@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Row, Col, Tree} from 'antd';
 const {TreeNode} = Tree;
 
+// This module displays all created scenarios 
 class CreatedScenarios extends React.Component {
 
     constructor(props) {

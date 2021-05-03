@@ -4,6 +4,9 @@ import '../styles/App.css';
 import {findDOMNode} from 'react-dom';
 import FlatView from "./SI_FlatView";
 import CompareView from "./SI_CompareView";
+
+// This Module is the main Module for sustaianbility index visualization
+
 const { Option , OptGroup} = Select;
 const {TreeNode} = Tree;
 const VIEW_STATUS_FLAT = 'VIEW_STATUS_FLAT';

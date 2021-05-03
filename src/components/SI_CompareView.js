@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Button, Row, Col, Divider, List, Card, Select} from 'antd';
 import ReactEcharts from 'echarts-for-react';
 import numeric from 'numericjs';
-
+// This module is OBSOLETE now and is not used.
 // const VIEW_CHART_HEIGHT = 162;
 // const VIEW_CHART_WIDTH = 368;
 // const VIEW_SIMILAR_RESULT_HEIGHT = 500;
